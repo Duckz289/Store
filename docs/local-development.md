@@ -21,9 +21,9 @@ Script thiết lập:
 
 1. Sinh password PostgreSQL, JWT secret, cookie secret và MFA encryption key bằng CSPRNG.
 2. Ghi chúng vào `.env`, `apps/backend/.env`; các file này bị Git bỏ qua.
-3. Khởi động PostgreSQL 16, chạy Medusa migration và seed.
+3. Khởi động PostgreSQL 16, chạy Medusa migration, commerce seed và reconcile sáu role RBAC.
 4. Đồng bộ publishable key vào `apps/storefront/.env.local`.
-5. Tạo admin local; credential nằm ở `.local/admin-credentials.txt` và không được commit.
+5. Tạo admin local, gán Owner cho đúng email được truyền vào script; credential nằm ở `.local/admin-credentials.txt` và không được commit.
 
 Admin: `http://localhost:9000/app`. Storefront: `http://localhost:8010`. Dự án dùng 8010 vì cổng 8000 của máy đang phục vụ một ứng dụng Uvicorn khác.
 
@@ -44,9 +44,13 @@ Push-Location apps/backend
 ./node_modules/.bin/medusa.cmd db:migrate
 Pop-Location
 corepack pnpm backend:seed
+corepack pnpm --filter @dtc/backend run security:seed
 Push-Location apps/backend
 ./node_modules/.bin/medusa.cmd user -e you@example.com -p <strong-password>
 Pop-Location
+$env:SECURITY_OWNER_EMAIL = "you@example.com"
+corepack pnpm --filter @dtc/backend run security:bootstrap-owner
+Remove-Item Env:\SECURITY_OWNER_EMAIL
 corepack pnpm dev
 ```
 

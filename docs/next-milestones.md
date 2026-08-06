@@ -14,6 +14,14 @@ Mục tiêu: khóa bề mặt Admin trước khi thêm payment/carrier integrati
 
 Exit criteria: role matrix được review; mọi Admin route nhạy cảm có authorization test; MFA enforcement và Admin authentication smoke pass; audit event truy vết được một order end-to-end.
 
+Trạng thái 06/08/2026: hoàn tất cho development/milestone nội bộ, chưa production-approved.
+
+- Native RBAC 2.18.0 được đăng ký và migrate; sáu role được reconcile idempotent, Owner local được bootstrap bằng email tường minh.
+- Tất cả Admin mutation và audit export yêu cầu MFA step-up gắn với bearer/session; API key không thể giả human assurance; logout revoke assurance của session.
+- Audit module có redaction, correlation ID, nonce + SHA-256 integrity check, JSON export và subscriber lifecycle cho order/payment/refund/fulfillment/product/inventory.
+- Integration tests bao phủ privilege escalation, challenge khác identity, mã TOTP sai, TOTP và recovery-code step-up, session revoke, tamper detection, audit export và chuỗi order `placed → updated → completed`.
+- Giới hạn production còn mở được ghi trong ADR-002: harden quyền DB append-only, external immutable export/SIEM, reverse-proxy logging cho native RBAC denial và rate limit MFA.
+
 ## 2. Repair service module
 
 Mục tiêu: quản lý yêu cầu sửa chữa mà không làm biến dạng Order core.

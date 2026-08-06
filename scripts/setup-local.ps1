@@ -31,6 +31,28 @@ function Write-Utf8NoBom([string]$path, [string]$content) {
   )
 }
 
+function Set-EnvValue([string]$path, [string]$name, [string]$value) {
+  $lines = [System.Collections.Generic.List[string]]::new()
+  $lines.AddRange([string[]][System.IO.File]::ReadAllLines($path))
+  $prefix = "$name="
+  $index = -1
+
+  for ($i = 0; $i -lt $lines.Count; $i++) {
+    if ($lines[$i].StartsWith($prefix, [System.StringComparison]::Ordinal)) {
+      $index = $i
+      break
+    }
+  }
+
+  if ($index -ge 0) {
+    $lines[$index] = "$prefix$value"
+  } else {
+    $lines.Add("$prefix$value")
+  }
+
+  Write-Utf8NoBom $path (($lines -join "`r`n") + "`r`n")
+}
+
 Set-Location $workspaceRoot
 
 $rootEnvPath = Join-Path $workspaceRoot ".env"
@@ -66,10 +88,15 @@ AUTH_CORS=http://localhost:8010,http://localhost:9000
 JWT_SECRET=$jwtSecret
 COOKIE_SECRET=$cookieSecret
 AUTH_MFA_ENCRYPTION_KEY=$mfaSecret
+MEDUSA_FF_RBAC=true
+MFA_STEP_UP_TTL_SECONDS=600
 DATABASE_URL=postgres://medusa:$postgresPassword@localhost:5433/hungphat_commerce
 DB_NAME=hungphat_commerce
 "@
 }
+
+Set-EnvValue $backendEnvPath "MEDUSA_FF_RBAC" "true"
+Set-EnvValue $backendEnvPath "MFA_STEP_UP_TTL_SECONDS" "600"
 
 if (-not (Test-Path -LiteralPath $storefrontEnvPath)) {
   Write-Utf8NoBom $storefrontEnvPath @"
@@ -106,6 +133,11 @@ try {
   }
 } finally {
   Pop-Location
+}
+
+corepack pnpm --filter @dtc/backend run security:seed
+if ($LASTEXITCODE -ne 0) {
+  throw "Security role seed failed."
 }
 
 if (-not $SkipSeed) {
@@ -158,6 +190,21 @@ if (-not (Test-Path -LiteralPath $credentialPath)) {
     Pop-Location
   }
   Write-Utf8NoBom $credentialPath "Email=$AdminEmail`r`nPassword=$adminPassword`r`n"
+}
+
+$previousSecurityOwnerEmail = $env:SECURITY_OWNER_EMAIL
+try {
+  $env:SECURITY_OWNER_EMAIL = $AdminEmail
+  corepack pnpm --filter @dtc/backend run security:bootstrap-owner
+  if ($LASTEXITCODE -ne 0) {
+    throw "Local security owner bootstrap failed."
+  }
+} finally {
+  if ($null -eq $previousSecurityOwnerEmail) {
+    Remove-Item Env:\SECURITY_OWNER_EMAIL -ErrorAction SilentlyContinue
+  } else {
+    $env:SECURITY_OWNER_EMAIL = $previousSecurityOwnerEmail
+  }
 }
 
 Write-Host "Local setup completed."

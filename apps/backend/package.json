@@ -18,6 +18,8 @@
     "dev": "medusa develop",
     "seed": "medusa exec ./src/scripts/initial-data-seed.ts",
     "storefront-key": "medusa exec ./src/scripts/print-storefront-key.ts",
+    "security:seed": "medusa exec ./src/scripts/seed-security-roles.ts",
+    "security:bootstrap-owner": "medusa exec ./src/scripts/bootstrap-security-owner.ts",
     "lint": "medusa lint",
     "test:integration:http": "node ./scripts/run-jest.mjs integration-http",
     "test:integration:modules": "node ./scripts/run-jest.mjs integration-modules",

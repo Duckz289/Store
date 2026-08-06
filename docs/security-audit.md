@@ -78,7 +78,9 @@ Medusa packages giữ nguyên `2.18.0` vì npm registry xác nhận đây là b�
 
 ## Risk acceptance tạm thời
 
-Đây là exception kỹ thuật đang chờ repository owner chấp thuận, không phải tuyên bố advisory đã được sửa. Review vào ngày **2026-09-06** hoặc ngay khi Medusa/Next phát hành bản tương thích, tùy điều kiện nào đến trước.
+Repository owner đã xác nhận exception kỹ thuật này ngày **2026-08-06**, chỉ để tiếp tục development và các milestone nội bộ đến hết ngày **2026-09-06**. Quyết định này **không phải production approval** và không phải tuyên bố advisory đã được sửa. Trước production phải đóng exception hoặc có một quyết định production risk acceptance riêng.
+
+Review lại ngay khi Medusa, Next hoặc dependency upstream phát hành bản tương thích, hoặc muộn nhất ngày **2026-09-06**, tùy điều kiện nào đến trước. Sáu high advisory hiện tại là phạm vi duy nhất được accept; high mới có runtime reachability không được tự động đưa vào exception này.
 
 | Finding còn lại | Phạm vi ảnh hưởng | Lý do chưa vá | Giảm thiểu bắt buộc | Trigger đóng exception |
 |---|---|---|---|---|
@@ -96,11 +98,22 @@ Medusa packages giữ nguyên `2.18.0` vì npm registry xác nhận đây là b�
 | `corepack pnpm install --frozen-lockfile` | Pass |
 | Workspace lint | Pass, không warning/error từ ESLint; cảnh báo deprecation `next lint` chỉ là migration note |
 | Storefront TypeScript `tsc --noEmit` | Pass |
-| Backend unit tests | Pass: 1 suite, 2 tests |
+| Security-patch backend unit tests | Pass: 1 suite, 2 tests |
+| Milestone 1 backend unit tests | Pass: 5 suites, 15 tests |
+| Milestone 1 module integration | Pass: 1 suite, 2 tests |
+| Milestone 1 HTTP integration | Pass: 1 suite, 5 tests; RBAC escalation, MFA TOTP/recovery, horizontal challenge, revoke, audit/order lifecycle |
 | Backend + Admin production build | Pass |
 | Storefront production build | Pass, 13 static pages generated |
 | Store API smoke | Pass: VN/VND, 4 products, SKU, server price 690000, shipping 30000/0, COD |
-| Admin authentication smoke | Pass; token không được in/log |
+| Admin authentication smoke | Pass: 233 effective permissions; Admin mutation trả `403 MFA_ENROLLMENT_REQUIRED`; token không được in/log |
+| Milestone 1 production audit | Pass theo exception: 0 critical, 6 high, 11 moderate, 0 low; không có critical/high mới |
+
+Snapshot sau milestone 1:
+
+- [`security/pnpm-audit-milestone-1-rbac-mfa-audit-2026-08-06.json`](security/pnpm-audit-milestone-1-rbac-mfa-audit-2026-08-06.json)
+- [`security/pnpm-audit-milestone-1-rbac-mfa-audit-2026-08-06.csv`](security/pnpm-audit-milestone-1-rbac-mfa-audit-2026-08-06.csv)
+
+Milestone 1 không thay dependency hoặc lockfile. Sáu high còn lại vẫn chỉ được accept cho development/milestone nội bộ đến 2026-09-06; production vẫn bị chặn như phần risk acceptance ở trên.
 
 Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Admin\.config\medusa\config.json`; chạy lại với quyền đọc cấu hình cho kết quả pass. Đây là giới hạn sandbox, không phải lỗi source hay dependency.
 
@@ -110,4 +123,4 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
 - High mới hoặc high có runtime reachability không được tự động accept.
 - Không xóa override cho đến khi lockfile đã được xác minh resolve bản upstream an toàn.
 - Không bật Next image optimizer hoặc expose Vite dev server khi exception liên quan còn mở.
-- Risk acceptance phải được repository owner xác nhận và có ngày hết hạn; nếu không, trạng thái mặc định là blocker production.
+- Risk acceptance đã được repository owner xác nhận cho development/milestone nội bộ đến 2026-09-06; trạng thái production vẫn là blocker.

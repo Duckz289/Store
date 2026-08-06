@@ -34,6 +34,18 @@ Mục tiêu: quản lý yêu cầu sửa chữa mà không làm biến dạng Or
 
 Exit criteria: state machine/invariants được tài liệu hóa; unit/integration/API tests pass; repair case có thể reconcile và không sửa core Medusa.
 
+Trạng thái 06/08/2026: **hoàn tất cho development nội bộ**; production chưa được duyệt.
+
+- Custom module `repair` sở hữu case, contact/device snapshot, diagnosis, versioned quote/decision, parts usage, technician assignment, attachment metadata, append-only status history, command receipt và reconciliation issue.
+- Official module links tham chiếu một chiều tới Customer, Product, Product Variant, Order, User, Inventory Item và Stock Location; không sửa schema/core Medusa và không biến repair case thành Order.
+- Workflow hữu hạn bao phủ intake → diagnosis → quote → customer decision → repair → QA → return → closed/canceled, có role/precondition, optimistic revision, lock, idempotency receipt và compensation.
+- Quote được server tính và freeze bằng content hash; decision/token là append-only/one-time. Parts usage đi qua Inventory Module và Locking Module, có apply/reverse audit và compensation.
+- Store/Admin API, Admin route/widget, audit redaction và hourly reconciliation job dùng extension point chính thức. Reconciliation chỉ flag issue theo fingerprint, không tự sửa state, tiền hoặc inventory.
+- Tài liệu thiết kế tại `docs/repair-service-design.md`; quyết định boundary tại `docs/adr/ADR-003-repair-bounded-context.md`.
+- Unit 22/22, module integration 5/5 và HTTP integration 10/10 (security 5, repair 5) pass. Frozen install, source typecheck, ESLint trực tiếp, storefront build, Store API smoke và Admin auth/MFA smoke pass.
+- Backend/Admin production build đã pass sau nhóm source chính. Lần chạy lại cuối qua Medusa CLI bị sandbox chặn đọc `C:\Users\Admin\.config\medusa\config.json`; source không thay đổi sau build ngoài test, typecheck script và tài liệu.
+- Live security audit snapshot đã xác nhận 0 critical, 6 high đã risk-accept, 11 moderate và không có critical/high mới. Lockfile chỉ thêm backend importer cho `@medusajs/js-sdk@2.18.0` đã tồn tại trong workspace graph, không thêm package resolution. Toàn bộ exit gate Milestone 2 cho development nội bộ đã đóng.
+
 ## 3. VietQR
 
 Mục tiêu: payment provider module cho chuyển khoản QR có đối soát và chống ghi nhận trùng.

@@ -124,3 +124,12 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
 - Không xóa override cho đến khi lockfile đã được xác minh resolve bản upstream an toàn.
 - Không bật Next image optimizer hoặc expose Vite dev server khi exception liên quan còn mở.
 - Risk acceptance đã được repository owner xác nhận cho development/milestone nội bộ đến 2026-09-06; trạng thái production vẫn là blocker.
+
+## Milestone 2 Repair Service — kiểm tra dependency 06/08/2026
+
+- Dependency duy nhất được khai báo thêm là `@medusajs/js-sdk@2.18.0` trong backend để Admin extension gọi API. Cùng package/version đã tồn tại trong storefront importer và package-resolution section của lockfile; diff không thêm package resolution hoặc dependency chain mới.
+- Frozen install offline pass và lockfile không bị chỉnh tay.
+- Live exporter đã chạy thành công ngoài sandbox. Production graph có 17 advisory/17 finding: **0 critical, 6 high, 11 moderate, 0 low**; toàn graph có thêm 15 finding chỉ thuộc development dependencies.
+- So sánh theo registry ID, GHSA, package, current version và dependency path với snapshot Milestone 1 cho kết quả không có production finding thêm hoặc bớt. Sáu high vẫn là Vite (1), Immutable.js (2), Sharp (1) và PostCSS qua Next (2); không có critical/high mới.
+- Snapshot: [`security/pnpm-audit-milestone-2-repair-2026-08-06.json`](security/pnpm-audit-milestone-2-repair-2026-08-06.json) và [`security/pnpm-audit-milestone-2-repair-2026-08-06.csv`](security/pnpm-audit-milestone-2-repair-2026-08-06.csv).
+- Sáu high đã risk-accept trước đó không thay đổi phạm vi, biện pháp giảm thiểu hay hạn 2026-09-06. Milestone 2 vẫn không production-approved.

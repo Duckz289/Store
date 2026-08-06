@@ -10,6 +10,7 @@
     "build": "corepack pnpm -r run build",
     "start": "corepack pnpm --parallel -r run start",
     "lint": "corepack pnpm -r run lint",
+    "typecheck": "corepack pnpm -r run typecheck",
     "test": "corepack pnpm --filter @dtc/backend run test:unit",
     "test:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/smoke-commerce.ps1",
     "backend:seed": "corepack pnpm --filter @dtc/backend run seed",

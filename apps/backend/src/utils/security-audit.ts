@@ -5,6 +5,8 @@ const SECRET_KEY_PATTERN =
 const EMAIL_KEY_PATTERN = /email/i
 const PHONE_KEY_PATTERN = /phone|mobile/i
 const ADDRESS_KEY_PATTERN = /address/i
+const REPAIR_SENSITIVE_KEY_PATTERN =
+  /full[-_]?name|serial|imei|condition[-_]?summary|accessories|warranty[-_]?context|findings|recommended[-_]?action|internal[-_]?note|file[-_]?reference|checksum/i
 
 const MAX_DEPTH = 6
 const MAX_ARRAY_ITEMS = 50
@@ -62,6 +64,10 @@ function redactValue(value: unknown, key: string, depth: number): JsonValue {
 
   if (ADDRESS_KEY_PATTERN.test(key)) {
     return "<redacted:address>"
+  }
+
+  if (REPAIR_SENSITIVE_KEY_PATTERN.test(key)) {
+    return "<redacted:repair-sensitive>"
   }
 
   if (depth >= MAX_DEPTH) {

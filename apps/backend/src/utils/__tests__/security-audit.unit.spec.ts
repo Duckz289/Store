@@ -61,6 +61,34 @@ describe("security audit data", () => {
     ).toBe(false)
   })
 
+  it("redacts repair device and diagnosis payloads", () => {
+    expect(
+      redactAuditData({
+        contact: { full_name: "Nguyen Van A" },
+        device: {
+          serial_number: "SERIAL-SECRET",
+          imei: "123456789012345",
+          condition_summary: "Contains a private lock-screen message",
+        },
+        diagnosis: {
+          findings: "Customer data visible",
+          internal_note: "Technician-only detail",
+        },
+      })
+    ).toEqual({
+      contact: { full_name: "<redacted:repair-sensitive>" },
+      device: {
+        condition_summary: "<redacted:repair-sensitive>",
+        imei: "<redacted:repair-sensitive>",
+        serial_number: "<redacted:repair-sensitive>",
+      },
+      diagnosis: {
+        findings: "<redacted:repair-sensitive>",
+        internal_note: "<redacted:repair-sensitive>",
+      },
+    })
+  })
+
   it("uses a nonce so equivalent events remain distinct", () => {
     const input = {
       correlation_id: "request-123",

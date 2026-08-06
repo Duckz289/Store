@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "medusa-config.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "integration-tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".medusa",
+    ".cache",
+    "eslint.config.*"
+  ]
+}

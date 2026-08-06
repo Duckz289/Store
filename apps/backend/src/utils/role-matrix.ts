@@ -2,7 +2,7 @@ export const SECURITY_ROLE_MANAGED_BY = "dtc-security-role-matrix-v1"
 
 type Permission = {
   resource: string
-  operation: "create" | "read" | "update" | "delete" | "*"
+  operation: string
 }
 
 export type SecurityRoleDefinition = {
@@ -68,6 +68,18 @@ const paymentResources = [
   "refund_reason",
 ]
 
+const repairReadResources = [
+  "repair_case",
+  "repair_device",
+  "repair_diagnosis",
+  "repair_quote",
+  "repair_quote_decision",
+  "repair_part_usage",
+  "repair_assignment",
+  "repair_attachment",
+  "repair_status_history",
+]
+
 export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
   {
     name: "Owner",
@@ -77,7 +89,10 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
   {
     name: "Catalog Manager",
     description: "Manages catalog, inventory, pricing, and promotions",
-    permissions: all(catalogResources),
+    permissions: [
+      ...all(catalogResources),
+      ...operations(["repair_part_usage"], ["read"]),
+    ],
   },
   {
     name: "Order & Fulfillment",
@@ -85,6 +100,9 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
     permissions: [
       ...all(orderResources),
       ...operations(["customer", "customer_address"], ["read"]),
+      ...operations(repairReadResources, ["read"]),
+      ...operations(["repair_case"], ["transition"]),
+      ...operations(["repair_contact"], ["read_sensitive"]),
     ],
   },
   {
@@ -95,6 +113,10 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
       ...all(["price_list", "price_preference", "price", "currency"]),
       ...operations(["order", "order_item", "customer"], ["read"]),
       ...operations(["campaign", "promotion"], ["read"]),
+      ...operations(
+        ["repair_case", "repair_quote", "repair_quote_decision"],
+        ["read"]
+      ),
     ],
   },
   {
@@ -106,6 +128,29 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
         ["read", "update"]
       ),
       ...operations(["fulfillment", "return"], ["read"]),
+      ...operations(repairReadResources, ["read"]),
+      ...operations(["repair_case", "repair_attachment"], ["create"]),
+      ...operations(["repair_case", "repair_device"], ["update"]),
+      ...operations(["repair_case"], ["transition"]),
+      ...operations(
+        ["repair_contact"],
+        ["read_sensitive", "update_sensitive"]
+      ),
+    ],
+  },
+  {
+    name: "Repair Technician",
+    description: "Diagnoses and repairs assigned devices without contact PII",
+    permissions: [
+      ...operations(repairReadResources, ["read"]),
+      ...operations(["repair_case"], ["transition"]),
+      ...operations(["repair_diagnosis"], ["read_internal"]),
+      ...operations(
+        ["repair_diagnosis", "repair_quote", "repair_part_usage", "repair_attachment"],
+        ["create", "update"]
+      ),
+      ...operations(["repair_quote"], ["submit"]),
+      ...operations(["repair_part_usage"], ["reverse"]),
     ],
   },
   {

@@ -1,0 +1,4318 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-06T02:03:06.155Z",
+  "label": "baseline-2026-08-06",
+  "source": "pnpm audit --prod --json and pnpm audit --json",
+  "nodeVersion": "v24.14.0",
+  "packageManager": "pnpm@10.11.1",
+  "productionSummary": {
+    "uniqueAdvisories": 84,
+    "vulnerabilityInstances": 89,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 4,
+        "moderate": 47,
+        "high": 37,
+        "critical": 1
+      },
+      "dependencies": 1270,
+      "devDependencies": 0,
+      "optionalDependencies": 0,
+      "totalDependencies": 1270
+    }
+  },
+  "allDependencySummary": {
+    "uniqueAdvisories": 110,
+    "vulnerabilityInstances": 119,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 8,
+        "moderate": 56,
+        "high": 54,
+        "critical": 1
+      },
+      "dependencies": 1712,
+      "devDependencies": 0,
+      "optionalDependencies": 0,
+      "totalDependencies": 1712
+    }
+  },
+  "productionFindings": [
+    {
+      "findingNumber": 1,
+      "registryId": "1102341",
+      "ghsa": "GHSA-67mh-4wv8-2f99",
+      "package": "esbuild",
+      "currentVersion": "0.21.5",
+      "severity": "moderate",
+      "vulnerableVersions": "<=0.24.2",
+      "patchedVersions": ">=0.25.0",
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "cves": [],
+      "cwe": [
+        "CWE-346"
+      ],
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>esbuild",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "esbuild"
+      ],
+      "surface": "Admin/storefront compilation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The package processes trusted repository source during compilation and is not invoked by Store API requests.",
+      "recommendation": "Upgrade to version 0.25.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "esbuild 0.25 is outside Vite 5's ^0.21.3 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 2,
+      "registryId": "1113161",
+      "ghsa": "GHSA-w7fw-mjwx-w883",
+      "package": "qs",
+      "currentVersion": "6.14.0",
+      "severity": "low",
+      "vulnerableVersions": ">=6.7.0 <=6.14.1",
+      "patchedVersions": ">=6.14.2",
+      "title": "qs's arrayLimit bypass in comma parsing allows denial of service",
+      "cves": [
+        "CVE-2026-2391"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "url": "https://github.com/advisories/GHSA-w7fw-mjwx-w883",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^6.12.1",
+      "path": "apps__storefront>qs",
+      "chain": [
+        "apps/storefront",
+        "qs"
+      ],
+      "surface": "Unused direct storefront dependency",
+      "reachability": "not-reachable-in-current-source",
+      "actualRisk": "low",
+      "reachabilityRationale": "Source search found no import or require of qs in the storefront or backend.",
+      "recommendation": "Upgrade to version 6.14.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct storefront QS to 6.15.2 within its caret range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 3,
+      "registryId": "1113515",
+      "ghsa": "GHSA-mw96-cpmx-2vgc",
+      "package": "rollup",
+      "currentVersion": "4.53.3",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <4.59.0",
+      "patchedVersions": ">=4.59.0",
+      "title": "Rollup 4 has Arbitrary File Write via Path Traversal",
+      "cves": [
+        "CVE-2026-27606"
+      ],
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-mw96-cpmx-2vgc",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>rollup",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "rollup"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 4.59.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Rollup 4 to 4.62.4 within Vite's ^4.20.0 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 4,
+      "registryId": "1113715",
+      "ghsa": "GHSA-2g4f-4pwh-qvx6",
+      "package": "ajv",
+      "currentVersion": "8.13.0",
+      "severity": "moderate",
+      "vulnerableVersions": ">=7.0.0-alpha.0 <8.18.0",
+      "patchedVersions": ">=8.18.0",
+      "title": "ajv has ReDoS when using `$data` option",
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@mikro-orm/migrations>umzug>@rushstack/ts-command-line>@rushstack/terminal>@rushstack/node-core-library>ajv",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@mikro-orm/migrations",
+        "umzug",
+        "@rushstack/ts-command-line",
+        "@rushstack/terminal",
+        "@rushstack/node-core-library",
+        "ajv"
+      ],
+      "surface": "Database migration and CLI command validation",
+      "reachability": "migration-or-operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path validates trusted migration/CLI input and is not exposed through Store or Admin APIs.",
+      "recommendation": "Upgrade to version 8.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "AJV 8.18.0 is outside the parent's ~8.13.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 5,
+      "registryId": "1113719",
+      "ghsa": "GHSA-6rw7-vpxm-498p",
+      "package": "qs",
+      "currentVersion": "6.14.0",
+      "severity": "moderate",
+      "vulnerableVersions": "<6.14.1",
+      "patchedVersions": ">=6.14.1",
+      "title": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+      "cves": [
+        "CVE-2025-15284"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^6.12.1",
+      "path": "apps__storefront>qs",
+      "chain": [
+        "apps/storefront",
+        "qs"
+      ],
+      "surface": "Unused direct storefront dependency",
+      "reachability": "not-reachable-in-current-source",
+      "actualRisk": "low",
+      "reachabilityRationale": "Source search found no import or require of qs in the storefront or backend.",
+      "recommendation": "Upgrade to version 6.14.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct storefront QS to 6.15.2 within its caret range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 6,
+      "registryId": "1115527",
+      "ghsa": "GHSA-37ch-88jc-xwx2",
+      "package": "path-to-regexp",
+      "currentVersion": "0.1.12",
+      "severity": "high",
+      "vulnerableVersions": "<0.1.13",
+      "patchedVersions": ">=0.1.13",
+      "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple route parameters",
+      "cves": [
+        "CVE-2026-4867"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-37ch-88jc-xwx2",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>express>path-to-regexp",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "express",
+        "path-to-regexp"
+      ],
+      "surface": "Express route compilation during Medusa CLI startup",
+      "reachability": "startup-configuration-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "An attacker cannot define application route patterns through Store or Admin APIs.",
+      "recommendation": "Upgrade to version 0.1.13 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 0.1.13 within Express's ~0.1.12 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 7,
+      "registryId": "1115540",
+      "ghsa": "GHSA-f886-m6hf-6m8v",
+      "package": "brace-expansion",
+      "currentVersion": "1.1.12",
+      "severity": "moderate",
+      "vulnerableVersions": "<1.1.13",
+      "patchedVersions": ">=1.1.13",
+      "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+      "cves": [
+        "CVE-2026-33750"
+      ],
+      "cwe": [
+        "CWE-400"
+      ],
+      "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>yalc>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "yalc",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 1.1.13 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 8,
+      "registryId": "1115549",
+      "ghsa": "GHSA-3v7f-55p6-f55p",
+      "package": "picomatch",
+      "currentVersion": "2.3.1",
+      "severity": "moderate",
+      "vulnerableVersions": "<2.3.2",
+      "patchedVersions": ">=2.3.2",
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "cves": [
+        "CVE-2026-33672"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/caching>awilix>fast-glob>micromatch>picomatch",
+      "chain": [
+        "apps/backend",
+        "@medusajs/caching",
+        "awilix",
+        "fast-glob",
+        "micromatch",
+        "picomatch"
+      ],
+      "surface": "Dependency discovery, file globbing, and Admin build",
+      "reachability": "startup-build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint passes attacker-controlled glob patterns to these call paths.",
+      "recommendation": "Upgrade to version 2.3.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 2 or major 4.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 9,
+      "registryId": "1115551",
+      "ghsa": "GHSA-3v7f-55p6-f55p",
+      "package": "picomatch",
+      "currentVersion": "4.0.3",
+      "severity": "moderate",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+      "cves": [
+        "CVE-2026-33672"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/admin-bundler>tailwindcss>sucrase>tinyglobby>picomatch",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/admin-bundler",
+        "tailwindcss",
+        "sucrase",
+        "tinyglobby",
+        "picomatch"
+      ],
+      "surface": "Dependency discovery, file globbing, and Admin build",
+      "reachability": "startup-build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint passes attacker-controlled glob patterns to these call paths.",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 2 or major 4.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 10,
+      "registryId": "1115552",
+      "ghsa": "GHSA-c2c7-rcm5-vvqj",
+      "package": "picomatch",
+      "currentVersion": "2.3.1",
+      "severity": "high",
+      "vulnerableVersions": "<2.3.2",
+      "patchedVersions": ">=2.3.2",
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "cves": [
+        "CVE-2026-33671"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/caching>awilix>fast-glob>micromatch>picomatch",
+      "chain": [
+        "apps/backend",
+        "@medusajs/caching",
+        "awilix",
+        "fast-glob",
+        "micromatch",
+        "picomatch"
+      ],
+      "surface": "Dependency discovery, file globbing, and Admin build",
+      "reachability": "startup-build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint passes attacker-controlled glob patterns to these call paths.",
+      "recommendation": "Upgrade to version 2.3.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 2 or major 4.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 11,
+      "registryId": "1115554",
+      "ghsa": "GHSA-c2c7-rcm5-vvqj",
+      "package": "picomatch",
+      "currentVersion": "4.0.3",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+      "cves": [
+        "CVE-2026-33671"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/admin-bundler>tailwindcss>sucrase>tinyglobby>picomatch",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/admin-bundler",
+        "tailwindcss",
+        "sucrase",
+        "tinyglobby",
+        "picomatch"
+      ],
+      "surface": "Dependency discovery, file globbing, and Admin build",
+      "reachability": "startup-build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint passes attacker-controlled glob patterns to these call paths.",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 2 or major 4.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 12,
+      "registryId": "1115806",
+      "ghsa": "GHSA-r5fr-rjxr-66jc",
+      "package": "lodash",
+      "currentVersion": "4.17.21",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <=4.17.23",
+      "patchedVersions": ">=4.18.0",
+      "title": "lodash vulnerable to Code Injection via `_.template` imports key names",
+      "cves": [
+        "CVE-2026-4800"
+      ],
+      "cwe": [
+        "CWE-94"
+      ],
+      "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^4.17.21",
+      "path": "apps__storefront>lodash",
+      "chain": [
+        "apps/storefront",
+        "lodash"
+      ],
+      "surface": "Storefront server/client utility calls",
+      "reachability": "runtime-reachable",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The storefront imports isEqual, pick, and mapKeys. Exploitation still depends on advisory-specific attacker-controlled values.",
+      "recommendation": "Upgrade to version 4.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct and transitive Lodash 4 to 4.18.1.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 13,
+      "registryId": "1115810",
+      "ghsa": "GHSA-f23m-r3pf-42rh",
+      "package": "lodash",
+      "currentVersion": "4.17.21",
+      "severity": "moderate",
+      "vulnerableVersions": "<=4.17.23",
+      "patchedVersions": ">=4.18.0",
+      "title": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+      "cves": [
+        "CVE-2026-2950"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^4.17.21",
+      "path": "apps__storefront>lodash",
+      "chain": [
+        "apps/storefront",
+        "lodash"
+      ],
+      "surface": "Storefront server/client utility calls",
+      "reachability": "runtime-reachable",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The storefront imports isEqual, pick, and mapKeys. Exploitation still depends on advisory-specific attacker-controlled values.",
+      "recommendation": "Upgrade to version 4.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct and transitive Lodash 4 to 4.18.1.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 14,
+      "registryId": "1116229",
+      "ghsa": "GHSA-4w7w-66w2-5vf9",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "moderate",
+      "vulnerableVersions": "<=6.4.1",
+      "patchedVersions": ">=6.4.2",
+      "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+      "cves": [
+        "CVE-2026-39365"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 15,
+      "registryId": "1116560",
+      "ghsa": "GHSA-r4q5-vmmm-2653",
+      "package": "follow-redirects",
+      "currentVersion": "1.15.11",
+      "severity": "moderate",
+      "vulnerableVersions": "<=1.15.11",
+      "patchedVersions": ">=1.16.0",
+      "title": "follow-redirects leaks Custom Authentication Headers to Cross-Domain Redirect Targets",
+      "cves": [],
+      "cwe": [
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-r4q5-vmmm-2653",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios>follow-redirects",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios",
+        "follow-redirects"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Resolved by the compatible Axios dependency refresh.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 16,
+      "registryId": "1116673",
+      "ghsa": "GHSA-3p68-rc4w-qgx5",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.0",
+      "patchedVersions": ">=1.15.0",
+      "title": "Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF",
+      "cves": [
+        "CVE-2025-62718"
+      ],
+      "cwe": [
+        "CWE-441",
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-3p68-rc4w-qgx5",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 17,
+      "registryId": "1117015",
+      "ghsa": "GHSA-qx2v-qp2m-jg93",
+      "package": "postcss",
+      "currentVersion": "8.5.6",
+      "severity": "moderate",
+      "vulnerableVersions": "<8.5.10",
+      "patchedVersions": ">=8.5.10",
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "cves": [
+        "CVE-2026-41305"
+      ],
+      "cwe": [
+        "CWE-79"
+      ],
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>postcss",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.10 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Vite/PostCSS paths to 8.5.25 within Vite's ^8.4.43 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 18,
+      "registryId": "1117015",
+      "ghsa": "GHSA-qx2v-qp2m-jg93",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "moderate",
+      "vulnerableVersions": "<8.5.10",
+      "patchedVersions": ">=8.5.10",
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "cves": [
+        "CVE-2026-41305"
+      ],
+      "cwe": [
+        "CWE-79"
+      ],
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.10 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 19,
+      "registryId": "1117066",
+      "ghsa": "GHSA-wf6x-7x77-mvgw",
+      "package": "immutable",
+      "currentVersion": "3.7.6",
+      "severity": "high",
+      "vulnerableVersions": "<3.8.3",
+      "patchedVersions": ">=3.8.3",
+      "title": "Immutable is vulnerable to Prototype Pollution",
+      "cves": [
+        "CVE-2026-29063"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-wf6x-7x77-mvgw",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/utils>@graphql-codegen/typescript>@graphql-codegen/visitor-plugin-common>@graphql-tools/relay-operation-optimizer>@ardatan/relay-compiler>immutable",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/utils",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/relay-operation-optimizer",
+        "@ardatan/relay-compiler",
+        "immutable"
+      ],
+      "surface": "GraphQL/Relay code generation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected value processing occurs in generated-code tooling, not Store API request handling.",
+      "recommendation": "Upgrade to version 3.8.3 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Immutable 3.7.6 to 3.8.3 within the parent ~3.7.6 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 20,
+      "registryId": "1117571",
+      "ghsa": "GHSA-xq3m-2v4x-88gg",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "critical",
+      "vulnerableVersions": "<7.5.5",
+      "patchedVersions": ">=7.5.5",
+      "title": "Arbitrary code execution in protobufjs",
+      "cves": [
+        "CVE-2026-41242"
+      ],
+      "cwe": [
+        "CWE-94"
+      ],
+      "url": "https://github.com/advisories/GHSA-xq3m-2v4x-88gg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.5 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 21,
+      "registryId": "1117574",
+      "ghsa": "GHSA-w9j2-pvgh-6h63",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: Authentication Bypass via Prototype Pollution Gadget in `validateStatus` Merge Strategy",
+      "cves": [
+        "CVE-2026-42041"
+      ],
+      "cwe": [
+        "CWE-287",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-w9j2-pvgh-6h63",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 22,
+      "registryId": "1117576",
+      "ghsa": "GHSA-pmwg-cvhr-8vh7",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: Incomplete Fix for CVE-2025-62718 — NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0",
+      "cves": [
+        "CVE-2026-42043"
+      ],
+      "cwe": [
+        "CWE-183",
+        "CWE-441",
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-pmwg-cvhr-8vh7",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 23,
+      "registryId": "1117577",
+      "ghsa": "GHSA-3w6x-2g7m-8v23",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.2",
+      "patchedVersions": ">=1.15.2",
+      "title": "Axios: Invisible JSON Response Tampering via Prototype Pollution Gadget in `parseReviver`",
+      "cves": [
+        "CVE-2026-42044"
+      ],
+      "cwe": [
+        "CWE-915",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-3w6x-2g7m-8v23",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 24,
+      "registryId": "1117580",
+      "ghsa": "GHSA-xhjh-pmcv-23jw",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "low",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: Null Byte Injection via Reverse-Encoding in AxiosURLSearchParams",
+      "cves": [
+        "CVE-2026-42040"
+      ],
+      "cwe": [
+        "CWE-116",
+        "CWE-626"
+      ],
+      "url": "https://github.com/advisories/GHSA-xhjh-pmcv-23jw",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 25,
+      "registryId": "1117581",
+      "ghsa": "GHSA-445q-vr5w-6q77",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: CRLF Injection in multipart/form-data body via unsanitized blob.type in formDataToStream",
+      "cves": [
+        "CVE-2026-42037"
+      ],
+      "cwe": [
+        "CWE-93"
+      ],
+      "url": "https://github.com/advisories/GHSA-445q-vr5w-6q77",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 26,
+      "registryId": "1117583",
+      "ghsa": "GHSA-m7pr-hjqh-92cm",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: no_proxy bypass via IP alias allows SSRF",
+      "cves": [
+        "CVE-2026-42038"
+      ],
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-m7pr-hjqh-92cm",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 27,
+      "registryId": "1117587",
+      "ghsa": "GHSA-5c9x-8gcm-mpgx",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios' HTTP adapter-streamed uploads bypass maxBodyLength when maxRedirects: 0",
+      "cves": [
+        "CVE-2026-42034"
+      ],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-5c9x-8gcm-mpgx",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 28,
+      "registryId": "1117589",
+      "ghsa": "GHSA-vf2m-468p-8v99",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: HTTP adapter streamed responses bypass maxContentLength",
+      "cves": [
+        "CVE-2026-42036"
+      ],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-vf2m-468p-8v99",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 29,
+      "registryId": "1117591",
+      "ghsa": "GHSA-pf86-5x62-jrwf",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking",
+      "cves": [
+        "CVE-2026-42033"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-pf86-5x62-jrwf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 30,
+      "registryId": "1117593",
+      "ghsa": "GHSA-6chq-wfr3-2hj9",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: Header Injection via Prototype Pollution",
+      "cves": [
+        "CVE-2026-42035"
+      ],
+      "cwe": [
+        "CWE-113",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-6chq-wfr3-2hj9",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 31,
+      "registryId": "1117595",
+      "ghsa": "GHSA-xx6v-rp6x-q39c",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: XSRF Token Cross-Origin Leakage via Prototype Pollution Gadget in `withXSRFToken` Boolean Coercion",
+      "cves": [
+        "CVE-2026-42042"
+      ],
+      "cwe": [
+        "CWE-183",
+        "CWE-201"
+      ],
+      "url": "https://github.com/advisories/GHSA-xx6v-rp6x-q39c",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 32,
+      "registryId": "1117858",
+      "ghsa": "GHSA-43fc-jf86-j433",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <=1.13.4",
+      "patchedVersions": ">=1.13.5",
+      "title": "Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig",
+      "cves": [
+        "CVE-2026-25639"
+      ],
+      "cwe": [
+        "CWE-754",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-43fc-jf86-j433",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.13.5 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 33,
+      "registryId": "1118607",
+      "ghsa": "GHSA-q8qp-cvcw-x6jj",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.15.2",
+      "patchedVersions": ">=1.15.2",
+      "title": "Axios has prototype pollution read-side gadgets in HTTP adapter that allow credential injection and request hijacking",
+      "cves": [
+        "CVE-2026-42264"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-q8qp-cvcw-x6jj",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 34,
+      "registryId": "1118641",
+      "ghsa": "GHSA-66ff-xgx4-vchm",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "high",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Code injection through bytes field defaults in generated toObject code",
+      "cves": [
+        "CVE-2026-44293"
+      ],
+      "cwe": [
+        "CWE-94"
+      ],
+      "url": "https://github.com/advisories/GHSA-66ff-xgx4-vchm",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 35,
+      "registryId": "1118924",
+      "ghsa": "GHSA-2pr8-phx7-x9h3",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Denial of service from crafted field names in generated code",
+      "cves": [
+        "CVE-2026-44294"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "url": "https://github.com/advisories/GHSA-2pr8-phx7-x9h3",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 36,
+      "registryId": "1118926",
+      "ghsa": "GHSA-fx83-v9x8-x52w",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Prototype injection in generated message constructors",
+      "cves": [
+        "CVE-2026-44292"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-fx83-v9x8-x52w",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 37,
+      "registryId": "1118928",
+      "ghsa": "GHSA-75px-5xx7-5xc7",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "high",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Code generation gadget after prototype pollution",
+      "cves": [
+        "CVE-2026-44291"
+      ],
+      "cwe": [
+        "CWE-94",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-75px-5xx7-5xc7",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 38,
+      "registryId": "1118930",
+      "ghsa": "GHSA-jvwf-75h9-cwgg",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "high",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Process-wide denial of service through unsafe option paths",
+      "cves": [
+        "CVE-2026-44290"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-jvwf-75h9-cwgg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 39,
+      "registryId": "1118932",
+      "ghsa": "GHSA-685m-2w69-288q",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "high",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobuf.js: Denial of service through unbounded protobuf recursion",
+      "cves": [
+        "CVE-2026-44289"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-685m-2w69-288q",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 40,
+      "registryId": "1118933",
+      "ghsa": "GHSA-q6x5-8v7m-xcrf",
+      "package": "@protobufjs/utf8",
+      "currentVersion": "1.1.0",
+      "severity": "moderate",
+      "vulnerableVersions": "<=1.1.0",
+      "patchedVersions": ">=1.1.1",
+      "title": "protobufjs has overlong UTF-8 decoding",
+      "cves": [
+        "CVE-2026-44288"
+      ],
+      "cwe": [
+        "CWE-176"
+      ],
+      "url": "https://github.com/advisories/GHSA-q6x5-8v7m-xcrf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs>@protobufjs/utf8",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs",
+        "@protobufjs/utf8"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 1.1.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Resolved as part of the compatible protobufjs 7.6.5 update.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 41,
+      "registryId": "1118935",
+      "ghsa": "GHSA-q6x5-8v7m-xcrf",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": "<=7.5.5",
+      "patchedVersions": ">=7.5.6",
+      "title": "protobufjs has overlong UTF-8 decoding",
+      "cves": [
+        "CVE-2026-44288"
+      ],
+      "cwe": [
+        "CWE-176"
+      ],
+      "url": "https://github.com/advisories/GHSA-q6x5-8v7m-xcrf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 42,
+      "registryId": "1119378",
+      "ghsa": "GHSA-jggg-4jg4-v7c6",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": "<=7.5.7",
+      "patchedVersions": ">=7.5.8",
+      "title": "protobufjs: Denial of Service via unbounded recursive JSON descriptor expansion",
+      "cves": [
+        "CVE-2026-45740"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-jggg-4jg4-v7c6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.5.8 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 43,
+      "registryId": "1119404",
+      "ghsa": "GHSA-fvcv-3m26-pcqx",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.0",
+      "patchedVersions": ">=1.15.0",
+      "title": "Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain",
+      "cves": [
+        "CVE-2026-40175"
+      ],
+      "cwe": [
+        "CWE-113",
+        "CWE-444",
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-fvcv-3m26-pcqx",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 44,
+      "registryId": "1119441",
+      "ghsa": "GHSA-w5hq-g745-h8pq",
+      "package": "uuid",
+      "currentVersion": "9.0.1",
+      "severity": "moderate",
+      "vulnerableVersions": "<11.1.1",
+      "patchedVersions": ">=11.1.1",
+      "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+      "cves": [
+        "CVE-2026-41907"
+      ],
+      "cwe": [
+        "CWE-787",
+        "CWE-1285"
+      ],
+      "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/event-bus-redis>bullmq>uuid",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/event-bus-redis",
+        "bullmq",
+        "uuid"
+      ],
+      "surface": "Redis event bus job identifiers",
+      "reachability": "conditionally-runtime-reachable",
+      "actualRisk": "low",
+      "reachabilityRationale": "The local deployment has no REDIS_URL and uses the local event bus. The path becomes relevant only when Redis event bus is enabled.",
+      "recommendation": "Upgrade to version 11.1.1 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "UUID 11 is outside BullMQ 5.13.0's ^9.0.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 45,
+      "registryId": "1119502",
+      "ghsa": "GHSA-q8mj-m7cp-5q26",
+      "package": "qs",
+      "currentVersion": "6.14.0",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.11.1 <=6.15.1",
+      "patchedVersions": ">=6.15.2",
+      "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+      "cves": [
+        "CVE-2026-8723"
+      ],
+      "cwe": [
+        "CWE-476"
+      ],
+      "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^6.12.1",
+      "path": "apps__storefront>qs",
+      "chain": [
+        "apps/storefront",
+        "qs"
+      ],
+      "surface": "Unused direct storefront dependency",
+      "reachability": "not-reachable-in-current-source",
+      "actualRisk": "low",
+      "reachabilityRationale": "Source search found no import or require of qs in the storefront or backend.",
+      "recommendation": "Upgrade to version 6.15.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct storefront QS to 6.15.2 within its caret range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 46,
+      "registryId": "1120125",
+      "ghsa": "GHSA-62hf-57xw-28j9",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.15.1",
+      "patchedVersions": ">=1.15.1",
+      "title": "Axios: unbounded recursion in toFormData causes DoS via deeply nested request data",
+      "cves": [
+        "CVE-2026-42039"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-62hf-57xw-28j9",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 47,
+      "registryId": "1120311",
+      "ghsa": "GHSA-jxxr-4gwj-5jf2",
+      "package": "brace-expansion",
+      "currentVersion": "5.0.5",
+      "severity": "moderate",
+      "vulnerableVersions": ">=5.0.0 <5.0.6",
+      "patchedVersions": ">=5.0.6",
+      "title": "brace-expansion: Large numeric range defeats documented `max` DoS protection",
+      "cves": [
+        "CVE-2026-45149"
+      ],
+      "cwe": [
+        "CWE-400"
+      ],
+      "url": "https://github.com/advisories/GHSA-jxxr-4gwj-5jf2",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 5.0.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 48,
+      "registryId": "1120370",
+      "ghsa": "GHSA-xxjr-mmjv-4gpg",
+      "package": "lodash",
+      "currentVersion": "4.17.21",
+      "severity": "moderate",
+      "vulnerableVersions": ">=4.0.0 <=4.17.22",
+      "patchedVersions": ">=4.17.23",
+      "title": "Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions",
+      "cves": [
+        "CVE-2025-13465"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-xxjr-mmjv-4gpg",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:^4.17.21",
+      "path": "apps__storefront>lodash",
+      "chain": [
+        "apps/storefront",
+        "lodash"
+      ],
+      "surface": "Storefront server/client utility calls",
+      "reachability": "runtime-reachable",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The storefront imports isEqual, pick, and mapKeys. Exploitation still depends on advisory-specific attacker-controlled values.",
+      "recommendation": "Upgrade to version 4.17.23 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade direct and transitive Lodash 4 to 4.18.1.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 49,
+      "registryId": "1120547",
+      "ghsa": "GHSA-hfxv-24rg-xrqf",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "Axios: Regular Expression Denial of Service (ReDoS) via Cookie Name Injection",
+      "cves": [
+        "CVE-2026-44496"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-hfxv-24rg-xrqf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 50,
+      "registryId": "1120643",
+      "ghsa": "GHSA-777c-7fjr-54vf",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.7.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "Allocation of Resources Without Limits or Throttling in Axios",
+      "cves": [
+        "CVE-2026-44488"
+      ],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-777c-7fjr-54vf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 51,
+      "registryId": "1120645",
+      "ghsa": "GHSA-p92q-9vqr-4j8v",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter",
+      "cves": [
+        "CVE-2026-44487"
+      ],
+      "cwe": [
+        "CWE-201"
+      ],
+      "url": "https://github.com/advisories/GHSA-p92q-9vqr-4j8v",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 52,
+      "registryId": "1120647",
+      "ghsa": "GHSA-j5f8-grm9-p9fc",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection",
+      "cves": [
+        "CVE-2026-44486"
+      ],
+      "cwe": [
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-j5f8-grm9-p9fc",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 53,
+      "registryId": "1120649",
+      "ghsa": "GHSA-3g43-6gmg-66jw",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.15.2",
+      "patchedVersions": ">=1.15.2",
+      "title": "axios Vulnerable to Credential Theft and Response Hijacking via Prototype Pollution Gadget in Config Merge",
+      "cves": [
+        "CVE-2026-44495"
+      ],
+      "cwe": [
+        "CWE-94",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-3g43-6gmg-66jw",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.15.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 54,
+      "registryId": "1120650",
+      "ghsa": "GHSA-35jp-ww65-95wh",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "high",
+      "vulnerableVersions": ">=1.0.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "axios Vulnerable to Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy`",
+      "cves": [
+        "CVE-2026-44494"
+      ],
+      "cwe": [
+        "CWE-441",
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-35jp-ww65-95wh",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 55,
+      "registryId": "1120652",
+      "ghsa": "GHSA-898c-q2cr-xwhg",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.16.0",
+      "patchedVersions": ">=1.16.0",
+      "title": "axios has DoS & Header Injection via Prototype Pollution Read-Side Gadgets in axios merge functions",
+      "cves": [
+        "CVE-2026-44490"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-898c-q2cr-xwhg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.16.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 56,
+      "registryId": "1120743",
+      "ghsa": "GHSA-hmw2-7cc7-3qxx",
+      "package": "form-data",
+      "currentVersion": "4.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <4.0.6",
+      "patchedVersions": ">=4.0.6",
+      "title": "form-data: CRLF injection in form-data via unescaped multipart field names and filenames",
+      "cves": [
+        "CVE-2026-12143"
+      ],
+      "cwe": [
+        "CWE-93"
+      ],
+      "url": "https://github.com/advisories/GHSA-hmw2-7cc7-3qxx",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios>form-data",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios",
+        "form-data"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 4.0.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 4.0.6 within Axios's 4.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 57,
+      "registryId": "1120784",
+      "ghsa": "GHSA-v6wh-96g9-6wx3",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "moderate",
+      "vulnerableVersions": "<=6.4.2",
+      "patchedVersions": ">=6.4.3",
+      "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+      "cves": [
+        "CVE-2026-53632"
+      ],
+      "cwe": [
+        "CWE-73",
+        "CWE-522"
+      ],
+      "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 58,
+      "registryId": "1120821",
+      "ghsa": "GHSA-8988-4f7v-96qf",
+      "package": "@opentelemetry/core",
+      "currentVersion": "2.7.1",
+      "severity": "moderate",
+      "vulnerableVersions": "<2.8.0",
+      "patchedVersions": ">=2.8.0",
+      "title": "OpenTelemetry Core: Unbounded memory allocation in W3C Baggage propagation",
+      "cves": [
+        "CVE-2026-54285"
+      ],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-8988-4f7v-96qf",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/instrumentation-pg>@opentelemetry/core",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/instrumentation-pg",
+        "@opentelemetry/core"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 2.8.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 2.9.0 within the parent ^2.0.0 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 59,
+      "registryId": "1123488",
+      "ghsa": "GHSA-wcpc-wj8m-hjx6",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "high",
+      "vulnerableVersions": "<=7.6.0",
+      "patchedVersions": ">=7.6.1",
+      "title": "protobufjs: Denial of service through unbounded Any expansion during JSON conversion",
+      "cves": [
+        "CVE-2026-48712"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-wcpc-wj8m-hjx6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.6.1 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 60,
+      "registryId": "1123492",
+      "ghsa": "GHSA-f38q-mgvj-vph7",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": "<=7.6.2",
+      "patchedVersions": ">=7.6.3",
+      "title": "protobufjs : Schema-derived names can shadow runtime-significant properties",
+      "cves": [
+        "CVE-2026-54269"
+      ],
+      "cwe": [
+        "CWE-674",
+        "CWE-754"
+      ],
+      "url": "https://github.com/advisories/GHSA-f38q-mgvj-vph7",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.6.3 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 61,
+      "registryId": "1123525",
+      "ghsa": "GHSA-fx2h-pf6j-xcff",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "high",
+      "vulnerableVersions": "<=6.4.2",
+      "patchedVersions": ">=6.4.3",
+      "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+      "cves": [
+        "CVE-2026-53571"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 62,
+      "registryId": "1123528",
+      "ghsa": "GHSA-4x5r-pxfx-6jf8",
+      "package": "@babel/core",
+      "currentVersion": "7.28.5",
+      "severity": "low",
+      "vulnerableVersions": "<=7.29.0",
+      "patchedVersions": ">=7.29.6",
+      "title": "@babel/core: Arbitrary File Read via sourceMappingURL Comment",
+      "cves": [
+        "CVE-2026-49356"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-4x5r-pxfx-6jf8",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/admin-bundler>@vitejs/plugin-react>@babel/core",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/admin-bundler",
+        "@vitejs/plugin-react",
+        "@babel/core"
+      ],
+      "surface": "Admin/storefront compilation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The package processes trusted repository source during compilation and is not invoked by Store API requests.",
+      "recommendation": "Upgrade to version 7.29.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.29.6 within the parent caret range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 63,
+      "registryId": "1123882",
+      "ghsa": "GHSA-42h9-826w-cgv3",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: Excessive recursion in formDataToJSON can cause denial of service",
+      "cves": [],
+      "cwe": [
+        "CWE-400",
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-42h9-826w-cgv3",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 64,
+      "registryId": "1123885",
+      "ghsa": "GHSA-pmv8-rq9r-6j72",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: Deep formToJSON Key Recursion Can Cause Denial of Service",
+      "cves": [],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-pmv8-rq9r-6j72",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 65,
+      "registryId": "1123897",
+      "ghsa": "GHSA-3jxr-9vmj-r5cp",
+      "package": "brace-expansion",
+      "currentVersion": "1.1.12",
+      "severity": "high",
+      "vulnerableVersions": "<1.1.16",
+      "patchedVersions": ">=1.1.16",
+      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+      "cves": [
+        "CVE-2026-13149"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>yalc>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "yalc",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 1.1.16 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 66,
+      "registryId": "1123898",
+      "ghsa": "GHSA-3jxr-9vmj-r5cp",
+      "package": "brace-expansion",
+      "currentVersion": "5.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <5.0.7",
+      "patchedVersions": ">=5.0.7",
+      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+      "cves": [
+        "CVE-2026-13149"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 5.0.7 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 67,
+      "registryId": "1123957",
+      "ghsa": "GHSA-jqh4-m9w3-8hp9",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.7.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: Fetch adapter `ReadableStream` uploads bypass `maxBodyLength`",
+      "cves": [],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-jqh4-m9w3-8hp9",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 68,
+      "registryId": "1123959",
+      "ghsa": "GHSA-mmx7-hfxf-jppx",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: Prototype pollution gadgets can alter axios request construction",
+      "cves": [],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-mmx7-hfxf-jppx",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 69,
+      "registryId": "1123964",
+      "ghsa": "GHSA-j3f2-48v5-ccww",
+      "package": "protobufjs",
+      "currentVersion": "7.5.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=7.5.0 <=7.6.4",
+      "patchedVersions": ">=7.6.5",
+      "title": "protobufjs: Denial of Service via infinite loop in .proto option parsing",
+      "cves": [
+        "CVE-2026-59877"
+      ],
+      "cwe": [
+        "CWE-835"
+      ],
+      "url": "https://github.com/advisories/GHSA-j3f2-48v5-ccww",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@opentelemetry/sdk-node>@opentelemetry/exporter-logs-otlp-grpc>@grpc/grpc-js>@grpc/proto-loader>protobufjs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@opentelemetry/sdk-node",
+        "@opentelemetry/exporter-logs-otlp-grpc",
+        "@grpc/grpc-js",
+        "@grpc/proto-loader",
+        "protobufjs"
+      ],
+      "surface": "Medusa CLI OpenTelemetry gRPC export",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected codec is under the CLI telemetry exporter. No protobuf decoding endpoint is exposed by this application.",
+      "recommendation": "Upgrade to version 7.6.5 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 7.6.5 within proto-loader's ^7.2.5 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 70,
+      "registryId": "1123971",
+      "ghsa": "GHSA-7q8q-rj6j-mhjq",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.0.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: Nested axios option objects can consume polluted prototype values",
+      "cves": [],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-7q8q-rj6j-mhjq",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 71,
+      "registryId": "1123973",
+      "ghsa": "GHSA-mwf2-3pr3-8698",
+      "package": "axios",
+      "currentVersion": "1.13.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=1.13.0 <1.18.0",
+      "patchedVersions": ">=1.18.0",
+      "title": "Axios: HTTP/2 streamed uploads bypass `maxBodyLength`",
+      "cves": [],
+      "cwe": [
+        "CWE-400"
+      ],
+      "url": "https://github.com/advisories/GHSA-mwf2-3pr3-8698",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/telemetry>axios",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/telemetry",
+        "axios"
+      ],
+      "surface": "Medusa CLI telemetry HTTP client",
+      "reachability": "operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path is invoked by Medusa CLI telemetry, not by customer-controlled Store API request handling.",
+      "recommendation": "Upgrade to version 1.18.0 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.19.0 within the parent ^1.x range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 72,
+      "registryId": "1123977",
+      "ghsa": "GHSA-v422-hmwv-36x6",
+      "package": "body-parser",
+      "currentVersion": "1.20.4",
+      "severity": "low",
+      "vulnerableVersions": "<1.20.6",
+      "patchedVersions": ">=1.20.6",
+      "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+      "cves": [
+        "CVE-2026-12590"
+      ],
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>express>body-parser",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "express",
+        "body-parser"
+      ],
+      "surface": "Medusa HTTP request body parsing",
+      "reachability": "conditionally-runtime-reachable",
+      "actualRisk": "medium",
+      "reachabilityRationale": "Request bodies are attacker-controlled, but endpoint body limits, reverse-proxy limits, authentication, and rate limiting constrain exploitation.",
+      "recommendation": "Upgrade to version 1.20.6 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade to 1.20.6 within Express's ~1.20.3 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 73,
+      "registryId": "1124008",
+      "ghsa": "GHSA-v56q-mh7h-f735",
+      "package": "immutable",
+      "currentVersion": "3.7.6",
+      "severity": "high",
+      "vulnerableVersions": "<4.3.9",
+      "patchedVersions": ">=4.3.9",
+      "title": "Immutable.js `List` 32-bit trie overflow → unrecoverable DoS",
+      "cves": [
+        "CVE-2026-59879"
+      ],
+      "cwe": [
+        "CWE-190",
+        "CWE-400",
+        "CWE-835",
+        "CWE-1284"
+      ],
+      "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/utils>@graphql-codegen/typescript>@graphql-codegen/visitor-plugin-common>@graphql-tools/relay-operation-optimizer>@ardatan/relay-compiler>immutable",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/utils",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/relay-operation-optimizer",
+        "@ardatan/relay-compiler",
+        "immutable"
+      ],
+      "surface": "GraphQL/Relay code generation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected value processing occurs in generated-code tooling, not Store API request handling.",
+      "recommendation": "Upgrade to version 4.3.9 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The remaining fix requires Immutable 4 while relay-compiler pins ~3.7.6.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 74,
+      "registryId": "1124018",
+      "ghsa": "GHSA-xvcm-6775-5m9r",
+      "package": "immutable",
+      "currentVersion": "3.7.6",
+      "severity": "high",
+      "vulnerableVersions": "<4.3.9",
+      "patchedVersions": ">=4.3.9",
+      "title": "Immutabl: Hash-collision algorithmic complexity denial of service in Immutable.Map/Set",
+      "cves": [
+        "CVE-2026-59880"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/utils>@graphql-codegen/typescript>@graphql-codegen/visitor-plugin-common>@graphql-tools/relay-operation-optimizer>@ardatan/relay-compiler>immutable",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/utils",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/relay-operation-optimizer",
+        "@ardatan/relay-compiler",
+        "immutable"
+      ],
+      "surface": "GraphQL/Relay code generation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected value processing occurs in generated-code tooling, not Store API request handling.",
+      "recommendation": "Upgrade to version 4.3.9 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The remaining fix requires Immutable 4 while relay-compiler pins ~3.7.6.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 75,
+      "registryId": "1124066",
+      "ghsa": "GHSA-f88m-g3jw-g9cj",
+      "package": "sharp",
+      "currentVersion": "0.34.5",
+      "severity": "high",
+      "vulnerableVersions": "<0.35.0",
+      "patchedVersions": ">=0.35.0",
+      "title": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591",
+      "cves": [],
+      "cwe": [
+        "CWE-1395"
+      ],
+      "url": "https://github.com/advisories/GHSA-f88m-g3jw-g9cj",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>sharp",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "sharp"
+      ],
+      "surface": "Next.js optional image optimizer dependency",
+      "reachability": "not-reachable-with-current-configuration",
+      "actualRisk": "low",
+      "reachabilityRationale": "apps/storefront/next.config.js sets images.unoptimized to true, so the current storefront does not invoke Sharp image optimization.",
+      "recommendation": "Upgrade to version 0.35.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Sharp 0.35 is outside Next 15.5.21's ^0.34.3 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 76,
+      "registryId": "1124252",
+      "ghsa": "GHSA-6g55-p6wh-862q",
+      "package": "postcss",
+      "currentVersion": "8.5.6",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.11",
+      "patchedVersions": ">=8.5.12",
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "cves": [
+        "CVE-2026-45623"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>postcss",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.12 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Vite/PostCSS paths to 8.5.25 within Vite's ^8.4.43 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 77,
+      "registryId": "1124252",
+      "ghsa": "GHSA-6g55-p6wh-862q",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.11",
+      "patchedVersions": ">=8.5.12",
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "cves": [
+        "CVE-2026-45623"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.12 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 78,
+      "registryId": "1124268",
+      "ghsa": "GHSA-wrjc-x8rr-h8h6",
+      "package": "react-router",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.0.0 <7.18.0",
+      "patchedVersions": ">=7.18.0",
+      "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+      "cves": [
+        "CVE-2026-53669"
+      ],
+      "cwe": [
+        "CWE-601"
+      ],
+      "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>react-router-dom>react-router",
+      "chain": [
+        "apps/backend",
+        "react-router-dom",
+        "react-router"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "Upgrade to version 7.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The fix requires React Router 7 while Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 79,
+      "registryId": "1124270",
+      "ghsa": "GHSA-jjmj-jmhj-qwj2",
+      "package": "react-router-dom",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.30.2 <=6.30.4",
+      "patchedVersions": "<0.0.0",
+      "title": "React Router: Open redirect leading to XSS",
+      "cves": [
+        "CVE-2026-53668"
+      ],
+      "cwe": [
+        "CWE-601"
+      ],
+      "url": "https://github.com/advisories/GHSA-jjmj-jmhj-qwj2",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:6.30.4",
+      "path": "apps__backend>react-router-dom",
+      "chain": [
+        "apps/backend",
+        "react-router-dom"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "None",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The advisory has no patched 6.x release; Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 80,
+      "registryId": "1124272",
+      "ghsa": "GHSA-337j-9hxr-rhxg",
+      "package": "react-router",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.4.0 <7.18.0",
+      "patchedVersions": ">=7.18.0",
+      "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+      "cves": [
+        "CVE-2026-53666"
+      ],
+      "cwe": [
+        "CWE-470"
+      ],
+      "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>react-router-dom>react-router",
+      "chain": [
+        "apps/backend",
+        "react-router-dom",
+        "react-router"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "Upgrade to version 7.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The fix requires React Router 7 while Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 81,
+      "registryId": "1124288",
+      "ghsa": "GHSA-r28c-9q8g-f849",
+      "package": "postcss",
+      "currentVersion": "8.5.6",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.17",
+      "patchedVersions": ">=8.5.18",
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "cves": [],
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>postcss",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.18 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Vite/PostCSS paths to 8.5.25 within Vite's ^8.4.43 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 82,
+      "registryId": "1124288",
+      "ghsa": "GHSA-r28c-9q8g-f849",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.17",
+      "patchedVersions": ">=8.5.18",
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "cves": [],
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.18 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 83,
+      "registryId": "1130588",
+      "ghsa": "GHSA-mh99-v99m-4gvg",
+      "package": "brace-expansion",
+      "currentVersion": "1.1.12",
+      "severity": "high",
+      "vulnerableVersions": "<1.1.17",
+      "patchedVersions": ">=1.1.17",
+      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+      "cves": [
+        "CVE-2026-14257"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>yalc>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "yalc",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 1.1.17 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 84,
+      "registryId": "1130591",
+      "ghsa": "GHSA-mh99-v99m-4gvg",
+      "package": "brace-expansion",
+      "currentVersion": "5.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <5.0.8",
+      "patchedVersions": ">=5.0.8",
+      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+      "cves": [
+        "CVE-2026-14257"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 5.0.8 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 85,
+      "registryId": "1130709",
+      "ghsa": "GHSA-fxqj-rqcc-2cmp",
+      "package": "postcss",
+      "currentVersion": "8.5.6",
+      "severity": "moderate",
+      "vulnerableVersions": "<=8.5.22",
+      "patchedVersions": ">=8.5.23",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>postcss",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.23 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Vite/PostCSS paths to 8.5.25 within Vite's ^8.4.43 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 86,
+      "registryId": "1130709",
+      "ghsa": "GHSA-fxqj-rqcc-2cmp",
+      "package": "postcss",
+      "currentVersion": "8.5.22",
+      "severity": "moderate",
+      "vulnerableVersions": "<=8.5.22",
+      "patchedVersions": ">=8.5.23",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/admin-bundler>postcss",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/admin-bundler",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.23 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade Vite/PostCSS paths to 8.5.25 within Vite's ^8.4.43 range.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 87,
+      "registryId": "1130709",
+      "ghsa": "GHSA-fxqj-rqcc-2cmp",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "moderate",
+      "vulnerableVersions": "<=8.5.22",
+      "patchedVersions": ">=8.5.23",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.23 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 88,
+      "registryId": "1130734",
+      "ghsa": "GHSA-rgw5-rvv9-x895",
+      "package": "brace-expansion",
+      "currentVersion": "5.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <5.0.9",
+      "patchedVersions": ">=5.0.9",
+      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+      "cves": [
+        "CVE-2026-69152"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 5.0.9 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "findingNumber": 89,
+      "registryId": "1130737",
+      "ghsa": "GHSA-rgw5-rvv9-x895",
+      "package": "brace-expansion",
+      "currentVersion": "1.1.12",
+      "severity": "high",
+      "vulnerableVersions": "<1.1.18",
+      "patchedVersions": ">=1.1.18",
+      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+      "cves": [
+        "CVE-2026-69152"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>yalc>glob>minimatch>brace-expansion",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "yalc",
+        "glob",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 1.1.18 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    }
+  ],
+  "developmentOnlyFindings": [
+    {
+      "registryId": "1112704",
+      "ghsa": "GHSA-73rr-hh4g-fpgx",
+      "package": "diff",
+      "currentVersion": "4.0.2",
+      "severity": "low",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "title": "jsdiff has a Denial of Service vulnerability in parsePatch and applyPatch",
+      "cves": [
+        "CVE-2026-24001"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-73rr-hh4g-fpgx",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>ts-node>diff",
+      "chain": [
+        "apps/backend",
+        "ts-node",
+        "diff"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113041",
+      "ghsa": "GHSA-8fgc-7cc6-rx7x",
+      "package": "webpack",
+      "currentVersion": "5.103.0",
+      "severity": "low",
+      "vulnerableVersions": ">=5.49.0 <=5.104.0",
+      "patchedVersions": ">=5.104.1",
+      "title": "webpack buildHttp: allowedUris allow-list bypass via URL userinfo (@) leading to build-time SSRF behavior",
+      "cves": [
+        "CVE-2025-68458"
+      ],
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-8fgc-7cc6-rx7x",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 5.104.1 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113042",
+      "ghsa": "GHSA-38r7-794h-5758",
+      "package": "webpack",
+      "currentVersion": "5.103.0",
+      "severity": "low",
+      "vulnerableVersions": ">=5.49.0 <5.104.0",
+      "patchedVersions": ">=5.104.0",
+      "title": "webpack buildHttp HttpUriPlugin allowedUris bypass via HTTP redirects → SSRF + cache persistence",
+      "cves": [
+        "CVE-2025-68157"
+      ],
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-38r7-794h-5758",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 5.104.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113465",
+      "ghsa": "GHSA-3ppc-4f35-3m26",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.6",
+      "patchedVersions": ">=9.0.6",
+      "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+      "cves": [
+        "CVE-2026-26996"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.6 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113544",
+      "ghsa": "GHSA-7r86-cg39-jmmj",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.7",
+      "patchedVersions": ">=9.0.7",
+      "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+      "cves": [
+        "CVE-2026-27903"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.7 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113552",
+      "ghsa": "GHSA-23c5-xmqv-rm74",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.7",
+      "patchedVersions": ">=9.0.7",
+      "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+      "cves": [
+        "CVE-2026-27904"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.7 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113686",
+      "ghsa": "GHSA-5c6j-r48x-rmvq",
+      "package": "serialize-javascript",
+      "currentVersion": "6.0.2",
+      "severity": "high",
+      "vulnerableVersions": "<=7.0.2",
+      "patchedVersions": ">=7.0.3",
+      "title": "Serialize JavaScript is Vulnerable to RCE via RegExp.flags and Date.prototype.toISOString()",
+      "cves": [],
+      "cwe": [
+        "CWE-96"
+      ],
+      "url": "https://github.com/advisories/GHSA-5c6j-r48x-rmvq",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>terser-webpack-plugin>serialize-javascript",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "terser-webpack-plugin",
+        "serialize-javascript"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 7.0.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113714",
+      "ghsa": "GHSA-2g4f-4pwh-qvx6",
+      "package": "ajv",
+      "currentVersion": "6.12.6",
+      "severity": "moderate",
+      "vulnerableVersions": "<6.14.0",
+      "patchedVersions": ">=6.14.0",
+      "title": "ajv has ReDoS when using `$data` option",
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>schema-utils>ajv",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "schema-utils",
+        "ajv"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 6.14.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "AJV 8.18.0 is outside the parent's ~8.13.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113715",
+      "ghsa": "GHSA-2g4f-4pwh-qvx6",
+      "package": "ajv",
+      "currentVersion": "8.17.1",
+      "severity": "moderate",
+      "vulnerableVersions": ">=7.0.0-alpha.0 <8.18.0",
+      "patchedVersions": ">=8.18.0",
+      "title": "ajv has ReDoS when using `$data` option",
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 8.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "AJV 8.18.0 is outside the parent's ~8.13.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1114526",
+      "ghsa": "GHSA-25h7-pfq9-p65f",
+      "package": "flatted",
+      "currentVersion": "3.3.3",
+      "severity": "high",
+      "vulnerableVersions": "<3.4.0",
+      "patchedVersions": ">=3.4.0",
+      "title": "flatted vulnerable to unbounded recursion DoS in parse() revive phase",
+      "cves": [
+        "CVE-2026-32141"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-25h7-pfq9-p65f",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>file-entry-cache>flat-cache>flatted",
+      "chain": [
+        ".",
+        "eslint",
+        "file-entry-cache",
+        "flat-cache",
+        "flatted"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.4.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1115357",
+      "ghsa": "GHSA-rf6f-7fwh-wjgh",
+      "package": "flatted",
+      "currentVersion": "3.3.3",
+      "severity": "high",
+      "vulnerableVersions": "<=3.4.1",
+      "patchedVersions": ">=3.4.2",
+      "title": "Prototype Pollution via parse() in NodeJS flatted",
+      "cves": [
+        "CVE-2026-33228"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>file-entry-cache>flat-cache>flatted",
+      "chain": [
+        ".",
+        "eslint",
+        "file-entry-cache",
+        "flat-cache",
+        "flatted"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.4.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1115541",
+      "ghsa": "GHSA-f886-m6hf-6m8v",
+      "package": "brace-expansion",
+      "currentVersion": "2.0.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=2.0.0 <2.0.3",
+      "patchedVersions": ">=2.0.3",
+      "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+      "cves": [
+        "CVE-2026-33750"
+      ],
+      "cwe": [
+        "CWE-400"
+      ],
+      "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 2.0.3 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "registryId": "1117870",
+      "ghsa": "GHSA-q3j6-qgpj-74h6",
+      "package": "fast-uri",
+      "currentVersion": "3.1.0",
+      "severity": "high",
+      "vulnerableVersions": "<=3.1.0",
+      "patchedVersions": ">=3.1.1",
+      "title": "fast-uri vulnerable to path traversal via percent-encoded dot segments",
+      "cves": [
+        "CVE-2026-6321"
+      ],
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-q3j6-qgpj-74h6",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv>fast-uri",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv",
+        "fast-uri"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.1.1 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1117884",
+      "ghsa": "GHSA-v39h-62p7-jpjc",
+      "package": "fast-uri",
+      "currentVersion": "3.1.0",
+      "severity": "high",
+      "vulnerableVersions": "<=3.1.1",
+      "patchedVersions": ">=3.1.2",
+      "title": "fast-uri vulnerable to host confusion via percent-encoded authority delimiters",
+      "cves": [
+        "CVE-2026-6322"
+      ],
+      "cwe": [
+        "CWE-436"
+      ],
+      "url": "https://github.com/advisories/GHSA-v39h-62p7-jpjc",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv>fast-uri",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv",
+        "fast-uri"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.1.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1119389",
+      "ghsa": "GHSA-3qcw-2rhx-2726",
+      "package": "turbo",
+      "currentVersion": "2.6.3",
+      "severity": "low",
+      "vulnerableVersions": ">=1.1.0 <2.9.14",
+      "patchedVersions": ">=2.9.14",
+      "title": "Turbo: Unexpected local code execution during Yarn Berry detection",
+      "cves": [
+        "CVE-2026-45772"
+      ],
+      "cwe": [
+        "CWE-426"
+      ],
+      "url": "https://github.com/advisories/GHSA-3qcw-2rhx-2726",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>turbo",
+      "chain": [
+        ".",
+        "turbo"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 2.9.14 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1119440",
+      "ghsa": "GHSA-qj8w-gfj5-8c6v",
+      "package": "serialize-javascript",
+      "currentVersion": "6.0.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=5.0.0 <7.0.5",
+      "patchedVersions": ">=7.0.5",
+      "title": "Serialize JavaScript has CPU Exhaustion Denial of Service via crafted array-like objects",
+      "cves": [
+        "CVE-2026-34043"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-834"
+      ],
+      "url": "https://github.com/advisories/GHSA-qj8w-gfj5-8c6v",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>terser-webpack-plugin>serialize-javascript",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "terser-webpack-plugin",
+        "serialize-javascript"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 7.0.5 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121859",
+      "ghsa": "GHSA-h67p-54hq-rp68",
+      "package": "js-yaml",
+      "currentVersion": "3.14.2",
+      "severity": "moderate",
+      "vulnerableVersions": "<3.15.0",
+      "patchedVersions": ">=3.15.0",
+      "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+      "cves": [
+        "CVE-2026-53550"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>jest>@jest/core>@jest/transform>babel-plugin-istanbul>@istanbuljs/load-nyc-config>js-yaml",
+      "chain": [
+        "apps/backend",
+        "jest",
+        "@jest/core",
+        "@jest/transform",
+        "babel-plugin-istanbul",
+        "@istanbuljs/load-nyc-config",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.15.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121860",
+      "ghsa": "GHSA-h67p-54hq-rp68",
+      "package": "js-yaml",
+      "currentVersion": "4.1.1",
+      "severity": "moderate",
+      "vulnerableVersions": ">=4.0.0 <=4.1.1",
+      "patchedVersions": ">=4.2.0",
+      "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+      "cves": [
+        "CVE-2026-53550"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>@eslint/eslintrc>js-yaml",
+      "chain": [
+        ".",
+        "eslint",
+        "@eslint/eslintrc",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.2.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121861",
+      "ghsa": "GHSA-hcf7-66rw-9f5r",
+      "package": "turbo",
+      "currentVersion": "2.6.3",
+      "severity": "moderate",
+      "vulnerableVersions": "<=2.9.13",
+      "patchedVersions": ">=2.9.14",
+      "title": "Turbo: Login callback CSRF/session fixation",
+      "cves": [
+        "CVE-2026-45773"
+      ],
+      "cwe": [
+        "CWE-352"
+      ],
+      "url": "https://github.com/advisories/GHSA-hcf7-66rw-9f5r",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>turbo",
+      "chain": [
+        ".",
+        "turbo"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 2.9.14 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1123896",
+      "ghsa": "GHSA-3jxr-9vmj-r5cp",
+      "package": "brace-expansion",
+      "currentVersion": "2.0.2",
+      "severity": "high",
+      "vulnerableVersions": ">=2.0.0 <2.1.2",
+      "patchedVersions": ">=2.1.2",
+      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+      "cves": [
+        "CVE-2026-13149"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 2.1.2 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "registryId": "1123911",
+      "ghsa": "GHSA-52cp-r559-cp3m",
+      "package": "js-yaml",
+      "currentVersion": "4.1.1",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <4.3.0",
+      "patchedVersions": ">=4.3.0",
+      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+      "cves": [
+        "CVE-2026-59869"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>@eslint/eslintrc>js-yaml",
+      "chain": [
+        ".",
+        "eslint",
+        "@eslint/eslintrc",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.3.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1123912",
+      "ghsa": "GHSA-52cp-r559-cp3m",
+      "package": "js-yaml",
+      "currentVersion": "3.14.2",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <3.15.0",
+      "patchedVersions": ">=3.15.0",
+      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+      "cves": [
+        "CVE-2026-59869"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>jest>@jest/core>@jest/transform>babel-plugin-istanbul>@istanbuljs/load-nyc-config>js-yaml",
+      "chain": [
+        "apps/backend",
+        "jest",
+        "@jest/core",
+        "@jest/transform",
+        "babel-plugin-istanbul",
+        "@istanbuljs/load-nyc-config",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.15.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1124064",
+      "ghsa": "GHSA-v2hh-gcrm-f6hx",
+      "package": "fast-uri",
+      "currentVersion": "3.1.0",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <=3.1.3",
+      "patchedVersions": ">=3.1.4",
+      "title": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
+      "cves": [
+        "CVE-2026-16221"
+      ],
+      "cwe": [
+        "CWE-436"
+      ],
+      "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv>fast-uri",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv",
+        "fast-uri"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.1.4 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1130589",
+      "ghsa": "GHSA-mh99-v99m-4gvg",
+      "package": "brace-expansion",
+      "currentVersion": "2.0.2",
+      "severity": "high",
+      "vulnerableVersions": ">=2.0.0 <2.1.3",
+      "patchedVersions": ">=2.1.3",
+      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+      "cves": [
+        "CVE-2026-14257"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 2.1.3 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "registryId": "1130720",
+      "ghsa": "GHSA-7p8r-x3mc-p8w7",
+      "package": "fast-uri",
+      "currentVersion": "3.1.0",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <3.1.5",
+      "patchedVersions": ">=3.1.5",
+      "title": "fast-uri vulnerable to host confusion via backslash authority introducer",
+      "cves": [
+        "CVE-2026-18446"
+      ],
+      "cwe": [
+        "CWE-436"
+      ],
+      "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv>fast-uri",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv",
+        "fast-uri"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.1.5 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1130736",
+      "ghsa": "GHSA-rgw5-rvv9-x895",
+      "package": "brace-expansion",
+      "currentVersion": "2.0.2",
+      "severity": "high",
+      "vulnerableVersions": ">=2.0.0 <2.1.4",
+      "patchedVersions": ">=2.1.4",
+      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+      "cves": [
+        "CVE-2026-69152"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch>brace-expansion",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch",
+        "brace-expansion"
+      ],
+      "surface": "CLI, glob, and local package tooling",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "No public endpoint accepts glob or brace expressions for these dependency paths.",
+      "recommendation": "Upgrade to version 2.1.4 or later",
+      "patchCompatibility": "compatible-patch-applied",
+      "remediationPlan": "Upgrade separately within major 1 or major 5.",
+      "breakingChangeRisk": "low"
+    },
+    {
+      "registryId": "1136581",
+      "ghsa": "GHSA-4c8g-83qw-93j6",
+      "package": "fast-uri",
+      "currentVersion": "3.1.0",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <3.1.3",
+      "patchedVersions": ">=3.1.3",
+      "title": "fast-uri vulnerable to host confusion via failed IDN canonicalization",
+      "cves": [
+        "CVE-2026-13676"
+      ],
+      "cwe": [
+        "CWE-436",
+        "CWE-551"
+      ],
+      "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack>schema-utils>ajv>fast-uri",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack",
+        "schema-utils",
+        "ajv",
+        "fast-uri"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.1.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    }
+  ]
+}

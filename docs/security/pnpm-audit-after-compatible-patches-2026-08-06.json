@@ -1,0 +1,1198 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-06T02:42:08.492Z",
+  "label": "after-compatible-patches-2026-08-06",
+  "source": "pnpm audit --prod --json and pnpm audit --json",
+  "nodeVersion": "v24.14.0",
+  "packageManager": "pnpm@10.11.1",
+  "productionSummary": {
+    "uniqueAdvisories": 17,
+    "vulnerabilityInstances": 17,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 11,
+        "high": 6,
+        "critical": 0
+      },
+      "dependencies": 1283,
+      "devDependencies": 0,
+      "optionalDependencies": 0,
+      "totalDependencies": 1283
+    }
+  },
+  "allDependencySummary": {
+    "uniqueAdvisories": 32,
+    "vulnerabilityInstances": 35,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 4,
+        "moderate": 17,
+        "high": 14,
+        "critical": 0
+      },
+      "dependencies": 1724,
+      "devDependencies": 0,
+      "optionalDependencies": 0,
+      "totalDependencies": 1724
+    }
+  },
+  "productionFindings": [
+    {
+      "findingNumber": 1,
+      "registryId": "1102341",
+      "ghsa": "GHSA-67mh-4wv8-2f99",
+      "package": "esbuild",
+      "currentVersion": "0.21.5",
+      "severity": "moderate",
+      "vulnerableVersions": "<=0.24.2",
+      "patchedVersions": ">=0.25.0",
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "cves": [],
+      "cwe": [
+        "CWE-346"
+      ],
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite>esbuild",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite",
+        "esbuild"
+      ],
+      "surface": "Admin/storefront compilation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The package processes trusted repository source during compilation and is not invoked by Store API requests.",
+      "recommendation": "Upgrade to version 0.25.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "esbuild 0.25 is outside Vite 5's ^0.21.3 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 2,
+      "registryId": "1113715",
+      "ghsa": "GHSA-2g4f-4pwh-qvx6",
+      "package": "ajv",
+      "currentVersion": "8.13.0",
+      "severity": "moderate",
+      "vulnerableVersions": ">=7.0.0-alpha.0 <8.18.0",
+      "patchedVersions": ">=8.18.0",
+      "title": "ajv has ReDoS when using `$data` option",
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/deps>@mikro-orm/migrations>umzug>@rushstack/ts-command-line>@rushstack/terminal>@rushstack/node-core-library>ajv",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/deps",
+        "@mikro-orm/migrations",
+        "umzug",
+        "@rushstack/ts-command-line",
+        "@rushstack/terminal",
+        "@rushstack/node-core-library",
+        "ajv"
+      ],
+      "surface": "Database migration and CLI command validation",
+      "reachability": "migration-or-operational-cli-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The path validates trusted migration/CLI input and is not exposed through Store or Admin APIs.",
+      "recommendation": "Upgrade to version 8.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "AJV 8.18.0 is outside the parent's ~8.13.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 3,
+      "registryId": "1116229",
+      "ghsa": "GHSA-4w7w-66w2-5vf9",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "moderate",
+      "vulnerableVersions": "<=6.4.1",
+      "patchedVersions": ">=6.4.2",
+      "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+      "cves": [
+        "CVE-2026-39365"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 4,
+      "registryId": "1117015",
+      "ghsa": "GHSA-qx2v-qp2m-jg93",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "moderate",
+      "vulnerableVersions": "<8.5.10",
+      "patchedVersions": ">=8.5.10",
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "cves": [
+        "CVE-2026-41305"
+      ],
+      "cwe": [
+        "CWE-79"
+      ],
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.10 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 5,
+      "registryId": "1119441",
+      "ghsa": "GHSA-w5hq-g745-h8pq",
+      "package": "uuid",
+      "currentVersion": "9.0.1",
+      "severity": "moderate",
+      "vulnerableVersions": "<11.1.1",
+      "patchedVersions": ">=11.1.1",
+      "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+      "cves": [
+        "CVE-2026-41907"
+      ],
+      "cwe": [
+        "CWE-787",
+        "CWE-1285"
+      ],
+      "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/medusa>@medusajs/event-bus-redis>bullmq>uuid",
+      "chain": [
+        "apps/backend",
+        "@medusajs/medusa",
+        "@medusajs/event-bus-redis",
+        "bullmq",
+        "uuid"
+      ],
+      "surface": "Redis event bus job identifiers",
+      "reachability": "conditionally-runtime-reachable",
+      "actualRisk": "low",
+      "reachabilityRationale": "The local deployment has no REDIS_URL and uses the local event bus. The path becomes relevant only when Redis event bus is enabled.",
+      "recommendation": "Upgrade to version 11.1.1 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "UUID 11 is outside BullMQ 5.13.0's ^9.0.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 6,
+      "registryId": "1119502",
+      "ghsa": "GHSA-q8mj-m7cp-5q26",
+      "package": "qs",
+      "currentVersion": "6.14.2",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.11.1 <=6.15.1",
+      "patchedVersions": ">=6.15.2",
+      "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+      "cves": [
+        "CVE-2026-8723"
+      ],
+      "cwe": [
+        "CWE-476"
+      ],
+      "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>express>qs",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "express",
+        "qs"
+      ],
+      "surface": "Medusa HTTP query-string parsing",
+      "reachability": "conditionally-runtime-reachable",
+      "actualRisk": "medium",
+      "reachabilityRationale": "Query strings are attacker-controlled, but route validation, query-size limits, reverse-proxy limits, and rate limiting constrain exploitation.",
+      "recommendation": "Upgrade to version 6.15.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "QS 6.15.2 is outside Express 4.22.1's ~6.14.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 7,
+      "registryId": "1120784",
+      "ghsa": "GHSA-v6wh-96g9-6wx3",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "moderate",
+      "vulnerableVersions": "<=6.4.2",
+      "patchedVersions": ">=6.4.3",
+      "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+      "cves": [
+        "CVE-2026-53632"
+      ],
+      "cwe": [
+        "CWE-73",
+        "CWE-522"
+      ],
+      "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 8,
+      "registryId": "1123525",
+      "ghsa": "GHSA-fx2h-pf6j-xcff",
+      "package": "vite",
+      "currentVersion": "5.4.21",
+      "severity": "high",
+      "vulnerableVersions": "<=6.4.2",
+      "patchedVersions": ">=6.4.3",
+      "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+      "cves": [
+        "CVE-2026-53571"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/framework>vite",
+      "chain": [
+        "apps/backend",
+        "@medusajs/framework",
+        "vite"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 6.4.3 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Vite 6.4.x is outside Medusa 2.18's ^5.4.21 peer range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 9,
+      "registryId": "1124008",
+      "ghsa": "GHSA-v56q-mh7h-f735",
+      "package": "immutable",
+      "currentVersion": "3.8.3",
+      "severity": "high",
+      "vulnerableVersions": "<4.3.9",
+      "patchedVersions": ">=4.3.9",
+      "title": "Immutable.js `List` 32-bit trie overflow → unrecoverable DoS",
+      "cves": [
+        "CVE-2026-59879"
+      ],
+      "cwe": [
+        "CWE-190",
+        "CWE-400",
+        "CWE-835",
+        "CWE-1284"
+      ],
+      "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/utils>@graphql-codegen/typescript>@graphql-codegen/visitor-plugin-common>@graphql-tools/relay-operation-optimizer>@ardatan/relay-compiler>immutable",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/utils",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/relay-operation-optimizer",
+        "@ardatan/relay-compiler",
+        "immutable"
+      ],
+      "surface": "GraphQL/Relay code generation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected value processing occurs in generated-code tooling, not Store API request handling.",
+      "recommendation": "Upgrade to version 4.3.9 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The remaining fix requires Immutable 4 while relay-compiler pins ~3.7.6.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 10,
+      "registryId": "1124018",
+      "ghsa": "GHSA-xvcm-6775-5m9r",
+      "package": "immutable",
+      "currentVersion": "3.8.3",
+      "severity": "high",
+      "vulnerableVersions": "<4.3.9",
+      "patchedVersions": ">=4.3.9",
+      "title": "Immutabl: Hash-collision algorithmic complexity denial of service in Immutable.Map/Set",
+      "cves": [
+        "CVE-2026-59880"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>@medusajs/cli>@medusajs/utils>@graphql-codegen/typescript>@graphql-codegen/visitor-plugin-common>@graphql-tools/relay-operation-optimizer>@ardatan/relay-compiler>immutable",
+      "chain": [
+        "apps/backend",
+        "@medusajs/cli",
+        "@medusajs/utils",
+        "@graphql-codegen/typescript",
+        "@graphql-codegen/visitor-plugin-common",
+        "@graphql-tools/relay-operation-optimizer",
+        "@ardatan/relay-compiler",
+        "immutable"
+      ],
+      "surface": "GraphQL/Relay code generation",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The affected value processing occurs in generated-code tooling, not Store API request handling.",
+      "recommendation": "Upgrade to version 4.3.9 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The remaining fix requires Immutable 4 while relay-compiler pins ~3.7.6.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 11,
+      "registryId": "1124066",
+      "ghsa": "GHSA-f88m-g3jw-g9cj",
+      "package": "sharp",
+      "currentVersion": "0.34.5",
+      "severity": "high",
+      "vulnerableVersions": "<0.35.0",
+      "patchedVersions": ">=0.35.0",
+      "title": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591",
+      "cves": [],
+      "cwe": [
+        "CWE-1395"
+      ],
+      "url": "https://github.com/advisories/GHSA-f88m-g3jw-g9cj",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>sharp",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "sharp"
+      ],
+      "surface": "Next.js optional image optimizer dependency",
+      "reachability": "not-reachable-with-current-configuration",
+      "actualRisk": "low",
+      "reachabilityRationale": "apps/storefront/next.config.js sets images.unoptimized to true, so the current storefront does not invoke Sharp image optimization.",
+      "recommendation": "Upgrade to version 0.35.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Sharp 0.35 is outside Next 15.5.21's ^0.34.3 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 12,
+      "registryId": "1124252",
+      "ghsa": "GHSA-6g55-p6wh-862q",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.11",
+      "patchedVersions": ">=8.5.12",
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "cves": [
+        "CVE-2026-45623"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.12 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 13,
+      "registryId": "1124268",
+      "ghsa": "GHSA-wrjc-x8rr-h8h6",
+      "package": "react-router",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.0.0 <7.18.0",
+      "patchedVersions": ">=7.18.0",
+      "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+      "cves": [
+        "CVE-2026-53669"
+      ],
+      "cwe": [
+        "CWE-601"
+      ],
+      "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>react-router-dom>react-router",
+      "chain": [
+        "apps/backend",
+        "react-router-dom",
+        "react-router"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "Upgrade to version 7.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The fix requires React Router 7 while Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 14,
+      "registryId": "1124270",
+      "ghsa": "GHSA-jjmj-jmhj-qwj2",
+      "package": "react-router-dom",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.30.2 <=6.30.4",
+      "patchedVersions": "<0.0.0",
+      "title": "React Router: Open redirect leading to XSS",
+      "cves": [
+        "CVE-2026-53668"
+      ],
+      "cwe": [
+        "CWE-601"
+      ],
+      "url": "https://github.com/advisories/GHSA-jjmj-jmhj-qwj2",
+      "dependencyScope": "production",
+      "dependencyType": "direct",
+      "declaration": "dependencies:6.30.4",
+      "path": "apps__backend>react-router-dom",
+      "chain": [
+        "apps/backend",
+        "react-router-dom"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "None",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The advisory has no patched 6.x release; Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 15,
+      "registryId": "1124272",
+      "ghsa": "GHSA-337j-9hxr-rhxg",
+      "package": "react-router",
+      "currentVersion": "6.30.4",
+      "severity": "moderate",
+      "vulnerableVersions": ">=6.4.0 <7.18.0",
+      "patchedVersions": ">=7.18.0",
+      "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+      "cves": [
+        "CVE-2026-53666"
+      ],
+      "cwe": [
+        "CWE-470"
+      ],
+      "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>react-router-dom>react-router",
+      "chain": [
+        "apps/backend",
+        "react-router-dom",
+        "react-router"
+      ],
+      "surface": "Authenticated Medusa Admin browser application",
+      "reachability": "admin-runtime-conditional",
+      "actualRisk": "medium",
+      "reachabilityRationale": "The router executes in Admin, not Store API. Exploitation depends on advisory-specific routing/redirect behavior and an authenticated Admin context.",
+      "recommendation": "Upgrade to version 7.18.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "The fix requires React Router 7 while Medusa Admin is on 6.30.4.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 16,
+      "registryId": "1124288",
+      "ghsa": "GHSA-r28c-9q8g-f849",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "high",
+      "vulnerableVersions": "<=8.5.17",
+      "patchedVersions": ">=8.5.18",
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "cves": [],
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.18 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "findingNumber": 17,
+      "registryId": "1130709",
+      "ghsa": "GHSA-fxqj-rqcc-2cmp",
+      "package": "postcss",
+      "currentVersion": "8.4.31",
+      "severity": "moderate",
+      "vulnerableVersions": "<=8.5.22",
+      "patchedVersions": ">=8.5.23",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "cves": [
+        "CVE-2026-69153"
+      ],
+      "cwe": [
+        "CWE-22",
+        "CWE-200"
+      ],
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "dependencyScope": "production",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>next>postcss",
+      "chain": [
+        "apps/storefront",
+        "next",
+        "postcss"
+      ],
+      "surface": "Admin/storefront compilation and development server",
+      "reachability": "build-or-development-only",
+      "actualRisk": "low",
+      "reachabilityRationale": "The vulnerable parser/bundler path is not used by Store API requests. Risk remains for CI/build input and exposed development servers.",
+      "recommendation": "Upgrade to version 8.5.23 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Next 15.5.21 pins PostCSS exactly to 8.4.31.",
+      "breakingChangeRisk": "high"
+    }
+  ],
+  "developmentOnlyFindings": [
+    {
+      "registryId": "1112704",
+      "ghsa": "GHSA-73rr-hh4g-fpgx",
+      "package": "diff",
+      "currentVersion": "4.0.2",
+      "severity": "low",
+      "vulnerableVersions": ">=4.0.0 <4.0.4",
+      "patchedVersions": ">=4.0.4",
+      "title": "jsdiff has a Denial of Service vulnerability in parsePatch and applyPatch",
+      "cves": [
+        "CVE-2026-24001"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-73rr-hh4g-fpgx",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>ts-node>diff",
+      "chain": [
+        "apps/backend",
+        "ts-node",
+        "diff"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.0.4 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113041",
+      "ghsa": "GHSA-8fgc-7cc6-rx7x",
+      "package": "webpack",
+      "currentVersion": "5.103.0",
+      "severity": "low",
+      "vulnerableVersions": ">=5.49.0 <=5.104.0",
+      "patchedVersions": ">=5.104.1",
+      "title": "webpack buildHttp: allowedUris allow-list bypass via URL userinfo (@) leading to build-time SSRF behavior",
+      "cves": [
+        "CVE-2025-68458"
+      ],
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-8fgc-7cc6-rx7x",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 5.104.1 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113042",
+      "ghsa": "GHSA-38r7-794h-5758",
+      "package": "webpack",
+      "currentVersion": "5.103.0",
+      "severity": "low",
+      "vulnerableVersions": ">=5.49.0 <5.104.0",
+      "patchedVersions": ">=5.104.0",
+      "title": "webpack buildHttp HttpUriPlugin allowedUris bypass via HTTP redirects → SSRF + cache persistence",
+      "cves": [
+        "CVE-2025-68157"
+      ],
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-38r7-794h-5758",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>webpack",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "webpack"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 5.104.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113465",
+      "ghsa": "GHSA-3ppc-4f35-3m26",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.6",
+      "patchedVersions": ">=9.0.6",
+      "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+      "cves": [
+        "CVE-2026-26996"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.6 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113544",
+      "ghsa": "GHSA-7r86-cg39-jmmj",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.7",
+      "patchedVersions": ">=9.0.7",
+      "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+      "cves": [
+        "CVE-2026-27903"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.7 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113552",
+      "ghsa": "GHSA-23c5-xmqv-rm74",
+      "package": "minimatch",
+      "currentVersion": "9.0.5",
+      "severity": "high",
+      "vulnerableVersions": ">=9.0.0 <9.0.7",
+      "patchedVersions": ">=9.0.7",
+      "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+      "cves": [
+        "CVE-2026-27904"
+      ],
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>@medusajs/eslint-plugin>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+      "chain": [
+        ".",
+        "@medusajs/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "minimatch"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 9.0.7 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1113714",
+      "ghsa": "GHSA-2g4f-4pwh-qvx6",
+      "package": "ajv",
+      "currentVersion": "6.12.6",
+      "severity": "moderate",
+      "vulnerableVersions": "<6.14.0",
+      "patchedVersions": ">=6.14.0",
+      "title": "ajv has ReDoS when using `$data` option",
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__storefront>babel-loader>schema-utils>ajv",
+      "chain": [
+        "apps/storefront",
+        "babel-loader",
+        "schema-utils",
+        "ajv"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 6.14.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "AJV 8.18.0 is outside the parent's ~8.13.0 range.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1114526",
+      "ghsa": "GHSA-25h7-pfq9-p65f",
+      "package": "flatted",
+      "currentVersion": "3.3.3",
+      "severity": "high",
+      "vulnerableVersions": "<3.4.0",
+      "patchedVersions": ">=3.4.0",
+      "title": "flatted vulnerable to unbounded recursion DoS in parse() revive phase",
+      "cves": [
+        "CVE-2026-32141"
+      ],
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-25h7-pfq9-p65f",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>file-entry-cache>flat-cache>flatted",
+      "chain": [
+        ".",
+        "eslint",
+        "file-entry-cache",
+        "flat-cache",
+        "flatted"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.4.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1115357",
+      "ghsa": "GHSA-rf6f-7fwh-wjgh",
+      "package": "flatted",
+      "currentVersion": "3.3.3",
+      "severity": "high",
+      "vulnerableVersions": "<=3.4.1",
+      "patchedVersions": ">=3.4.2",
+      "title": "Prototype Pollution via parse() in NodeJS flatted",
+      "cves": [
+        "CVE-2026-33228"
+      ],
+      "cwe": [
+        "CWE-1321"
+      ],
+      "url": "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>file-entry-cache>flat-cache>flatted",
+      "chain": [
+        ".",
+        "eslint",
+        "file-entry-cache",
+        "flat-cache",
+        "flatted"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.4.2 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1119389",
+      "ghsa": "GHSA-3qcw-2rhx-2726",
+      "package": "turbo",
+      "currentVersion": "2.6.3",
+      "severity": "low",
+      "vulnerableVersions": ">=1.1.0 <2.9.14",
+      "patchedVersions": ">=2.9.14",
+      "title": "Turbo: Unexpected local code execution during Yarn Berry detection",
+      "cves": [
+        "CVE-2026-45772"
+      ],
+      "cwe": [
+        "CWE-426"
+      ],
+      "url": "https://github.com/advisories/GHSA-3qcw-2rhx-2726",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>turbo",
+      "chain": [
+        ".",
+        "turbo"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 2.9.14 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121859",
+      "ghsa": "GHSA-h67p-54hq-rp68",
+      "package": "js-yaml",
+      "currentVersion": "3.14.2",
+      "severity": "moderate",
+      "vulnerableVersions": "<3.15.0",
+      "patchedVersions": ">=3.15.0",
+      "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+      "cves": [
+        "CVE-2026-53550"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>jest>@jest/core>@jest/transform>babel-plugin-istanbul>@istanbuljs/load-nyc-config>js-yaml",
+      "chain": [
+        "apps/backend",
+        "jest",
+        "@jest/core",
+        "@jest/transform",
+        "babel-plugin-istanbul",
+        "@istanbuljs/load-nyc-config",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.15.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121860",
+      "ghsa": "GHSA-h67p-54hq-rp68",
+      "package": "js-yaml",
+      "currentVersion": "4.1.1",
+      "severity": "moderate",
+      "vulnerableVersions": ">=4.0.0 <=4.1.1",
+      "patchedVersions": ">=4.2.0",
+      "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+      "cves": [
+        "CVE-2026-53550"
+      ],
+      "cwe": [
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>@eslint/eslintrc>js-yaml",
+      "chain": [
+        ".",
+        "eslint",
+        "@eslint/eslintrc",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.2.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1121861",
+      "ghsa": "GHSA-hcf7-66rw-9f5r",
+      "package": "turbo",
+      "currentVersion": "2.6.3",
+      "severity": "moderate",
+      "vulnerableVersions": "<=2.9.13",
+      "patchedVersions": ">=2.9.14",
+      "title": "Turbo: Login callback CSRF/session fixation",
+      "cves": [
+        "CVE-2026-45773"
+      ],
+      "cwe": [
+        "CWE-352"
+      ],
+      "url": "https://github.com/advisories/GHSA-hcf7-66rw-9f5r",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>turbo",
+      "chain": [
+        ".",
+        "turbo"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 2.9.14 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1123911",
+      "ghsa": "GHSA-52cp-r559-cp3m",
+      "package": "js-yaml",
+      "currentVersion": "4.1.1",
+      "severity": "high",
+      "vulnerableVersions": ">=4.0.0 <4.3.0",
+      "patchedVersions": ">=4.3.0",
+      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+      "cves": [
+        "CVE-2026-59869"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": ".>eslint>@eslint/eslintrc>js-yaml",
+      "chain": [
+        ".",
+        "eslint",
+        "@eslint/eslintrc",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 4.3.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    },
+    {
+      "registryId": "1123912",
+      "ghsa": "GHSA-52cp-r559-cp3m",
+      "package": "js-yaml",
+      "currentVersion": "3.14.2",
+      "severity": "high",
+      "vulnerableVersions": ">=3.0.0 <3.15.0",
+      "patchedVersions": ">=3.15.0",
+      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+      "cves": [
+        "CVE-2026-59869"
+      ],
+      "cwe": [
+        "CWE-400",
+        "CWE-407"
+      ],
+      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+      "dependencyScope": "development-only",
+      "dependencyType": "transitive",
+      "declaration": null,
+      "path": "apps__backend>jest>@jest/core>@jest/transform>babel-plugin-istanbul>@istanbuljs/load-nyc-config>js-yaml",
+      "chain": [
+        "apps/backend",
+        "jest",
+        "@jest/core",
+        "@jest/transform",
+        "babel-plugin-istanbul",
+        "@istanbuljs/load-nyc-config",
+        "js-yaml"
+      ],
+      "surface": "Framework runtime or tooling; manual review required",
+      "reachability": "undetermined",
+      "actualRisk": "needs-manual-review",
+      "reachabilityRationale": "No package-specific reachability rule has been assigned.",
+      "recommendation": "Upgrade to version 3.15.0 or later",
+      "patchCompatibility": "no-compatible-patch-in-parent-range",
+      "remediationPlan": "Wait for a compatible upstream parent release.",
+      "breakingChangeRisk": "high"
+    }
+  ]
+}

@@ -57,6 +57,13 @@ Mục tiêu: payment provider module cho chuyển khoản QR có đối soát v�
 
 Exit criteria: sandbox/contract tests, replay tests, amount tampering tests, webhook idempotency và order/payment state machine pass.
 
+Trạng thái: **hoàn tất cho development nội bộ ngày 06/08/2026** theo boundary QR-only vì workspace không có provider API/webhook contract hoặc credential ngân hàng. Payment Provider tạo amount, currency, reference bất biến và expiry ở backend; payment giữ pending đến khi Finance xác nhận sao kê thật qua Admin RBAC + MFA. Không có webhook giả, polling giả, nhận diện ảnh biên lai hoặc return URL làm nguồn xác nhận.
+
+- Provider và support module dùng extension point chính thức của Medusa 2.18.0; không sửa core. Exact transfer mới chạy authorize/capture workflow, còn thiếu/thừa/sai nội dung/hết hạn chỉ tạo observation và reconciliation issue để review thủ công.
+- Confirmation, capture, cancel và refund có guard/idempotency riêng. Native refund route bị chặn cho VietQR; manual refund cần receipt giao dịch ngân hàng trước khi ghi Medusa refund ledger. Reconciliation job chỉ phát hiện lệch, không tự chuyển trạng thái tài chính.
+- Frozen offline install, workspace lint/typecheck, 36 unit test, 16 module integration test, 13 HTTP integration test, backend/Admin/storefront production build, Store API smoke và Admin auth/MFA smoke đều pass.
+- Live security audit xác nhận production 0 critical, 6 high đã risk-accept và 11 moderate; không có critical/high mới, finding/path mới hoặc dependency resolution mới. Milestone này vẫn không production-approved.
+
 ## 4. VNPay
 
 Mục tiêu: payment provider redirect/webhook hoàn chỉnh theo contract VNPay được chọn.

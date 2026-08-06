@@ -6,13 +6,15 @@ Region Việt Nam bật provider hệ thống `pp_system_default`. Storefront hi
 
 ## VietQR
 
-VietQR nên là custom Payment Provider hoặc payment module riêng:
+Thiết kế được chốt tại `docs/vietqr-payment-design.md` và ADR-004. Workspace hiện không có provider API/webhook contract, vì vậy Milestone 3 dùng custom Payment Provider với QR động và xác nhận thủ công:
 
 - Tạo nội dung chuyển khoản duy nhất theo payment session/order.
-- Lưu amount, ngân hàng đích, nội dung, thời hạn và trạng thái ở module riêng.
+- Amount/currency lấy từ Payment Collection của Medusa; reference, ngân hàng đích, nội dung và thời hạn được snapshot trong Payment Session.
 - Chỉ backend sinh QR payload; storefront không quyết định số tiền.
-- Webhook/đối soát dùng idempotency key của đối tác và unique constraint logic trong module.
-- Chuyển payment sang authorized/captured chỉ sau xác minh server-to-server.
+- Payment giữ `pending_authorization` sau khi đặt order; Finance/Owner kiểm tra sao kê ngân hàng và xác nhận qua workflow RBAC + MFA.
+- Không có webhook/polling giả, không auto-paid từ return URL hoặc ảnh biên lai. Quick Link chỉ hiển thị QR.
+- Mismatch, expiry và duplicate mở reconciliation issue; transition authorize/capture/refund tách biệt và idempotent.
+- Khi có provider contract thật, webhook/polling phải dùng signature/allow-list nếu được hỗ trợ, replay protection và amount reconciliation trước khi trở thành nguồn xác nhận server-to-server.
 
 ## VNPay
 

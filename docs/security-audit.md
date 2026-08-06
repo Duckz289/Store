@@ -133,3 +133,16 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
 - So sánh theo registry ID, GHSA, package, current version và dependency path với snapshot Milestone 1 cho kết quả không có production finding thêm hoặc bớt. Sáu high vẫn là Vite (1), Immutable.js (2), Sharp (1) và PostCSS qua Next (2); không có critical/high mới.
 - Snapshot: [`security/pnpm-audit-milestone-2-repair-2026-08-06.json`](security/pnpm-audit-milestone-2-repair-2026-08-06.json) và [`security/pnpm-audit-milestone-2-repair-2026-08-06.csv`](security/pnpm-audit-milestone-2-repair-2026-08-06.csv).
 - Sáu high đã risk-accept trước đó không thay đổi phạm vi, biện pháp giảm thiểu hay hạn 2026-09-06. Milestone 2 vẫn không production-approved.
+
+## Milestone 3 VietQR — kiểm tra dependency 06/08/2026
+
+Live exporter tạo hai artifact:
+
+- [`security/pnpm-audit-milestone-3-vietqr-2026-08-06.json`](security/pnpm-audit-milestone-3-vietqr-2026-08-06.json)
+- [`security/pnpm-audit-milestone-3-vietqr-2026-08-06.csv`](security/pnpm-audit-milestone-3-vietqr-2026-08-06.csv)
+
+Kết quả production chính xác là **17 finding / 17 advisory: 0 critical, 6 high, 11 moderate, 0 low**. Metadata của toàn dependency graph ghi 35 vulnerability instance: 0 critical, 14 high, 17 moderate và 4 low; exporter phân loại 15 finding development-only gồm 7 high, 4 moderate và 4 low.
+
+So sánh định danh advisory, package, phiên bản và dependency path với snapshot Milestone 2 cho kết quả không có dòng thêm, bớt hoặc thay đổi. `pnpm-lock.yaml` không đổi; frozen install xác nhận lockfile up to date và bỏ qua resolution step. Milestone 3 không thêm package hoặc dependency resolution.
+
+Sáu production high vẫn là đúng các exception đã risk-accept đến 2026-09-06. Không có critical/high mới, không mở rộng runtime reachability và không thay đổi biện pháp giảm thiểu. Kết quả này chỉ đóng security gate cho development nội bộ; **không phải production approval**.

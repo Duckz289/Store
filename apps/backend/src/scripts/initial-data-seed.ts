@@ -101,7 +101,12 @@ export default async function initialDataSeed({
           name: "Việt Nam",
           currency_code: "vnd",
           countries: ["vn"],
-          payment_providers: ["pp_system_default"],
+          payment_providers: [
+            "pp_system_default",
+            ...(process.env.VIETQR_ENABLED === "true"
+              ? ["pp_vietqr_vietqr"]
+              : []),
+          ],
         },
       ],
     },

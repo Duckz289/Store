@@ -1,6 +1,6 @@
 "use client"
 import { RadioGroup } from "@headlessui/react"
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
+import { isStripeLike, isVietQr, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
@@ -17,6 +17,7 @@ import {
 } from "@modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 
 const Payment = ({
@@ -27,7 +28,9 @@ const Payment = ({
   availablePaymentMethods: { id: string }[]
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession) => paymentSession.status === "pending"
+    (paymentSession) =>
+      paymentSession.status === "pending" ||
+      paymentSession.status === "pending_authorization"
   )
 
   const [isLoading, setIsLoading] = useState(false)
@@ -47,10 +50,11 @@ const Payment = ({
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
-    if (isStripeLike(method)) {
+    if (isStripeLike(method) || isVietQr(method)) {
       await initiatePaymentSession(cart, {
         provider_id: method,
       })
+      router.refresh()
     }
   }
 
@@ -209,7 +213,8 @@ const Payment = ({
 
         <div className={isOpen ? "hidden" : "block"}>
           {cart && paymentReady && activeSession ? (
-            <div className="flex items-start gap-x-1 w-full">
+            <div className="flex flex-col gap-y-4 w-full">
+              <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   Phương thức thanh toán
@@ -238,10 +243,41 @@ const Payment = ({
                   <Text>
                     {isStripeLike(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : "Thanh toán khi nhận hàng"}
+                      : isVietQr(selectedPaymentMethod)
+                        ? "Quét QR và chờ kiểm tra sao kê"
+                        : "Thanh toán khi nhận hàng"}
                   </Text>
                 </div>
               </div>
+              </div>
+              {isVietQr(activeSession.provider_id) &&
+              typeof activeSession.data?.qr_image_url === "string" ? (
+                <div className="rounded-lg border border-ui-border-base p-4">
+                  <Text className="txt-medium-plus text-ui-fg-base">
+                    VietQR do backend tạo
+                  </Text>
+                  <Image
+                    src={activeSession.data.qr_image_url}
+                    alt="Mã VietQR chuyển khoản"
+                    width={240}
+                    height={240}
+                    unoptimized
+                  />
+                  <Text className="text-sm">
+                    Nội dung: {String(activeSession.data.transfer_content)}
+                  </Text>
+                  <Text className="text-sm">
+                    Hết hạn:{" "}
+                    {new Date(
+                      String(activeSession.data.expires_at)
+                    ).toLocaleString("vi-VN")}
+                  </Text>
+                  <Text className="text-sm text-ui-fg-subtle">
+                    Đơn chỉ được ghi nhận thanh toán sau khi nhân viên kiểm tra
+                    sao kê ngân hàng.
+                  </Text>
+                </div>
+              ) : null}
             </div>
           ) : paidByGiftcard ? (
             <div className="flex flex-col w-1/3">

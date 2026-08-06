@@ -8,6 +8,7 @@ import { PolicyOperation } from "@medusajs/framework/utils"
 
 import "../policies/security"
 import "../policies/repair"
+import "../policies/vietqr"
 import { ListAuditEventsSchema } from "./admin/security/audit-events/route"
 import { VerifyMfaStepUpSchema } from "./admin/security/mfa/challenges/[id]/verify/route"
 import {
@@ -26,8 +27,13 @@ import {
   TransitionRepairSchema,
 } from "./repair-validators"
 import { captureAuditTrail } from "./middlewares/audit-trail"
+import { blockNativeVietQrRefund } from "./middlewares/block-native-vietqr-refund"
 import { requireMfaStepUp } from "./middlewares/require-mfa-step-up"
 import { revokeMfaAssurance } from "./middlewares/revoke-mfa-assurance"
+import {
+  ConfirmVietQrPaymentSchema,
+  RefundVietQrPaymentSchema,
+} from "./vietqr-validators"
 
 const adminAuthentication = authenticate("user", ["session", "bearer", "api-key"])
 
@@ -188,6 +194,35 @@ const middlewareConfiguration = {
       methods: ["GET"],
       middlewares: [adminAuthentication],
       policies: [{ resource: "repair_case", operation: "read" }],
+    },
+    {
+      matcher: "/admin/orders/:id/vietqr/confirm",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(ConfirmVietQrPaymentSchema),
+      ],
+      policies: [{ resource: "vietqr_payment", operation: "confirm" }],
+    },
+    {
+      matcher: "/admin/orders/:id/vietqr",
+      methods: ["GET"],
+      middlewares: [adminAuthentication],
+      policies: [{ resource: "vietqr_payment", operation: "read" }],
+    },
+    {
+      matcher: "/admin/payments/:id/vietqr/refund",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(RefundVietQrPaymentSchema),
+      ],
+      policies: [{ resource: "vietqr_payment", operation: "refund" }],
+    },
+    {
+      matcher: "/admin/payments/:id/refund",
+      methods: ["POST"],
+      middlewares: [blockNativeVietQrRefund],
     },
     {
       matcher: "/store/repairs",

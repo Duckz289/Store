@@ -117,6 +117,8 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
         ["repair_case", "repair_quote", "repair_quote_decision"],
         ["read"]
       ),
+      ...operations(["vietqr_payment"], ["read", "confirm", "refund"]),
+      ...operations(["vietqr_reconciliation_issue"], ["read"]),
     ],
   },
   {

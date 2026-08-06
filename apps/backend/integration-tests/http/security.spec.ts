@@ -225,10 +225,17 @@ medusaIntegrationTestRunner({
       const securityService = getContainer().resolve<SecurityModuleService>(
         SECURITY_MODULE
       )
-      const events = await securityService.listAuditEvents(
+      let events = await securityService.listAuditEvents(
         { correlation_id: `lifecycle:order:${orderId}` },
         { order: { occurred_at: "ASC" } }
       )
+      for (let attempt = 0; attempt < 20 && events.length < 3; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        events = await securityService.listAuditEvents(
+          { correlation_id: `lifecycle:order:${orderId}` },
+          { order: { occurred_at: "ASC" } }
+        )
+      }
 
       expect(events.map((event) => event.action)).toEqual([
         "order.placed",

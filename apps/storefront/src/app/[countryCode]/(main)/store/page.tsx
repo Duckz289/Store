@@ -5,13 +5,14 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import StoreTemplate from "@modules/store/templates"
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Explore all of our products.",
+  title: "Sản phẩm",
+  description: "Khám phá các thiết bị điện tử đang được phân phối.",
 }
 
 type StorePageSearchParams = Record<string, string | string[] | undefined> & {
   sortBy?: SortOptions
   page?: string
+  q?: string
   optionValueIds?: string | string[]
 }
 
@@ -25,7 +26,7 @@ type Params = {
 export default async function StorePage(props: Params) {
   const params = await props.params;
   const searchParams = await props.searchParams;
-  const { sortBy, page } = searchParams
+  const { sortBy, page, q } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
 
   return (
@@ -33,6 +34,7 @@ export default async function StorePage(props: Params) {
       sortBy={sortBy}
       page={page}
       countryCode={params.countryCode}
+      query={q}
       optionValueIds={optionValueIds}
     />
   )

@@ -11,134 +11,151 @@ import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
 import { Locale } from "@lib/data/locales"
 
-
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Account: "/account",
-  Cart: "/cart",
-}
-
 type SideMenuProps = {
+  categories: HttpTypes.StoreProductCategory[] | null
   regions: HttpTypes.StoreRegion[] | null
   locales: Locale[] | null
   currentLocale: string | null
 }
 
-const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
+const SideMenu = ({
+  categories,
+  regions,
+  locales,
+  currentLocale,
+}: SideMenuProps) => {
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
+  const topLevelCategories = (categories ?? [])
+    .filter((category) => !category.parent_category)
+    .slice(0, 12)
 
   return (
-    <div className="h-full">
-      <div className="flex items-center h-full">
-        <Popover className="h-full flex">
-          {({ open, close }) => (
-            <>
-              <div className="relative flex h-full">
-                <Popover.Button
-                  data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base"
+    <Popover className="relative">
+      {({ open, close }) => (
+        <>
+          <Popover.Button
+            data-testid="nav-menu-button"
+            className="flex h-11 items-center gap-2 rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] px-3 text-sm font-semibold text-[var(--hp-ink)] transition-colors hover:border-[var(--hp-accent)] hover:text-[var(--hp-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] sm:px-4"
+          >
+            <span className="text-base" aria-hidden="true">
+              ☰
+            </span>
+            <span className="hidden sm:inline">Danh mục</span>
+          </Popover.Button>
+
+          {open && (
+            <button
+              type="button"
+              aria-label="Đóng danh mục"
+              className="fixed inset-0 z-[50] cursor-default bg-black/20"
+              onClick={close}
+            />
+          )}
+
+          <Transition
+            show={open}
+            as={Fragment}
+            enter="transition ease-out duration-150"
+            enterFrom="opacity-0 -translate-y-2"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 -translate-y-2"
+          >
+            <PopoverPanel className="absolute left-0 top-[calc(100%+10px)] z-[60] w-[min(92vw,520px)] rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-4 text-[var(--hp-ink)] shadow-[var(--hp-shadow-card)]">
+              <div className="mb-3 flex items-center justify-between border-b border-[var(--hp-line)] pb-3">
+                <div>
+                  <p className="text-base font-bold">Danh mục sản phẩm</p>
+                  <p className="mt-1 text-xs text-[var(--hp-muted)]">
+                    Chọn nhóm sản phẩm để bắt đầu
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={close}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--hp-muted)] hover:bg-[var(--hp-paper)] hover:text-[var(--hp-ink)]"
+                  aria-label="Đóng danh mục"
                 >
-                  Menu
-                </Popover.Button>
+                  <XMark className="h-5 w-5" />
+                </button>
               </div>
 
-              {open && (
-                <div
-                  className="fixed inset-0 z-[50] bg-black/0 pointer-events-auto"
-                  onClick={close}
-                  data-testid="side-menu-backdrop"
-                />
+              <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                {topLevelCategories.map((category) => (
+                  <li key={category.id}>
+                    <LocalizedClientLink
+                      href={`/categories/${category.handle}`}
+                      onClick={close}
+                      className="flex items-center justify-between rounded-[var(--hp-radius-control)] px-3 py-3 text-sm font-semibold hover:bg-[var(--hp-accent-soft)] hover:text-[var(--hp-accent)]"
+                    >
+                      {category.name}
+                      <ArrowRightMini className="h-4 w-4" />
+                    </LocalizedClientLink>
+                  </li>
+                ))}
+              </ul>
+
+              {!topLevelCategories.length && (
+                <p className="py-4 text-sm text-[var(--hp-muted)]">
+                  Danh mục đang được cập nhật.
+                </p>
               )}
 
-              <Transition
-                show={open}
-                as={Fragment}
-                enter="transition ease-out duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100 backdrop-blur-2xl"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 backdrop-blur-2xl"
-                leaveTo="opacity-0"
-              >
-                <PopoverPanel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-ui-fg-on-color m-2 backdrop-blur-2xl">
+              <div className="mt-4 flex flex-col gap-3 border-t border-[var(--hp-line)] pt-4 text-sm">
+                <LocalizedClientLink
+                  href="/store"
+                  onClick={close}
+                  className="font-semibold text-[var(--hp-accent)] hover:text-[var(--hp-accent-strong)]"
+                >
+                  Xem tất cả sản phẩm
+                </LocalizedClientLink>
+                {!!locales?.length && (
                   <div
-                    data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
+                    className="flex items-center justify-between"
+                    onMouseEnter={languageToggleState.open}
+                    onMouseLeave={languageToggleState.close}
                   >
-                    <div className="flex justify-end" id="xmark">
-                      <button data-testid="close-menu-button" onClick={close}>
-                        <XMark />
-                      </button>
-                    </div>
-                    <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="flex flex-col gap-y-6">
-                      {!!locales?.length && (
-                        <div
-                          className="flex justify-between"
-                          onMouseEnter={languageToggleState.open}
-                          onMouseLeave={languageToggleState.close}
-                        >
-                          <LanguageSelect
-                            toggleState={languageToggleState}
-                            locales={locales}
-                            currentLocale={currentLocale}
-                          />
-                          <ArrowRightMini
-                            className={clx(
-                              "transition-transform duration-150",
-                              languageToggleState.state ? "-rotate-90" : ""
-                            )}
-                          />
-                        </div>
+                    <LanguageSelect
+                      toggleState={languageToggleState}
+                      locales={locales}
+                      currentLocale={currentLocale}
+                    />
+                    <ArrowRightMini
+                      className={clx(
+                        "h-4 w-4 transition-transform duration-150",
+                        languageToggleState.state ? "rotate-90" : ""
                       )}
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={countryToggleState.open}
-                        onMouseLeave={countryToggleState.close}
-                      >
-                        {regions && (
-                          <CountrySelect
-                            toggleState={countryToggleState}
-                            regions={regions}
-                          />
-                        )}
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            countryToggleState.state ? "-rotate-90" : ""
-                          )}
-                        />
-                      </div>
-                      <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Điện Tử Hưng Phát. Bảo lưu
-                        mọi quyền.
-                      </Text>
-                    </div>
+                    />
                   </div>
-                </PopoverPanel>
-              </Transition>
-            </>
-          )}
-        </Popover>
-      </div>
-    </div>
+                )}
+                {regions && (
+                  <div
+                    className="flex items-center justify-between"
+                    onMouseEnter={countryToggleState.open}
+                    onMouseLeave={countryToggleState.close}
+                  >
+                    <CountrySelect
+                      toggleState={countryToggleState}
+                      regions={regions}
+                    />
+                    <ArrowRightMini
+                      className={clx(
+                        "h-4 w-4 transition-transform duration-150",
+                        countryToggleState.state ? "rotate-90" : ""
+                      )}
+                    />
+                  </div>
+                )}
+                <Text className="pt-1 text-xs text-[var(--hp-muted)]">
+                  Thiết kế cho trải nghiệm mua sắm rõ ràng và dễ kiểm chứng.
+                </Text>
+              </div>
+            </PopoverPanel>
+          </Transition>
+        </>
+      )}
+    </Popover>
   )
 }
 

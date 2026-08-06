@@ -2,6 +2,61 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+:root {
+  --hp-ink: #111827;
+  --hp-muted: #667085;
+  --hp-paper: #f5f7fa;
+  --hp-surface: #ffffff;
+  --hp-line: #e4e7ec;
+  --hp-accent: #b4233a;
+  --hp-accent-strong: #8f1d2f;
+  --hp-accent-soft: #fbeaec;
+  --hp-success: #15803d;
+  --hp-warning: #b54708;
+  --hp-danger: #b42318;
+  --hp-radius-card: 12px;
+  --hp-radius-control: 10px;
+  --hp-radius-pill: 999px;
+  --hp-shadow-card: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--hp-paper);
+  color: var(--hp-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--hp-accent-soft);
+  color: var(--hp-ink);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--hp-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {

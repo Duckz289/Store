@@ -92,6 +92,42 @@ export const listProducts = async ({
     })
 }
 
+export type SearchProductSuggestion = {
+  id: string
+  handle: string
+  title: string
+}
+
+export const searchProducts = async ({
+  countryCode,
+  query,
+}: {
+  countryCode: string
+  query: string
+}): Promise<SearchProductSuggestion[]> => {
+  const trimmedQuery = query.trim()
+
+  if (trimmedQuery.length < 2) {
+    return []
+  }
+
+  const {
+    response: { products },
+  } = await listProducts({
+    countryCode,
+    queryParams: {
+      q: trimmedQuery,
+      limit: 6,
+    },
+  })
+
+  return products.map(({ id, handle, title }) => ({
+    id,
+    handle,
+    title,
+  }))
+}
+
 /**
  * This will fetch 100 products to the Next.js cache and sort them based on the sortBy parameter.
  * It will then return the paginated products based on the page and limit parameters.

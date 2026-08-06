@@ -1,8 +1,10 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { OptionValueIds } from "@lib/util/product-option-filters"
-import ProductPreview from "@modules/products/components/product-preview"
+import { HttpTypes } from "@medusajs/types"
+import SalesProductCard from "@modules/home/components/sales-product-card"
 import { Pagination } from "@modules/store/components/pagination"
+import ProductListingControls from "@modules/store/components/product-listing-controls"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
 const PRODUCT_LIMIT = 12
@@ -25,6 +27,7 @@ export default async function PaginatedProducts({
   countryCode,
   query,
   optionValueIds,
+  categories,
 }: {
   sortBy?: SortOptions
   page: number
@@ -34,6 +37,7 @@ export default async function PaginatedProducts({
   countryCode: string
   query?: string
   optionValueIds?: OptionValueIds
+  categories?: HttpTypes.StoreProductCategory[]
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -77,16 +81,28 @@ export default async function PaginatedProducts({
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
+  if (!products.length) {
+    return (
+      <section className="rounded-[var(--hp-radius-card)] border border-dashed border-[var(--hp-line)] bg-[var(--hp-surface)] px-6 py-14 text-center" aria-live="polite">
+        <h2 className="text-lg font-semibold text-[var(--hp-ink)]">Chưa tìm thấy sản phẩm phù hợp</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--hp-muted)]">
+          Hãy xóa bớt bộ lọc hoặc thử từ khóa tìm kiếm khác.
+        </p>
+      </section>
+    )
+  }
+
   return (
     <>
+      <ProductListingControls count={count} sortBy={sortBy || "created_at"} categories={categories} />
       <ul
-        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
+        className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         data-testid="products-list"
       >
         {products.map((p) => {
           return (
             <li key={p.id}>
-              <ProductPreview product={p} region={region} />
+              <SalesProductCard product={p} />
             </li>
           )
         })}

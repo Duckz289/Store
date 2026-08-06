@@ -18,6 +18,22 @@
   --hp-radius-control: 10px;
   --hp-radius-pill: 999px;
   --hp-shadow-card: 0 8px 24px rgba(16, 24, 40, 0.08);
+  --hp-font-sans: var(--font-be-vietnam-pro), "Segoe UI", Arial, sans-serif;
+  --hp-font-hero: 2rem;
+  --hp-font-section: clamp(1.5rem, 1.55vw, 1.75rem);
+  --hp-font-product-title: 1rem;
+  --hp-font-body: 1rem;
+  --hp-font-product-spec: 0.875rem;
+  --hp-font-product-price: clamp(1.125rem, 1.2vw, 1.375rem);
+  --hp-font-old-price: 0.875rem;
+  --hp-font-header-label: 0.8125rem;
+  --hp-font-badge: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --hp-font-hero: clamp(2.5rem, 2.3vw, 3rem);
+  }
 }
 
 html {
@@ -27,9 +43,19 @@ html {
 body {
   background: var(--hp-paper);
   color: var(--hp-ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: var(--hp-font-sans);
+  font-weight: 400;
+  font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 ::selection {
@@ -106,7 +132,71 @@ body {
 
 @layer components {
   .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
+    @apply max-w-[1600px] w-full mx-auto px-4 sm:px-6;
+  }
+
+  .type-hero-title {
+    font-size: var(--hp-font-hero);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  .type-section-title {
+    font-size: var(--hp-font-section);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .type-product-title {
+    font-size: var(--hp-font-product-title);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .type-body {
+    font-size: var(--hp-font-body);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .type-product-spec {
+    font-size: var(--hp-font-product-spec);
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .type-product-price {
+    color: var(--hp-ink);
+    font-size: var(--hp-font-product-price);
+    font-weight: 700;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .type-old-price {
+    color: var(--hp-muted);
+    font-size: var(--hp-font-old-price);
+    font-weight: 400;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .type-header-label {
+    font-size: var(--hp-font-header-label);
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .type-badge {
+    font-size: var(--hp-font-badge);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 
   .contrast-btn {

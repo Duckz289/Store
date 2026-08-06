@@ -16,18 +16,15 @@ export function Pagination({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // Helper function to generate an array of numbers within a range
   const arrayRange = (start: number, stop: number) =>
     Array.from({ length: stop - start + 1 }, (_, index) => start + index)
 
-  // Function to handle page changes
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams)
     params.set("page", newPage.toString())
     router.push(`${pathname}?${params.toString()}`)
   }
 
-  // Function to render a page button
   const renderPageButton = (
     p: number,
     label: string | number,
@@ -35,27 +32,28 @@ export function Pagination({
   ) => (
     <button
       key={p}
-      className={clx("txt-xlarge-plus text-ui-fg-muted", {
-        "text-ui-fg-base hover:text-ui-fg-subtle": isCurrent,
+      className={clx("inline-flex h-10 min-w-10 items-center justify-center rounded-[var(--hp-radius-control)] border text-sm font-semibold transition-colors", {
+        "border-[var(--hp-accent)] bg-[var(--hp-accent)] text-white": isCurrent,
+        "border-[var(--hp-line)] bg-[var(--hp-surface)] text-[var(--hp-ink)] hover:border-[var(--hp-accent)]": !isCurrent,
       })}
       disabled={isCurrent}
       onClick={() => handlePageChange(p)}
+      aria-current={isCurrent ? "page" : undefined}
+      aria-label={`Trang ${label}`}
     >
       {label}
     </button>
   )
 
-  // Function to render ellipsis
   const renderEllipsis = (key: string) => (
     <span
       key={key}
-      className="txt-xlarge-plus text-ui-fg-muted items-center cursor-default"
+      className="flex h-10 min-w-6 items-center justify-center text-sm text-[var(--hp-muted)]"
     >
       ...
     </span>
   )
 
-  // Function to render page buttons based on the current page and total pages
   const renderPageButtons = () => {
     const buttons = []
 
@@ -108,7 +106,7 @@ export function Pagination({
   // Render the component
   return (
     <div className="flex justify-center w-full mt-12">
-      <div className="flex gap-3 items-end" data-testid={dataTestid}>{renderPageButtons()}</div>
+      <nav className="flex gap-2" aria-label="Phân trang sản phẩm" data-testid={dataTestid}>{renderPageButtons()}</nav>
     </div>
   )
 }

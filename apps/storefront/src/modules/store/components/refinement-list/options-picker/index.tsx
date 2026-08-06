@@ -58,7 +58,7 @@ const OptionsPicker = ({
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center justify-between px-1">
         <span className="txt-compact-small-plus text-ui-fg-subtle">
-          Options
+          Thuộc tính sản phẩm
         </span>
       </div>
       <Accordion.Root
@@ -107,7 +107,7 @@ const OptionsPicker = ({
                 <Accordion.Trigger className="flex w-full items-center justify-between py-3 text-left">
                   <div className="flex items-center gap-2">
                     <span className="txt-compact-small-plus text-ui-fg-base">
-                      {option.title || "Option"}
+                      {option.title || "Thuộc tính"}
                     </span>
                     <span className="txt-compact-small-plus text-ui-fg-muted">
                       ({selectedCount})
@@ -135,11 +135,11 @@ const OptionsPicker = ({
                         key={value.id}
                         onClick={() => toggleValue(value.id)}
                         className={clsx(
-                          "border-ui-border-base border text-small-regular h-10 rounded-rounded px-3 flex items-center transition-colors duration-150",
+                          "h-10 rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] bg-[var(--hp-surface)] px-3 text-sm font-medium text-[var(--hp-ink)] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] focus-visible:ring-offset-2",
                           {
-                            "border-ui-border-interactive text-ui-fg-base":
+                            "border-[var(--hp-accent)] bg-[var(--hp-accent-soft)] text-[var(--hp-accent)]":
                               isSelected,
-                            "text-ui-fg-muted hover:text-ui-fg-base":
+                            "hover:border-[var(--hp-accent)]":
                               !isSelected,
                           }
                         )}

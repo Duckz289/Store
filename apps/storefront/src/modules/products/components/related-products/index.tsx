@@ -1,69 +1,35 @@
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { HttpTypes } from "@medusajs/types"
-import Product from "../product-preview"
+import SalesProductCard from "@modules/home/components/sales-product-card"
 
 type RelatedProductsProps = {
   product: HttpTypes.StoreProduct
   countryCode: string
 }
 
-export default async function RelatedProducts({
-  product,
-  countryCode,
-}: RelatedProductsProps) {
+export default async function RelatedProducts({ product, countryCode }: RelatedProductsProps) {
   const region = await getRegion(countryCode)
+  if (!region) return null
 
-  if (!region) {
-    return null
-  }
+  const queryParams: HttpTypes.StoreProductListParams = { is_giftcard: false, limit: 8 }
+  if (product.collection_id) queryParams.collection_id = [product.collection_id]
+  if (product.tags?.length) queryParams.tag_id = product.tags.map((tag) => tag.id).filter(Boolean) as string[]
 
-  // edit this function to define your related products logic
-  const queryParams: HttpTypes.StoreProductListParams = {}
-  if (region?.id) {
-    queryParams.region_id = region.id
-  }
-  if (product.collection_id) {
-    queryParams.collection_id = [product.collection_id]
-  }
-  if (product.tags) {
-    queryParams.tag_id = product.tags
-      .map((t) => t.id)
-      .filter(Boolean) as string[]
-  }
-  queryParams.is_giftcard = false
-
-  const products = await listProducts({
-    queryParams,
-    countryCode,
-  }).then(({ response }) => {
-    return response.products.filter(
-      (responseProduct) => responseProduct.id !== product.id
-    )
-  })
-
-  if (!products.length) {
-    return null
-  }
+  const products = await listProducts({ queryParams, countryCode }).then(({ response }) => response.products.filter((candidate) => candidate.id !== product.id).slice(0, 5))
+  if (!products.length) return null
 
   return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-16">
-        <span className="text-base-regular text-gray-600 mb-6">
-          Related products
-        </span>
-        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-          You might also want to check out these products.
-        </p>
+    <section aria-labelledby="related-products-heading">
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <p className="type-badge text-[var(--hp-accent)]">Gợi ý thêm</p>
+          <h2 id="related-products-heading" className="type-section-title mt-2">Sản phẩm liên quan</h2>
+        </div>
       </div>
-
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {products.map((product) => (
-          <li key={product.id}>
-            <Product region={region} product={product} />
-          </li>
-        ))}
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {products.map((relatedProduct) => <li key={relatedProduct.id}><SalesProductCard product={relatedProduct} /></li>)}
       </ul>
-    </div>
+    </section>
   )
 }

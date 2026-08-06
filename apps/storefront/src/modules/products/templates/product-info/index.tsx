@@ -1,5 +1,4 @@
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type ProductInfoProps = {
@@ -9,30 +8,24 @@ type ProductInfoProps = {
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
     <div id="product-info">
-      <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
-        {product.collection && (
-          <LocalizedClientLink
-            href={`/collections/${product.collection.handle}`}
-            className="text-medium text-ui-fg-muted hover:text-ui-fg-subtle"
-          >
+      <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--hp-muted)]">
+        {product.collection ? (
+          <LocalizedClientLink href={`/collections/${product.collection.handle}`} className="font-medium hover:text-[var(--hp-accent)]">
             {product.collection.title}
           </LocalizedClientLink>
-        )}
-        <Heading
-          level="h2"
-          className="text-3xl leading-10 text-ui-fg-base"
-          data-testid="product-title"
-        >
-          {product.title}
-        </Heading>
-
-        <Text
-          className="text-medium text-ui-fg-subtle whitespace-pre-line"
-          data-testid="product-description"
-        >
-          {product.description}
-        </Text>
+        ) : null}
+        {product.collection && product.categories?.[0] ? <span aria-hidden="true">/</span> : null}
+        {product.categories?.[0] ? (
+          <LocalizedClientLink href={`/categories/${product.categories[0].handle}`} className="font-medium hover:text-[var(--hp-accent)]">
+            {product.categories[0].name}
+          </LocalizedClientLink>
+        ) : null}
       </div>
+      <h1 className="mt-3 text-[28px] font-bold leading-[1.22] tracking-[-0.02em] text-[var(--hp-ink)] sm:text-[34px]" data-testid="product-title">
+        {product.title}
+      </h1>
+      {product.subtitle ? <p className="mt-3 text-base leading-6 text-[var(--hp-muted)]">{product.subtitle}</p> : null}
+      {product.description ? <p className="type-body mt-4 whitespace-pre-line text-[var(--hp-muted)]" data-testid="product-description">{product.description}</p> : null}
     </div>
   )
 }

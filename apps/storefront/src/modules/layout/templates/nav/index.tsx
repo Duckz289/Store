@@ -9,6 +9,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SearchBar from "@modules/layout/components/search-bar"
 import SideMenu from "@modules/layout/components/side-menu"
+import { ShoppingBag, ShoppingCart, User, Wrench } from "@medusajs/icons"
 
 export default async function Nav({ countryCode }: { countryCode: string }) {
   const [regions, locales, currentLocale, categories] = await Promise.all([
@@ -21,9 +22,9 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
   return (
     <div className="sticky inset-x-0 top-0 z-50">
       <div className="hidden border-b border-[var(--hp-accent-soft)] bg-[var(--hp-accent)] text-white lg:block">
-        <div className="content-container flex h-8 items-center justify-between text-xs">
-          <p>Thiết bị chính hãng, giá rõ ràng, hỗ trợ tận tâm</p>
-          <div className="flex items-center gap-5 text-white/90">
+        <div className="content-container flex h-7 items-center justify-between text-[12px] font-medium">
+          <p>Miễn phí giao hàng từ 500K · Hàng chính hãng</p>
+          <div className="flex items-center gap-6 text-white/90">
             <LocalizedClientLink href="/#repair" className="hover:text-white">
               Dịch vụ sửa chữa
             </LocalizedClientLink>
@@ -34,8 +35,21 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
         </div>
       </div>
       <header className="border-b border-[var(--hp-line)] bg-[var(--hp-surface)]">
-        <nav className="content-container flex min-h-[72px] w-full items-center gap-3 py-3 lg:gap-5">
-          <div className="shrink-0">
+        <nav className="content-container flex min-h-[72px] w-full items-center gap-2 py-3 lg:gap-4">
+          <LocalizedClientLink
+            href="/"
+            className="flex shrink-0 flex-col leading-none text-[var(--hp-ink)]"
+            data-testid="nav-store-link"
+          >
+            <span className="text-lg font-bold tracking-[-0.025em] sm:text-xl">
+              HƯNG PHÁT
+            </span>
+            <span className="mt-1 hidden text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--hp-accent)] sm:block">
+              Điện tử tin cậy
+            </span>
+          </LocalizedClientLink>
+
+          <div className="order-first shrink-0 sm:order-none">
             <SideMenu
               categories={categories}
               regions={regions}
@@ -44,46 +58,43 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
             />
           </div>
 
-          <LocalizedClientLink
-            href="/"
-            className="flex shrink-0 flex-col leading-none text-[var(--hp-ink)]"
-            data-testid="nav-store-link"
-          >
-            <span className="text-lg font-extrabold tracking-[-0.04em] sm:text-xl">
-              HƯNG PHÁT
-            </span>
-            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--hp-accent)]">
-              Điện tử tin cậy
-            </span>
-          </LocalizedClientLink>
-
           <div className="hidden min-w-0 flex-1 lg:flex">
             <SearchBar countryCode={countryCode} />
           </div>
 
-          <div className="ml-auto flex items-center gap-3 text-sm font-semibold text-[var(--hp-ink)] sm:gap-5">
+          <div className="ml-auto flex h-12 items-stretch gap-0 text-[var(--hp-ink)]">
             <LocalizedClientLink
-              className="hidden whitespace-nowrap hover:text-[var(--hp-accent)] lg:block"
+              className="type-header-label hidden w-[74px] flex-col items-center justify-center gap-1 text-center hover:text-[var(--hp-accent)] lg:flex"
               href="/account/orders"
               data-testid="nav-account-orders-link"
             >
+              <ShoppingBag className="h-5 w-5" />
               Đơn hàng
             </LocalizedClientLink>
             <LocalizedClientLink
-              className="hidden whitespace-nowrap hover:text-[var(--hp-accent)] sm:block"
+              className="type-header-label hidden w-[74px] flex-col items-center justify-center gap-1 text-center hover:text-[var(--hp-accent)] lg:flex"
+              href="/#repair"
+            >
+              <Wrench className="h-5 w-5" />
+              Sửa chữa
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              className="type-header-label flex w-[70px] flex-col items-center justify-center gap-1 whitespace-nowrap text-center hover:text-[var(--hp-accent)]"
               href="/account"
               data-testid="nav-account-link"
             >
+              <User className="h-5 w-5" />
               Tài khoản
             </LocalizedClientLink>
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="whitespace-nowrap hover:text-[var(--hp-accent)]"
+                  className="type-header-label flex w-[70px] flex-col items-center justify-center gap-1 whitespace-nowrap text-center hover:text-[var(--hp-accent)]"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
-                  Giỏ hàng (0)
+                  <ShoppingCart className="h-5 w-5" />
+                  Giỏ hàng
                 </LocalizedClientLink>
               }
             >

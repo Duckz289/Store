@@ -16,6 +16,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
+import { ShoppingCart } from "@medusajs/icons"
 
 const CartDropdown = ({
   cart: cartState,
@@ -82,10 +83,18 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
+            className="type-header-label relative flex w-[70px] flex-col items-center justify-center gap-1 whitespace-nowrap text-center hover:text-[var(--hp-accent)]"
             href="/cart"
             data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+          >
+            <ShoppingCart className="h-5 w-5" />
+            <span>Giỏ hàng</span>
+            {totalItems > 0 && (
+              <span className="absolute right-2 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--hp-accent)] px-1 text-[11px] font-semibold leading-none text-white tabular-nums">
+                {totalItems}
+              </span>
+            )}
+          </LocalizedClientLink>
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}
@@ -103,7 +112,7 @@ const CartDropdown = ({
             data-testid="nav-cart-dropdown"
           >
             <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
+              <h3 className="text-large-semi">Giỏ hàng</h3>
             </div>
             {cartState && cartState.items?.length ? (
               <>
@@ -208,12 +217,12 @@ const CartDropdown = ({
                   <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
                     <span>0</span>
                   </div>
-                  <span>Your shopping bag is empty.</span>
+                  <span>Giỏ hàng của bạn đang trống.</span>
                   <div>
                     <LocalizedClientLink href="/store">
                       <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
+                        <span className="sr-only">Đến trang tất cả sản phẩm</span>
+                        <Button onClick={close}>Khám phá sản phẩm</Button>
                       </>
                     </LocalizedClientLink>
                   </div>

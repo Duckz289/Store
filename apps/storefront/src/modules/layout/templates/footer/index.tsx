@@ -18,7 +18,7 @@ export default async function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr_1fr]">
           <div>
             <LocalizedClientLink href="/" className="inline-flex flex-col leading-none">
-              <span className="text-xl font-extrabold tracking-[-0.04em]">HƯNG PHÁT</span>
+              <span className="text-xl font-bold tracking-[-0.04em]">HƯNG PHÁT</span>
               <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
                 Điện tử tin cậy
               </span>

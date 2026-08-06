@@ -42,7 +42,9 @@ export default async function PageLayout(props: {
           shippingOptions={shippingOptions}
         />
       )}
-      {props.children}
+      <div id="main-content" tabIndex={-1}>
+        {props.children}
+      </div>
       <Footer />
     </>
   )

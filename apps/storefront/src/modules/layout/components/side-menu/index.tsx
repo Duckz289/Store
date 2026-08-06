@@ -2,7 +2,7 @@
 
 import { Popover, PopoverPanel, Transition } from "@headlessui/react"
 import useToggleState from "@lib/hooks/use-toggle-state"
-import { ArrowRightMini, XMark } from "@medusajs/icons"
+import { ArrowRightMini, GridLayout, XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Text, clx } from "@modules/common/components/ui"
@@ -36,11 +36,9 @@ const SideMenu = ({
         <>
           <Popover.Button
             data-testid="nav-menu-button"
-            className="flex h-11 items-center gap-2 rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] px-3 text-sm font-semibold text-[var(--hp-ink)] transition-colors hover:border-[var(--hp-accent)] hover:text-[var(--hp-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] sm:px-4"
+            className="type-header-label flex h-11 items-center gap-2 rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] px-3 text-[var(--hp-ink)] transition-colors hover:border-[var(--hp-accent)] hover:text-[var(--hp-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] sm:px-4"
           >
-            <span className="text-base" aria-hidden="true">
-              ☰
-            </span>
+            <GridLayout className="h-5 w-5" />
             <span className="hidden sm:inline">Danh mục</span>
           </Popover.Button>
 

@@ -1,7 +1,7 @@
 import { listProducts } from "@lib/data/products"
 import { HttpTypes } from "@medusajs/types"
 import InteractiveLink from "@modules/common/components/interactive-link"
-import ProductPreview from "@modules/products/components/product-preview"
+import SalesProductCard from "@modules/home/components/sales-product-card"
 
 export default async function ProductRail({
   collection,
@@ -25,13 +25,11 @@ export default async function ProductRail({
   }
 
   return (
-    <div className="content-container py-10 sm:py-14">
+    <div className="content-container py-8 sm:py-10">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--hp-accent)]">
-            Gợi ý theo bộ sưu tập
-          </p>
-          <h2 className="mt-2 text-xl font-bold text-[var(--hp-ink)] sm:text-2xl">
+          <p className="type-badge text-[var(--hp-accent)]">Gợi ý theo ngành hàng</p>
+          <h2 className="type-section-title mt-2 text-[var(--hp-ink)]">
             {collection.title}
           </h2>
         </div>
@@ -39,11 +37,11 @@ export default async function ProductRail({
           Xem tất cả
         </InteractiveLink>
       </div>
-      <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+      <ul className="grid grid-cols-1 gap-3 xsmall:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {pricedProducts &&
-          pricedProducts.map((product) => (
+          pricedProducts.slice(0, 5).map((product) => (
             <li key={product.id}>
-              <ProductPreview product={product} region={region} isFeatured />
+              <SalesProductCard product={product} />
             </li>
           ))}
       </ul>

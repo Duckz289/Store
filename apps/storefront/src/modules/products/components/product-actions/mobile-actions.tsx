@@ -1,21 +1,18 @@
+"use client"
+
 import { Dialog, Transition } from "@headlessui/react"
-import { Button, clx } from "@modules/common/components/ui"
-import React, { Fragment, useMemo } from "react"
-
-import useToggleState from "@lib/hooks/use-toggle-state"
-import ChevronDown from "@modules/common/icons/chevron-down"
-import X from "@modules/common/icons/x"
-
+import { ChevronDownMini, X } from "@medusajs/icons"
 import { getProductPrice } from "@lib/util/get-product-price"
-import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
-import { isSimpleProduct } from "@lib/util/product"
+import { Button, clx } from "@modules/common/components/ui"
+import { Fragment, useMemo, useState } from "react"
+import OptionSelect from "./option-select"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
   options: Record<string, string | undefined>
-  updateOptions: (title: string, value: string) => void
+  updateOptions: (optionId: string, value: string) => void
   inStock?: boolean
   handleAddToCart: () => void
   isAdding?: boolean
@@ -23,176 +20,43 @@ type MobileActionsProps = {
   optionsDisabled: boolean
 }
 
-const MobileActions: React.FC<MobileActionsProps> = ({
-  product,
-  variant,
-  options,
-  updateOptions,
-  inStock,
-  handleAddToCart,
-  isAdding,
-  show,
-  optionsDisabled,
-}) => {
-  const { state, open, close } = useToggleState()
-
-  const price = getProductPrice({
-    product: product,
-    variantId: variant?.id,
-  })
-
-  const selectedPrice = useMemo(() => {
-    if (!price) {
-      return null
-    }
-    const { variantPrice, cheapestPrice } = price
-
-    return variantPrice || cheapestPrice || null
-  }, [price])
-
-  const isSimple = isSimpleProduct(product)
+const MobileActions = ({ product, variant, options, updateOptions, inStock, handleAddToCart, isAdding, show, optionsDisabled }: MobileActionsProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const price = getProductPrice({ product, variantId: variant?.id })
+  const selectedPrice = useMemo(() => price.variantPrice || price.cheapestPrice || null, [price.cheapestPrice, price.variantPrice])
+  const isSimple = (product.variants?.length ?? 0) <= 1
 
   return (
     <>
-      <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-50", {
-          "pointer-events-none": !show,
-        })}
-      >
-        <Transition
-          as={Fragment}
-          show={show}
-          enter="ease-in-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-300"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div
-            className="bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 h-full w-full border-t border-gray-200"
-            data-testid="mobile-actions"
-          >
-            <div className="flex items-center gap-x-2">
-              <span data-testid="mobile-title">{product.title}</span>
-              <span>—</span>
-              {selectedPrice ? (
-                <div className="flex items-end gap-x-2 text-ui-fg-base">
-                  {selectedPrice.price_type === "sale" && (
-                    <p>
-                      <span className="line-through text-small-regular">
-                        {selectedPrice.original_price}
-                      </span>
-                    </p>
-                  )}
-                  <span
-                    className={clx({
-                      "text-ui-fg-interactive":
-                        selectedPrice.price_type === "sale",
-                    })}
-                  >
-                    {selectedPrice.calculated_price}
-                  </span>
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </div>
-            <div className={clx("grid grid-cols-2 w-full gap-x-4", {
-              "!grid-cols-1": isSimple
-            })}>
-              {!isSimple && <Button
-                onClick={open}
-                variant="secondary"
-                className="w-full"
-                data-testid="mobile-actions-button"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span>
-                    {variant
-                      ? Object.values(options).join(" / ")
-                      : "Select Options"}
-                  </span>
-                  <ChevronDown />
-                </div>
-              </Button>}
-              <Button
-                onClick={handleAddToCart}
-                disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
-                data-testid="mobile-cart-button"
-              >
-                {!variant
-                  ? "Select variant"
-                  : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
-              </Button>
-            </div>
+      <div className={clx("fixed inset-x-0 bottom-0 z-50 border-t border-[var(--hp-line)] bg-[var(--hp-surface)] p-3 shadow-[0_-8px_24px_rgba(16,24,40,0.12)] lg:hidden", { "pointer-events-none opacity-0": !show })} data-testid="mobile-actions">
+        <div className="mx-auto flex max-w-[640px] items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="line-clamp-1 text-[13px] font-medium text-[var(--hp-muted)]">{product.title}</p>
+            {selectedPrice ? <p className="type-product-price mt-1 text-[var(--hp-accent)]">{selectedPrice.calculated_price}</p> : null}
           </div>
-        </Transition>
+          {!isSimple && <Button onClick={() => setIsOpen(true)} variant="secondary" className="h-11 shrink-0 !border-[var(--hp-line)] !text-[var(--hp-ink)]">Chọn</Button>}
+          <Button onClick={handleAddToCart} disabled={!inStock || !variant} className="h-11 shrink-0 !bg-[var(--hp-accent)] !text-white hover:!bg-[var(--hp-accent-strong)]" isLoading={isAdding} data-testid="mobile-cart-button">
+            {!variant ? "Chọn mẫu" : !inStock ? "Hết hàng" : "Thêm giỏ"}
+          </Button>
+        </div>
       </div>
-      <Transition appear show={state} as={Fragment}>
-        <Dialog as="div" className="relative z-[75]" onClose={close}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-gray-700 bg-opacity-75 backdrop-blur-sm" />
-          </Transition.Child>
 
-          <div className="fixed bottom-0 inset-x-0">
-            <div className="flex min-h-full h-full items-center justify-center text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <Dialog.Panel
-                  className="w-full h-full transform overflow-hidden text-left flex flex-col gap-y-3"
-                  data-testid="mobile-actions-modal"
-                >
-                  <div className="w-full flex justify-end pr-6">
-                    <button
-                      onClick={close}
-                      className="bg-white w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
-                      data-testid="close-modal-button"
-                    >
-                      <X />
-                    </button>
-                  </div>
-                  <div className="bg-white px-6 py-12">
-                    {(product.variants?.length ?? 0) > 1 && (
-                      <div className="flex flex-col gap-y-6">
-                        {(product.options || []).map((option) => {
-                          return (
-                            <div key={option.id}>
-                              <OptionSelect
-                                option={option}
-                                current={options[option.id]}
-                                updateOption={updateOptions}
-                                title={option.title ?? ""}
-                                disabled={optionsDisabled}
-                              />
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-[80]" onClose={setIsOpen}>
+          <Transition.Child as={Fragment} enter="ease-out duration-150" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-black/35" />
+          </Transition.Child>
+          <div className="fixed inset-x-0 bottom-0">
+            <Dialog.Panel className="rounded-t-[18px] bg-[var(--hp-surface)] px-5 pb-6 pt-4 shadow-[0_-12px_32px_rgba(16,24,40,0.16)]">
+              <div className="mb-5 flex items-center justify-between">
+                <Dialog.Title className="text-lg font-semibold text-[var(--hp-ink)]">Chọn phiên bản</Dialog.Title>
+                <button type="button" onClick={() => setIsOpen(false)} className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--hp-radius-control)] hover:bg-[var(--hp-paper)]" aria-label="Đóng chọn phiên bản"><X className="h-5 w-5" /></button>
+              </div>
+              <div className="flex flex-col gap-5">
+                {(product.options || []).map((option) => <OptionSelect key={option.id} option={option} current={options[option.id]} updateOption={updateOptions} title={option.title ?? ""} disabled={optionsDisabled} />)}
+                <button type="button" onClick={() => setIsOpen(false)} className="inline-flex h-11 items-center justify-center gap-2 rounded-[var(--hp-radius-control)] bg-[var(--hp-accent)] px-4 text-sm font-semibold text-white"><ChevronDownMini className="h-4 w-4" />Xác nhận</button>
+              </div>
+            </Dialog.Panel>
           </div>
         </Dialog>
       </Transition>

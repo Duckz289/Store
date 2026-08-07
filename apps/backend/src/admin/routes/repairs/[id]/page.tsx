@@ -1,11 +1,13 @@
 import { Badge, Container, Heading, Text } from "@medusajs/ui"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import { sdk } from "../../../lib/sdk"
 import type { RepairDetailResponse } from "../../../types/repair"
 
 const RepairDetailPage = () => {
+  const { t } = useTranslation()
   const { id } = useParams()
   const { data, isLoading, error } = useQuery({
     queryKey: ["repair-case", id],
@@ -16,10 +18,10 @@ const RepairDetailPage = () => {
   const repairCase = data?.repair_case
 
   if (isLoading) {
-    return <Container><Text>Loading repair case...</Text></Container>
+    return <Container><Text>{t("repairs.loading")}</Text></Container>
   }
   if (error || !repairCase) {
-    return <Container><Text className="text-ui-fg-error">Unable to load repair case.</Text></Container>
+    return <Container><Text className="text-ui-fg-error">{t("repairs.loadError")}</Text></Container>
   }
 
   return (
@@ -29,29 +31,29 @@ const RepairDetailPage = () => {
           <div>
             <Heading level="h1">{repairCase.code}</Heading>
             <Text size="small" className="text-ui-fg-subtle">
-              Revision {repairCase.revision}
+              {t("repairs.revision", { value: repairCase.revision })}
             </Text>
           </div>
-          <Badge>{repairCase.status.replace(/_/g, " ")}</Badge>
+          <Badge>{t(`repairs.statuses.${repairCase.status}`, { defaultValue: repairCase.status.replace(/_/g, " ") })}</Badge>
         </div>
         <div className="grid grid-cols-2 gap-4 px-6 py-4">
           <div>
-            <Text weight="plus">Device</Text>
+            <Text weight="plus">{t("repairs.device")}</Text>
             <Text>
               {[repairCase.device?.brand, repairCase.device?.model]
                 .filter(Boolean)
-                .join(" ") || "Unknown device"}
+                .join(" ") || t("repairs.unknownDevice")}
             </Text>
             <Text size="small" className="text-ui-fg-subtle">
-              Serial: {repairCase.device?.serial_number ?? "-"}
+              {t("repairs.serial", { value: repairCase.device?.serial_number ?? "-" })}
             </Text>
           </div>
           <div>
-            <Text weight="plus">SLA due</Text>
+            <Text weight="plus">{t("repairs.slaDue")}</Text>
             <Text>
               {repairCase.sla_due_at
                 ? new Date(repairCase.sla_due_at).toLocaleString()
-                : "Not set"}
+                : t("repairs.notSet")}
             </Text>
           </div>
         </div>
@@ -59,13 +61,19 @@ const RepairDetailPage = () => {
 
       <Container className="p-0">
         <div className="px-6 py-4">
-          <Heading level="h2">Status history</Heading>
+          <Heading level="h2">{t("repairs.history")}</Heading>
         </div>
         <div className="divide-y">
           {repairCase.status_history?.map((entry) => (
             <div className="flex justify-between px-6 py-3" key={entry.id}>
               <Text>
-                {entry.from_status ?? "created"} → {entry.to_status}
+                {entry.from_status
+                  ? t(`repairs.statuses.${entry.from_status}`, {
+                      defaultValue: entry.from_status.replace(/_/g, " "),
+                    })
+                  : t("repairs.created")} → {t(`repairs.statuses.${entry.to_status}`, {
+                    defaultValue: entry.to_status.replace(/_/g, " "),
+                  })}
               </Text>
               <Text size="small" className="text-ui-fg-subtle">
                 {new Date(entry.occurred_at).toLocaleString()}
@@ -79,7 +87,7 @@ const RepairDetailPage = () => {
 }
 
 export const handle = {
-  breadcrumb: () => "Repair case",
+  breadcrumb: () => "Hồ sơ sửa chữa",
 }
 
 export default RepairDetailPage

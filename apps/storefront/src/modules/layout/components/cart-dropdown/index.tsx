@@ -14,72 +14,47 @@ import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { ShoppingCart } from "@medusajs/icons"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
-import { ShoppingCart } from "@medusajs/icons"
 
 const CartDropdown = ({
   cart: cartState,
 }: {
   cart?: HttpTypes.StoreCart | null
 }) => {
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
-  )
+  const [activeTimer, setActiveTimer] = useState<ReturnType<typeof setTimeout>>()
   const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
-  const open = () => setCartDropdownOpen(true)
-  const close = () => setCartDropdownOpen(false)
-
+  const pathname = usePathname()
   const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
-
+    cartState?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0
   const subtotal = cartState?.subtotal ?? 0
-  const itemRef = useRef<number>(totalItems || 0)
+  const itemRef = useRef<number>(totalItems)
 
-  const timedOpen = () => {
-    open()
-
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
+  const close = () => setCartDropdownOpen(false)
+  const open = () => setCartDropdownOpen(true)
   const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
+    if (activeTimer) clearTimeout(activeTimer)
     open()
   }
 
-  // Clean up the timer when the component unmounts
   useEffect(() => {
     return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
+      if (activeTimer) clearTimeout(activeTimer)
     }
   }, [activeTimer])
 
-  const pathname = usePathname()
-
-  // open cart dropdown when modifying the cart items, but only if we're not on the cart page
   useEffect(() => {
     if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
-      timedOpen()
+      open()
+      const timer = setTimeout(close, 5000)
+      setActiveTimer(timer)
+      itemRef.current = totalItems
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalItems, itemRef.current])
+  }, [pathname, totalItems])
 
   return (
-    <div
-      className="h-full z-50"
-      onMouseEnter={openAndCancel}
-      onMouseLeave={close}
-    >
+    <div className="z-50 h-full" onMouseEnter={openAndCancel} onMouseLeave={close}>
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
@@ -108,30 +83,29 @@ const CartDropdown = ({
         >
           <PopoverPanel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
+            className="absolute right-0 top-[calc(100%+1px)] hidden w-[min(420px,calc(100vw-2rem))] border-x border-b border-[var(--hp-line)] bg-white text-[var(--hp-ink)] shadow-[var(--hp-shadow-card)] small:block"
             data-testid="nav-cart-dropdown"
           >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Giỏ hàng</h3>
+            <div className="border-b border-[var(--hp-line)] px-5 py-4">
+              <h3 className="type-product-title text-center text-base">Giỏ hàng</h3>
             </div>
             {cartState && cartState.items?.length ? (
               <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
+                <div className="max-h-[402px] space-y-4 overflow-y-auto px-5 py-4 no-scrollbar">
                   {cartState.items
-                    .sort((a, b) => {
-                      return (a.created_at ?? "") > (b.created_at ?? "")
-                        ? -1
-                        : 1
-                    })
+                    .slice()
+                    .sort((a, b) =>
+                      (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
+                    )
                     .map((item) => (
                       <div
-                        className="grid grid-cols-[122px_1fr] gap-x-4"
+                        className="grid grid-cols-[80px_minmax(0,1fr)] gap-3 border-b border-[var(--hp-line)] pb-4 last:border-0 last:pb-0"
                         key={item.id}
                         data-testid="cart-item"
                       >
                         <LocalizedClientLink
                           href={`/products/${item.product_handle}`}
-                          className="w-24"
+                          className="w-20 shrink-0"
                         >
                           <Thumbnail
                             thumbnail={item.thumbnail}
@@ -139,94 +113,51 @@ const CartDropdown = ({
                             size="square"
                           />
                         </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
-                          <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
-                                <h3 className="text-base-regular overflow-hidden text-ellipsis">
-                                  <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
-                                    data-testid="product-link"
-                                  >
-                                    {item.title}
-                                  </LocalizedClientLink>
-                                </h3>
-                                <LineItemOptions
-                                  variant={item.variant}
-                                  data-testid="cart-item-variant"
-                                  data-value={item.variant}
-                                />
-                                <span
-                                  data-testid="cart-item-quantity"
-                                  data-value={item.quantity}
-                                >
-                                  Quantity: {item.quantity}
-                                </span>
-                              </div>
-                              <div className="flex justify-end">
-                                <LineItemPrice
-                                  item={item}
-                                  style="tight"
-                                  currencyCode={cartState.currency_code}
-                                />
-                              </div>
-                            </div>
+                        <div className="min-w-0">
+                          <h3 className="type-product-title line-clamp-2 text-sm">
+                            <LocalizedClientLink href={`/products/${item.product_handle}`} data-testid="product-link">
+                              {item.title}
+                            </LocalizedClientLink>
+                          </h3>
+                          <LineItemOptions variant={item.variant} data-testid="cart-item-variant" />
+                          <div className="mt-1 text-sm text-[var(--hp-muted)]" data-testid="cart-item-quantity">
+                            Số lượng: {item.quantity}
+                          </div>
+                          <div className="mt-1 flex justify-end text-right">
+                            <LineItemPrice item={item} style="tight" currencyCode={cartState.currency_code} />
                           </div>
                           <DeleteButton
                             id={item.id}
                             className="mt-1"
                             data-testid="cart-item-remove-button"
                           >
-                            Remove
+                            Xóa sản phẩm
                           </DeleteButton>
                         </div>
                       </div>
                     ))}
                 </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-                  <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
-                      Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
-                    </span>
-                    <span
-                      className="text-large-semi"
-                      data-testid="cart-subtotal"
-                      data-value={subtotal}
-                    >
-                      {convertToLocale({
-                        amount: subtotal,
-                        currency_code: cartState.currency_code,
-                      })}
+                <div className="flex flex-col gap-4 border-t border-[var(--hp-line)] p-5 text-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="font-semibold">Tạm tính</span>
+                    <span className="shrink-0 text-right text-lg font-bold tabular-nums" data-testid="cart-subtotal" data-value={subtotal}>
+                      {convertToLocale({ amount: subtotal, currency_code: cartState.currency_code })}
                     </span>
                   </div>
                   <LocalizedClientLink href="/cart" passHref>
-                    <Button
-                      className="w-full"
-                      size="large"
-                      data-testid="go-to-cart-button"
-                    >
-                      Go to cart
+                    <Button className="h-11 w-full" size="large" data-testid="go-to-cart-button">
+                      Xem giỏ hàng
                     </Button>
                   </LocalizedClientLink>
                 </div>
               </>
             ) : (
-              <div>
-                <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                  <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                    <span>0</span>
-                  </div>
-                  <span>Giỏ hàng của bạn đang trống.</span>
-                  <div>
-                    <LocalizedClientLink href="/store">
-                      <>
-                        <span className="sr-only">Đến trang tất cả sản phẩm</span>
-                        <Button onClick={close}>Khám phá sản phẩm</Button>
-                      </>
-                    </LocalizedClientLink>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center gap-4 px-5 py-16 text-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--hp-ink)] text-sm text-white">0</div>
+                <span className="type-body text-[var(--hp-muted)]">Giỏ hàng của bạn đang trống.</span>
+                <LocalizedClientLink href="/store">
+                  <Button onClick={close}>Khám phá sản phẩm</Button>
+                </LocalizedClientLink>
               </div>
             )}
           </PopoverPanel>

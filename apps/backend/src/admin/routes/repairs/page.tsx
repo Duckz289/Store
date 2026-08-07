@@ -2,11 +2,13 @@ import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { Badge, Container, Heading, Table, Text } from "@medusajs/ui"
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import { sdk } from "../../lib/sdk"
 import type { RepairListResponse } from "../../types/repair"
 
 const RepairsPage = () => {
+  const { t } = useTranslation()
   const { data, isLoading, error } = useQuery({
     queryKey: ["repair-cases"],
     queryFn: () =>
@@ -17,23 +19,23 @@ const RepairsPage = () => {
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div>
-          <Heading level="h1">Repair cases</Heading>
+          <Heading level="h1">{t("repairs.title")}</Heading>
           <Text size="small" className="text-ui-fg-subtle">
-            Independent service lifecycle; repair cases are not commerce orders.
+            {t("repairs.description")}
           </Text>
         </div>
       </div>
       <div className="px-6 py-4">
-        {isLoading ? <Text>Loading repair cases...</Text> : null}
-        {error ? <Text className="text-ui-fg-error">Unable to load cases.</Text> : null}
+        {isLoading ? <Text>{t("repairs.loading")}</Text> : null}
+        {error ? <Text className="text-ui-fg-error">{t("repairs.loadError")}</Text> : null}
         {!isLoading && !error ? (
           <Table>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Code</Table.HeaderCell>
-                <Table.HeaderCell>Device</Table.HeaderCell>
-                <Table.HeaderCell>Status</Table.HeaderCell>
-                <Table.HeaderCell>SLA due</Table.HeaderCell>
+                <Table.HeaderCell>{t("repairs.code")}</Table.HeaderCell>
+                <Table.HeaderCell>{t("repairs.device")}</Table.HeaderCell>
+                <Table.HeaderCell>{t("repairs.status")}</Table.HeaderCell>
+                <Table.HeaderCell>{t("repairs.slaDue")}</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -50,10 +52,14 @@ const RepairsPage = () => {
                   <Table.Cell>
                     {[repairCase.device?.brand, repairCase.device?.model]
                       .filter(Boolean)
-                      .join(" ") || "Unknown device"}
+                      .join(" ") || t("repairs.unknownDevice")}
                   </Table.Cell>
                   <Table.Cell>
-                    <Badge>{repairCase.status.replace(/_/g, " ")}</Badge>
+                    <Badge>
+                      {t(`repairs.statuses.${repairCase.status}`, {
+                        defaultValue: repairCase.status.replace(/_/g, " "),
+                      })}
+                    </Badge>
                   </Table.Cell>
                   <Table.Cell>
                     {repairCase.sla_due_at
@@ -71,7 +77,7 @@ const RepairsPage = () => {
 }
 
 export const config = defineRouteConfig({
-  label: "Repairs",
+  label: "Sửa chữa",
   rank: 45,
 })
 

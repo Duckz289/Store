@@ -14,20 +14,20 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   return (
     <div>
       <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+        <Heading level="h1" className="type-section-title">Giỏ hàng</Heading>
       </div>
-      <div className="overflow-x-auto -mx-2 px-2" role="region" aria-label="Sản phẩm trong giỏ hàng" tabIndex={0}>
-      <Table>
+      <div className="min-w-0 max-w-full w-full overflow-x-auto -mx-2 px-2" role="region" aria-label="Sản phẩm trong giỏ hàng" tabIndex={0}>
+      <Table className="table-fixed min-w-[680px]">
         <Table.Header className="border-t-0">
           <Table.Row className="text-ui-fg-subtle txt-medium-plus">
-            <Table.HeaderCell className="!pl-0">Item</Table.HeaderCell>
+            <Table.HeaderCell className="w-24 !pl-0">Sản phẩm</Table.HeaderCell>
             <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell>Quantity</Table.HeaderCell>
-            <Table.HeaderCell className="hidden small:table-cell">
-              Price
+            <Table.HeaderCell className="w-36">Số lượng</Table.HeaderCell>
+            <Table.HeaderCell className="hidden w-32 small:table-cell">
+              Đơn giá
             </Table.HeaderCell>
-            <Table.HeaderCell className="!pr-0 text-right">
-              Total
+            <Table.HeaderCell className="w-40 !pr-0 text-right">
+              Thành tiền
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>

@@ -41,11 +41,9 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
             className="flex shrink-0 flex-col leading-none text-[var(--hp-ink)]"
             data-testid="nav-store-link"
           >
-            <span className="text-lg font-bold tracking-[-0.025em] sm:text-xl">
-              HƯNG PHÁT
-            </span>
-            <span className="mt-1 hidden text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--hp-accent)] sm:block">
-              Điện tử tin cậy
+            <span className="flex whitespace-nowrap text-base font-bold leading-none tracking-[-0.025em] sm:text-lg">
+              <span className="text-[var(--hp-ink)]">Điện Tử</span>
+              <span className="ml-1 text-[var(--hp-accent)]">Hưng Phát</span>
             </span>
           </LocalizedClientLink>
 

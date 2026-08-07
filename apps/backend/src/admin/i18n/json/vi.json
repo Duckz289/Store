@@ -1,0 +1,70 @@
+{
+  "repairs": {
+    "title": "Hồ sơ sửa chữa",
+    "description": "Vòng đời dịch vụ độc lập; hồ sơ sửa chữa không phải đơn hàng thương mại.",
+    "loading": "Đang tải hồ sơ sửa chữa...",
+    "loadError": "Không thể tải hồ sơ sửa chữa.",
+    "code": "Mã hồ sơ",
+    "device": "Thiết bị",
+    "status": "Trạng thái",
+    "slaDue": "Hạn SLA",
+    "unknownDevice": "Chưa xác định thiết bị",
+    "revision": "Bản sửa đổi {{value}}",
+    "serial": "Số serial: {{value}}",
+    "notSet": "Chưa đặt",
+    "history": "Lịch sử trạng thái",
+    "created": "đã tạo",
+    "statuses": {
+      "intake": "Tiếp nhận",
+      "diagnosis": "Chẩn đoán",
+      "quote": "Báo giá",
+      "awaiting_customer_decision": "Chờ khách xác nhận",
+      "repair": "Đang sửa chữa",
+      "quality_assurance": "Kiểm tra chất lượng",
+      "return_ready": "Sẵn sàng trả máy",
+      "returned": "Đã trả máy",
+      "closed": "Đã đóng",
+      "canceled": "Đã hủy"
+    },
+    "view": "Xem hồ sơ",
+    "empty": "Đơn hàng này chưa có hồ sơ sửa chữa."
+  },
+  "vietqr": {
+    "title": "Đối soát VietQR thủ công",
+    "reference": "Mã tham chiếu: {{value}}",
+    "amount": "Số tiền: {{value}} VND",
+    "receiver": "Người nhận: {{name}} · {{account}}",
+    "expires": "Hết hạn: {{value}}",
+    "evidenceWarning": "Kiểm tra sao kê ngân hàng. Ảnh biên lai hoặc trang này không phải bằng chứng thanh toán.",
+    "observedAmount": "Số tiền thực nhận (VND)",
+    "observedContent": "Nội dung chuyển khoản thực nhận",
+    "transactionReference": "Mã giao dịch ngân hàng",
+    "transactionTime": "Thời gian giao dịch ngân hàng",
+    "confirm": "Ghi nhận và chỉ xác nhận khi khớp chính xác",
+    "capturedAt": "Đã ghi nhận lúc {{value}}",
+    "latestObservation": "Lần đối soát gần nhất"
+  },
+  "common": {
+    "repairService": "Dịch vụ sửa chữa",
+    "unknown": "Không xác định",
+    "viewRepairs": "Xem hồ sơ sửa chữa",
+    "noData": "Chưa có dữ liệu"
+  },
+  "mfa": {
+    "title": "Thiết lập MFA cho quản trị viên",
+    "description": "Bảo vệ thao tác quản trị bằng ứng dụng xác thực TOTP như Google Authenticator hoặc Microsoft Authenticator.",
+    "loading": "Đang kiểm tra trạng thái MFA...",
+    "noFactor": "Tài khoản này chưa có TOTP. Tạo cấu hình rồi thêm nó vào ứng dụng xác thực của bạn.",
+    "createFactor": "Tạo cấu hình TOTP",
+    "incompleteEnrollment": "Có một cấu hình TOTP cũ chưa hoàn tất. Để bảo vệ tài khoản, cấu hình này không thể tự xoá trong phiên chưa xác minh. Hãy liên hệ quản trị hệ thống để thực hiện quy trình khôi phục MFA có kiểm soát.",
+    "stepOne": "Bước 1: thêm tài khoản vào ứng dụng xác thực",
+    "manualSetup": "Workspace chưa dùng QR bên thứ ba để tránh làm lộ secret. Hãy nhập URI hoặc secret bên dưới vào ứng dụng xác thực.",
+    "secret": "Secret: {{value}}",
+    "codeLabel": "Mã xác minh 6 số",
+    "verifyFactor": "Xác minh và bật MFA",
+    "factorReady": "TOTP đã được bật. Xác minh phiên hiện tại để tiếp tục thay đổi thông tin quản trị.",
+    "startStepUp": "Xác minh phiên quản trị",
+    "stepUpInstruction": "Nhập mã TOTP mới nhất từ ứng dụng xác thực để xác minh phiên này.",
+    "verifyStepUp": "Xác minh phiên"
+  }
+}

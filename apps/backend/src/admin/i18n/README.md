@@ -1,6 +1,8 @@
 # Admin Customizations Translations
 
-The Medusa Admin dashboard supports multiple languages for its interface. Medusa uses [react-i18next](https://react.i18next.com/) to manage translations in the admin dashboard.
+The Medusa Admin dashboard supports multiple languages for its interface. Medusa 2.18.0 đã có sẵn bộ dịch tiếng Việt chính thức (`vi`) cho các màn hình core. Phần mở rộng Hưng Phát bổ sung bản dịch `vi` riêng cho hồ sơ sửa chữa và đối soát VietQR, dùng chung cơ chế `react-i18next` của Medusa.
+
+Để bật tiếng Việt cho toàn bộ panel, vào **Profile → Language → Vietnamese**. Lựa chọn được Medusa lưu trong trình duyệt và áp dụng cho cả màn hình core lẫn các extension của workspace.
 
 To add translations, create JSON translation files for each language under the `src/admin/i18n/json` directory. For example, create the `src/admin/i18n/json/en.json` file with the following content:
 

@@ -32,7 +32,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         >
           Chuyển tới nội dung chính
         </a>
-        <main className="relative min-h-screen">{props.children}</main>
+        <main className="relative min-h-screen overflow-x-hidden">{props.children}</main>
       </body>
     </html>
   )

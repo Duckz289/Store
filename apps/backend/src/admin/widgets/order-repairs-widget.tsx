@@ -3,11 +3,13 @@ import type { AdminOrder, DetailWidgetProps } from "@medusajs/framework/types"
 import { Button, Container, Heading, Text } from "@medusajs/ui"
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import { sdk } from "../lib/sdk"
 import type { RepairCase } from "../types/repair"
 
 const OrderRepairsWidget = ({ data }: DetailWidgetProps<AdminOrder>) => {
+  const { t } = useTranslation()
   const { data: response } = useQuery({
     queryKey: ["order-repair-cases", data.id],
     queryFn: () =>
@@ -20,9 +22,9 @@ const OrderRepairsWidget = ({ data }: DetailWidgetProps<AdminOrder>) => {
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">Repair service</Heading>
+        <Heading level="h2">{t("common.repairService")}</Heading>
         <Button size="small" variant="secondary" asChild>
-          <Link to="/repairs">View repairs</Link>
+          <Link to="/repairs">{t("common.viewRepairs")}</Link>
         </Button>
       </div>
       <div className="px-6 py-4">
@@ -35,12 +37,16 @@ const OrderRepairsWidget = ({ data }: DetailWidgetProps<AdminOrder>) => {
               >
                 {repairCase.code}
               </Link>
-              <Text size="small">{repairCase.status.replace(/_/g, " ")}</Text>
+              <Text size="small">
+                {t(`repairs.statuses.${repairCase.status}`, {
+                  defaultValue: repairCase.status.replace(/_/g, " "),
+                })}
+              </Text>
             </div>
           ))
         ) : (
           <Text size="small" className="text-ui-fg-subtle">
-            No repair case references this order.
+            {t("common.empty")}
           </Text>
         )}
       </div>

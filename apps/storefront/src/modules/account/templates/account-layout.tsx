@@ -16,13 +16,25 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
   return (
     <main className="flex-1 py-6 sm:py-10" data-testid="account-page">
       <div className="content-container">
-        <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-8">
+        <div
+          className={
+            customer
+              ? "grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-8"
+              : "flex justify-center"
+          }
+        >
           {customer && (
             <aside className="rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-4 lg:h-fit lg:p-5">
               <AccountNav customer={customer} />
             </aside>
           )}
-          <div className="min-w-0 rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-5 sm:p-7">
+          <div
+            className={
+              customer
+                ? "min-w-0 rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-5 sm:p-7"
+                : "w-full"
+            }
+          >
             {children}
           </div>
         </div>

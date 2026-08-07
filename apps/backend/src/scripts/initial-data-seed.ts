@@ -1,6 +1,7 @@
 import { MedusaContainer } from "@medusajs/framework"
 import {
   ContainerRegistrationKeys,
+  MedusaError,
   ModuleRegistrationName,
   Modules,
   ProductStatus,
@@ -38,6 +39,50 @@ export default async function initialDataSeed({
   )
 
   logger.info("Đang tạo seed data cho cửa hàng Việt Nam...")
+
+  // The seed command is intentionally safe to re-run. A complete catalog is
+  // treated as the marker that this seed has already run; creating another
+  // sales channel, API key, store, or product set would make the local data
+  // drift on every deploy/restart. A partially-seeded database is stopped so
+  // an operator can repair it explicitly instead of silently duplicating data.
+  const expectedProductHandles = [
+    "dien-thoai-nova-x1",
+    "laptop-workpro-14",
+    "sac-nhanh-usb-c-65w",
+    "router-wifi-6-ax1800",
+  ]
+  const seededSalesChannelName = "Kênh bán hàng Việt Nam"
+  const [{ data: existingProducts }, { data: existingRegions }, { data: existingSalesChannels }] =
+    await Promise.all([
+      query.graph({ entity: "product", fields: ["handle"] }),
+      query.graph({ entity: "region", fields: ["currency_code", "name"] }),
+      query.graph({ entity: "sales_channel", fields: ["name"] }),
+    ])
+  const existingHandles = new Set(
+    existingProducts.map((product) => product.handle)
+  )
+  const hasVndRegion = existingRegions.some(
+    (region) => region.currency_code === "vnd"
+  )
+  const hasSeededSalesChannel = existingSalesChannels.some(
+    (channel) => channel.name === seededSalesChannelName
+  )
+  const hasCompleteSeed =
+    hasVndRegion &&
+    hasSeededSalesChannel &&
+    expectedProductHandles.every((handle) => existingHandles.has(handle))
+
+  if (hasCompleteSeed) {
+    logger.info("Seed data đã tồn tại; bỏ qua để giữ dữ liệu idempotent.")
+    return
+  }
+
+  if (hasVndRegion || hasSeededSalesChannel || existingProducts.length > 0) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "Seed data đang ở trạng thái một phần; dừng để tránh tạo dữ liệu trùng. Hãy kiểm tra và sửa dữ liệu trước khi seed lại."
+    )
+  }
 
   const {
     result: [salesChannel],

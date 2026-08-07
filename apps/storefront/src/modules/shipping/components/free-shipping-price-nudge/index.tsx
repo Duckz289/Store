@@ -150,10 +150,10 @@ function FreeShippingInline({
               <div className="flex items-center gap-1.5">
                 {" "}
                 <CheckCircleSolid className="text-green-500 inline-block" />{" "}
-                Free Shipping unlocked!
+                Đã mở khóa miễn phí vận chuyển!
               </div>
             ) : (
-              `Unlock Free Shipping`
+              `Mở khóa miễn phí vận chuyển`
             )}
           </div>
 
@@ -162,14 +162,14 @@ function FreeShippingInline({
               "opacity-0 invisible": price.target_reached,
             })}
           >
-            Only{" "}
+            Chỉ còn{" "}
             <span className="text-neutral-950">
               {convertToLocale({
                 amount: price.target_remaining,
                 currency_code: cart.currency_code,
               })}
             </span>{" "}
-            away
+            nữa
           </div>
         </div>
         <div className="flex justify-between gap-1">
@@ -211,6 +211,7 @@ function FreeShippingPopup({
     >
       <div>
         <Button
+          aria-label="Đóng thông báo miễn phí vận chuyển"
           className="rounded-full bg-neutral-900 shadow-none outline-none border-none text-[15px] p-2"
           onClick={() => setIsClosed(true)}
         >
@@ -218,7 +219,7 @@ function FreeShippingPopup({
         </Button>
       </div>
 
-      <div className="w-[400px] bg-black text-white p-6 rounded-lg ">
+      <div className="w-[calc(100%-2rem)] max-w-[400px] bg-black text-white p-6 rounded-lg">
         <div className="pb-4">
           <div className="space-y-3">
             <div className="flex justify-between text-[15px] text-neutral-400">
@@ -226,10 +227,10 @@ function FreeShippingPopup({
                 {price.target_reached ? (
                   <div className="flex items-center gap-1.5">
                     <CheckCircleSolid className="text-green-500 inline-block" />{" "}
-                    Free Shipping unlocked!
+                    Đã mở khóa miễn phí vận chuyển!
                   </div>
                 ) : (
-                  `Unlock Free Shipping`
+                  `Mở khóa miễn phí vận chuyển`
                 )}
               </div>
 
@@ -238,14 +239,14 @@ function FreeShippingPopup({
                   "opacity-0 invisible": price.target_reached,
                 })}
               >
-                Only{" "}
+                Chỉ còn{" "}
                 <span className="text-white">
                   {convertToLocale({
                     amount: price.target_remaining,
                     currency_code: cart.currency_code,
                   })}
                 </span>{" "}
-                away
+                nữa
               </div>
             </div>
             <div className="flex justify-between gap-1">
@@ -268,14 +269,14 @@ function FreeShippingPopup({
             className="rounded-2xl bg-transparent shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4"
             href="/cart"
           >
-            View cart
+            Xem giỏ hàng
           </LocalizedClientLink>
 
           <LocalizedClientLink
             className="flex-grow rounded-2xl bg-white text-neutral-950 shadow-none outline-none border-[1px] border-white text-[15px] py-2.5 px-4 text-center"
             href="/store"
           >
-            View products
+            Xem sản phẩm
           </LocalizedClientLink>
         </div>
       </div>

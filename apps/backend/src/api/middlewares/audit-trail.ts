@@ -15,6 +15,28 @@ import {
 
 const pendingAuditWrites = new Set<Promise<unknown>>()
 
+const redactAuditPayload = (payload: unknown) => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return payload
+  }
+
+  const redacted = { ...(payload as Record<string, unknown>) }
+  for (const key of [
+    "code",
+    "password",
+    "secret",
+    "token",
+    "otpauth_url",
+    "recovery_codes",
+  ]) {
+    if (key in redacted) {
+      redacted[key] = "[REDACTED]"
+    }
+  }
+
+  return redacted
+}
+
 export async function waitForPendingAuditWrites() {
   await Promise.allSettled([...pendingAuditWrites])
 }
@@ -50,7 +72,7 @@ export function captureAuditTrail(
           request_path: req.path,
           outcome,
           status_code: statusCode,
-          after: req.validatedBody ?? req.body,
+          after: redactAuditPayload(req.validatedBody ?? req.body),
           metadata: {
             duration_ms: Date.now() - startedAt,
           },

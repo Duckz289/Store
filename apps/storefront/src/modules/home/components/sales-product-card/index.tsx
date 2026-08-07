@@ -72,7 +72,7 @@ const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
           )}
         </div>
 
-        <p className="mt-3 text-[13px] font-medium leading-5 text-[var(--hp-success)]">
+        <p className="mt-2 mb-3 min-h-5 text-[13px] font-semibold leading-5 text-[var(--hp-success)]">
           {stock ? `Còn ${stock} sản phẩm` : "Sẵn sàng đặt hàng"}
         </p>
 

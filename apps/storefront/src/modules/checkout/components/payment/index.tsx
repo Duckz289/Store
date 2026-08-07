@@ -20,6 +20,16 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 
+const getVietQrExpiry = (session?: HttpTypes.StorePaymentSession | null) => {
+  const raw = session?.data?.expires_at
+  if (typeof raw !== "string" && typeof raw !== "number") {
+    return null
+  }
+
+  const expiry = new Date(raw)
+  return Number.isNaN(expiry.getTime()) ? null : expiry
+}
+
 const Payment = ({
   cart,
   availablePaymentMethods,
@@ -47,14 +57,26 @@ const Payment = ({
 
   const isOpen = searchParams.get("step") === "payment"
 
+  const vietQrExpiry = getVietQrExpiry(
+    isVietQr(selectedPaymentMethod) ? activeSession : null
+  )
+  const vietQrExpired = !!vietQrExpiry && vietQrExpiry.getTime() <= Date.now()
+
   const setPaymentMethod = async (method: string) => {
+    const previousMethod = selectedPaymentMethod
     setError(null)
     setSelectedPaymentMethod(method)
-    if (isStripeLike(method) || isVietQr(method)) {
-      await initiatePaymentSession(cart, {
-        provider_id: method,
-      })
-      router.refresh()
+
+    try {
+      if (isStripeLike(method) || isVietQr(method)) {
+        await initiatePaymentSession(cart, {
+          provider_id: method,
+        })
+        router.refresh()
+      }
+    } catch (err) {
+      setSelectedPaymentMethod(previousMethod)
+      setError(err instanceof Error ? err.message : "Không thể khởi tạo thanh toán.")
     }
   }
 
@@ -88,7 +110,7 @@ const Payment = ({
         isStripeLike(selectedPaymentMethod) && !activeSession
 
       const checkActiveSession =
-        activeSession?.provider_id === selectedPaymentMethod
+        activeSession?.provider_id === selectedPaymentMethod && !vietQrExpired
 
       if (!checkActiveSession) {
         await initiatePaymentSession(cart, {
@@ -134,6 +156,7 @@ const Payment = ({
         {!isOpen && paymentReady && (
           <Text>
             <button
+              type="button"
               onClick={handleEdit}
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="edit-payment-button"
@@ -191,6 +214,7 @@ const Payment = ({
 
           <ErrorMessage
             error={error}
+            id="payment-method-error"
             data-testid="payment-method-error-message"
           />
 
@@ -201,8 +225,10 @@ const Payment = ({
             isLoading={isLoading}
             disabled={
               (isStripeLike(selectedPaymentMethod) && !cardComplete) ||
-              (!selectedPaymentMethod && !paidByGiftcard)
+              (!selectedPaymentMethod && !paidByGiftcard) ||
+              (isVietQr(selectedPaymentMethod) && vietQrExpired)
             }
+            aria-describedby={error ? "payment-method-error" : undefined}
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
@@ -214,8 +240,8 @@ const Payment = ({
         <div className={isOpen ? "hidden" : "block"}>
           {cart && paymentReady && activeSession ? (
             <div className="flex flex-col gap-y-4 w-full">
-              <div className="flex items-start gap-x-1 w-full">
-              <div className="flex flex-col w-1/3">
+              <div className="flex flex-col small:flex-row items-start gap-4 w-full">
+              <div className="flex flex-col w-full small:w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   Phương thức thanh toán
                 </Text>
@@ -227,7 +253,7 @@ const Payment = ({
                     activeSession?.provider_id}
                 </Text>
               </div>
-              <div className="flex flex-col w-1/3">
+              <div className="flex flex-col w-full small:w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   Chi tiết thanh toán
                 </Text>
@@ -250,28 +276,33 @@ const Payment = ({
                 </div>
               </div>
               </div>
-              {isVietQr(activeSession.provider_id) &&
-              typeof activeSession.data?.qr_image_url === "string" ? (
+              {isVietQr(activeSession.provider_id) ? (
                 <div className="rounded-lg border border-ui-border-base p-4">
                   <Text className="txt-medium-plus text-ui-fg-base">
                     VietQR do backend tạo
                   </Text>
-                  <Image
-                    src={activeSession.data.qr_image_url}
-                    alt="Mã VietQR chuyển khoản"
-                    width={240}
-                    height={240}
-                    unoptimized
-                  />
-                  <Text className="text-sm">
-                    Nội dung: {String(activeSession.data.transfer_content)}
+                  {typeof activeSession.data?.qr_image_url === "string" ? (
+                    <Image
+                      src={activeSession.data.qr_image_url}
+                      alt="Mã VietQR chuyển khoản"
+                      width={240}
+                      height={240}
+                      unoptimized
+                    />
+                  ) : null}
+                  <Text className="text-sm" aria-live="polite">
+                    Trạng thái: {vietQrExpired ? "Mã đã hết hạn" : "Đang chờ xác nhận"}
                   </Text>
-                  <Text className="text-sm">
-                    Hết hạn:{" "}
-                    {new Date(
-                      String(activeSession.data.expires_at)
-                    ).toLocaleString("vi-VN")}
-                  </Text>
+                  {activeSession.data?.transfer_content ? (
+                    <Text className="text-sm">
+                      Nội dung: {String(activeSession.data.transfer_content)}
+                    </Text>
+                  ) : null}
+                  {vietQrExpiry ? (
+                    <Text className="text-sm">
+                      Hết hạn: {vietQrExpiry.toLocaleString("vi-VN")}
+                    </Text>
+                  ) : null}
                   <Text className="text-sm text-ui-fg-subtle">
                     Đơn chỉ được ghi nhận thanh toán sau khi nhân viên kiểm tra
                     sao kê ngân hàng.
@@ -280,7 +311,7 @@ const Payment = ({
               ) : null}
             </div>
           ) : paidByGiftcard ? (
-            <div className="flex flex-col w-1/3">
+            <div className="flex flex-col w-full small:w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
                 Phương thức thanh toán
               </Text>

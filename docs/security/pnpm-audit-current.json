@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-07T01:31:22.713Z",
+  "generatedAt": "2026-08-07T02:57:30.672Z",
   "label": "current",
   "source": "pnpm audit --prod --json and pnpm audit --json",
   "nodeVersion": "v24.14.0",

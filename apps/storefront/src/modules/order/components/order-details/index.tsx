@@ -7,7 +7,23 @@ type OrderDetailsProps = {
 }
 
 const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
-  const formatStatus = (str: string) => {
+  const formatStatus = (str?: string | null) => {
+    if (!str) return "Chưa cập nhật"
+
+    const labels: Record<string, string> = {
+      not_paid: "Chưa thanh toán",
+      awaiting: "Đang chờ xác nhận",
+      captured: "Đã thanh toán",
+      refunded: "Đã hoàn tiền",
+      partially_refunded: "Hoàn tiền một phần",
+      not_fulfilled: "Chưa giao hàng",
+      fulfilled: "Đã giao hàng",
+      shipped: "Đã gửi hàng",
+      canceled: "Đã hủy",
+    }
+
+    if (labels[str]) return labels[str]
+
     const formatted = str.split("_").join(" ")
 
     return formatted.slice(0, 1).toUpperCase() + formatted.slice(1)
@@ -48,7 +64,7 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
               Payment status:{" "}
               <span
                 className="text-ui-fg-subtle "
-                sata-testid="order-payment-status"
+                data-testid="order-payment-status"
               >
                 {formatStatus(order.payment_status)}
               </span>

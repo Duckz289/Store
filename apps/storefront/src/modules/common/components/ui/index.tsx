@@ -81,6 +81,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
         className={clsx(
           "inline-flex gap-2 items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           variant === "primary" && "bg-black text-white hover:bg-gray-800",
@@ -214,12 +215,16 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, ...props }, ref) => {
+  ({ className, label, id, name, ...props }, ref) => {
+    const inputId = id || (name ? name.replace(/[^a-zA-Z0-9_-]/g, "-") : undefined)
+
     return (
       <div className="flex flex-col gap-1">
-        {label && <Label>{label}</Label>}
+        {label && <Label htmlFor={inputId}>{label}</Label>}
         <input
           ref={ref}
+          id={inputId}
+          name={name}
           className={clsx(
             "flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             className
@@ -406,20 +411,23 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
 }
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, label, id, ...props }, ref) => {
+  ({ className, label, id, name, ...props }, ref) => {
+    const checkboxId = id || (name ? name.replace(/[^a-zA-Z0-9_-]/g, "-") : undefined)
+
     return (
       <div className="flex items-center gap-2">
         <input
           ref={ref}
           type="checkbox"
-          id={id}
+          id={checkboxId}
           className={clsx(
             "h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900",
             className
           )}
+          name={name}
           {...props}
         />
-        {label && <Label htmlFor={id}>{label}</Label>}
+        {label && <Label htmlFor={checkboxId}>{label}</Label>}
       </div>
     )
   }

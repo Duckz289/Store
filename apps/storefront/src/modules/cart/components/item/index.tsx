@@ -3,7 +3,6 @@
 import { Table, Text, clx } from "@modules/common/components/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
@@ -12,7 +11,8 @@ import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -23,6 +23,12 @@ type ItemProps = {
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [quantity, setQuantity] = useState(String(item.quantity))
+  const router = useRouter()
+
+  useEffect(() => {
+    setQuantity(String(item.quantity))
+  }, [item.quantity])
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
@@ -37,12 +43,9 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       })
       .finally(() => {
         setUpdating(false)
+        router.refresh()
       })
   }
-
-  // TODO: Update this to grab the actual max inventory
-  const maxQtyFromInventory = 10
-  const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
@@ -76,31 +79,41 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         <Table.Cell>
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <CartItemSelect
-              value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
-              data-testid="product-select-button"
-            >
-              {/* TODO: Update this with the v2 way of managing inventory */}
-              {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
-                (_, i) => (
-                  <option value={i + 1} key={i}>
-                    {i + 1}
-                  </option>
-                )
-              )}
-
-              <option value={1} key={1}>
-                1
-              </option>
-            </CartItemSelect>
+            <label className="sr-only" htmlFor={`quantity-${item.id}`}>
+              Số lượng {item.product_title}
+            </label>
+            <input
+              id={`quantity-${item.id}`}
+              type="number"
+              min={1}
+              inputMode="numeric"
+              value={quantity}
+              disabled={updating}
+              onChange={(event) => setQuantity(event.target.value)}
+              onBlur={() => {
+                const parsed = Number.parseInt(quantity, 10)
+                if (Number.isInteger(parsed) && parsed > 0) {
+                  void changeQuantity(parsed)
+                } else {
+                  setQuantity(String(item.quantity))
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.currentTarget.blur()
+                }
+              }}
+              className="w-16 h-10 rounded-md border border-ui-border-base px-2 text-center focus:outline-none focus:ring-2 focus:ring-ui-fg-interactive"
+              data-testid="product-quantity-input"
+              aria-describedby={error ? `product-error-${item.id}` : undefined}
+            />
             {updating && <Spinner />}
           </div>
-          <ErrorMessage error={error} data-testid="product-error-message" />
+          <ErrorMessage
+            id={`product-error-${item.id}`}
+            error={error}
+            data-testid="product-error-message"
+          />
         </Table.Cell>
       )}
 

@@ -13,6 +13,7 @@
     "typecheck": "corepack pnpm -r run typecheck",
     "test": "corepack pnpm --filter @dtc/backend run test:unit",
     "test:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/smoke-commerce.ps1",
+    "test:checkout-smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/smoke-checkout.ps1",
     "backend:seed": "corepack pnpm --filter @dtc/backend run seed",
     "backend:dev": "corepack pnpm --filter @dtc/backend run dev",
     "storefront:dev": "corepack pnpm --filter @dtc/storefront run dev",

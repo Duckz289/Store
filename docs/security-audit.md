@@ -125,6 +125,28 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
 - Không bật Next image optimizer hoặc expose Vite dev server khi exception liên quan còn mở.
 - Risk acceptance đã được repository owner xác nhận cho development/milestone nội bộ đến 2026-09-06; trạng thái production vẫn là blocker.
 
+## Cart + Checkout UX — dependency check 07/08/2026
+
+- Không thêm package, không đổi `pnpm-lock.yaml`, Medusa/Next major hoặc core
+  source. Thay đổi milestone chỉ dùng Store API và payment/provider primitives
+  đã có.
+- Live exporter sau thay đổi vẫn ghi nhận production graph **17 finding / 17
+  advisory: 0 critical, 6 high đã risk-accept, 11 moderate, 0 low**. Toàn
+  graph có 37 vulnerability instances; các development-only path bổ sung
+  không tạo production runtime reachability mới.
+- Frozen install, lint, typecheck, unit/module/HTTP integration, backend/Admin
+  và storefront production build đều pass. Store API smoke xác nhận server
+  price và shipping; checkout runtime xác nhận guest/auth COD, duplicate
+  complete trả cùng order id, và quantity vượt inventory trả 400.
+- VietQR provider không được bật trong local `.env`; do đó chưa ghi nhận Store
+  API VietQR sandbox runtime ở môi trường này. Provider unit/module và HTTP
+  security tests pass; không coi trạng thái local này là production approval.
+- Sáu high risk acceptance và toàn bộ biện pháp giảm thiểu trước đó giữ
+  nguyên, gồm không expose Vite dev server, không bật Next image optimizer khi
+  Sharp exception còn mở, chỉ build source/config tin cậy, fail CI khi có
+  critical mới, không tự động accept high runtime-reachable mới và review trước
+  hoặc muộn nhất 2026-09-06.
+
 ## Milestone 2 Repair Service — kiểm tra dependency 06/08/2026
 
 - Dependency duy nhất được khai báo thêm là `@medusajs/js-sdk@2.18.0` trong backend để Admin extension gọi API. Cùng package/version đã tồn tại trong storefront importer và package-resolution section của lockfile; diff không thêm package resolution hoặc dependency chain mới.

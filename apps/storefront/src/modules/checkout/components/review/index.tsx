@@ -5,6 +5,7 @@ import { Heading, Text, clx } from "@modules/common/components/ui"
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import { convertToLocale } from "@lib/util/money"
 
 const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
   const searchParams = useSearchParams()
@@ -37,6 +38,28 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
       </div>
       {isOpen && previousStepsCompleted && (
         <>
+          <div
+            className="mb-6 rounded-md border border-ui-border-base bg-ui-bg-subtle p-4"
+            aria-label="Tóm tắt đơn hàng"
+            data-testid="review-order-summary"
+          >
+            <Text className="txt-medium-plus text-ui-fg-base mb-2">
+              Tóm tắt đơn hàng
+            </Text>
+            <dl className="grid grid-cols-2 gap-y-1 text-small-regular">
+              <dt className="text-ui-fg-subtle">Sản phẩm</dt>
+              <dd className="text-right text-ui-fg-base">
+                {cart.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0}
+              </dd>
+              <dt className="text-ui-fg-subtle">Tổng cộng</dt>
+              <dd className="text-right font-semibold text-ui-fg-base">
+                {convertToLocale({
+                  amount: cart.total ?? 0,
+                  currency_code: cart.currency_code,
+                })}
+              </dd>
+            </dl>
+          </div>
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">

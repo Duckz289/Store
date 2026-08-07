@@ -16,6 +16,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
       <div className="pb-3 flex items-center">
         <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
       </div>
+      <div className="overflow-x-auto -mx-2 px-2" role="region" aria-label="Sản phẩm trong giỏ hàng" tabIndex={0}>
       <Table>
         <Table.Header className="border-t-0">
           <Table.Row className="text-ui-fg-subtle txt-medium-plus">
@@ -50,6 +51,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
               })}
         </Table.Body>
       </Table>
+      </div>
     </div>
   )
 }

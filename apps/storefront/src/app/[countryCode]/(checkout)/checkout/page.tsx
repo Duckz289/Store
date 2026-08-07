@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Checkout() {
-  const cart = await retrieveCart()
+  // Checkout must re-read server totals and availability on every render.
+  const cart = await retrieveCart(undefined, undefined, "no-store")
 
   if (!cart) {
     return notFound()

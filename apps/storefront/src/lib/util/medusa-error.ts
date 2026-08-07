@@ -12,22 +12,27 @@ type MedusaError = {
 export default function medusaError(error: unknown): never {
   const err = error as MedusaError
   if (err.response) {
-    const u = new URL(err.config?.url ?? "", err.config?.baseURL ?? "")
-    console.error("Resource:", u.toString())
-    console.error("Response data:", err.response.data)
-    console.error("Status code:", err.response.status)
-    console.error("Headers:", err.response.headers)
-
     const data = err.response.data
-    const message =
+    const backendMessage =
       typeof data === "object" && data !== null
-        ? data.message || String(data)
-        : data
+        ? data.message
+        : typeof data === "string"
+          ? data
+          : undefined
+    const status = err.response.status
+    const message =
+      status === 401
+        ? "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại."
+        : status === 409
+          ? "Giỏ hàng đã thay đổi. Vui lòng kiểm tra lại giá, tồn kho và vận chuyển."
+          : status === 400 || status === 404
+            ? backendMessage || "Thông tin giỏ hàng không còn hợp lệ. Vui lòng kiểm tra lại."
+            : backendMessage || "Không thể hoàn tất thao tác. Vui lòng thử lại."
 
-    throw new Error(message.charAt(0).toUpperCase() + message.slice(1) + ".")
+    throw new Error(message)
   } else if (err.request) {
-    throw new Error("No response received: " + String(err.request))
+    throw new Error("Không nhận được phản hồi từ máy chủ. Vui lòng thử lại.")
   } else {
-    throw new Error("Error setting up the request: " + err.message)
+    throw new Error("Không thể kết nối tới máy chủ. Vui lòng thử lại.")
   }
 }

@@ -17,11 +17,24 @@ export default async function CheckoutForm({
     return null
   }
 
-  const shippingMethods = await listCartShippingMethods(cart.id)
-  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
+  const shippingMethods = await listCartShippingMethods(cart.id, "no-store")
+  const paymentMethods = await listCartPaymentMethods(
+    cart.region?.id ?? "",
+    "no-store"
+  )
 
   if (!shippingMethods || !paymentMethods) {
-    return null
+    return (
+      <div
+        className="rounded-md border border-ui-border-base bg-ui-bg-subtle p-4 text-ui-fg-base"
+        role="alert"
+        aria-live="assertive"
+        data-testid="checkout-options-error"
+      >
+        Không thể tải phương thức vận chuyển hoặc thanh toán. Vui lòng tải lại
+        trang để thử lại.
+      </div>
+    )
   }
 
   return (

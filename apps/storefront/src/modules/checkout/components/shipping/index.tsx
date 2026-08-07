@@ -119,7 +119,11 @@ const Shipping: React.FC<ShippingProps> = ({
           setCalculatedPricesMap(pricesMap)
           setIsLoadingPrices(false)
         })
+      } else {
+        setIsLoadingPrices(false)
       }
+    } else {
+      setIsLoadingPrices(false)
     }
 
     if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
@@ -132,6 +136,11 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   const handleSubmit = () => {
+    if (!shippingMethodId || !cart.shipping_methods?.length) {
+      setError("Chọn phương thức giao hàng trước khi tiếp tục.")
+      return
+    }
+
     router.push(pathname + "?step=payment", { scroll: false })
   }
 
@@ -147,22 +156,21 @@ const Shipping: React.FC<ShippingProps> = ({
       setShowPickupOptions(PICKUP_OPTION_OFF)
     }
 
-    let currentId: string | null = null
+    const currentId = shippingMethodId
     setIsLoading(true)
-    setShippingMethodId((prev) => {
-      currentId = prev
-      return id
-    })
+    setShippingMethodId(id)
 
-    await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
-      .catch((err) => {
-        setShippingMethodId(currentId)
-
-        setError(err.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    try {
+      await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
+      // Re-render totals from the server after the option is persisted. The
+      // client never calculates or owns the shipping fee.
+      router.refresh()
+    } catch (err) {
+      setShippingMethodId(currentId)
+      setError(err instanceof Error ? err.message : "Không thể cập nhật vận chuyển.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -193,6 +201,7 @@ const Shipping: React.FC<ShippingProps> = ({
           cart?.email && (
             <Text>
               <button
+                type="button"
                 onClick={handleEdit}
                 className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
                 data-testid="edit-delivery-button"
@@ -213,7 +222,11 @@ const Shipping: React.FC<ShippingProps> = ({
                 Chọn cách bạn muốn nhận đơn hàng
               </span>
             </div>
-            <div data-testid="delivery-options-container">
+            <div
+              data-testid="delivery-options-container"
+              aria-live="polite"
+              aria-busy={isLoadingPrices || isLoading}
+            >
               <div className="pb-8 md:pt-0 pt-2">
                 {hasPickupOptions && (
                   <RadioGroup
@@ -297,7 +310,7 @@ const Shipping: React.FC<ShippingProps> = ({
                               amount: option.amount!,
                               currency_code: cart?.currency_code,
                             })
-                          ) : calculatedPricesMap[option.id] ? (
+                          ) : typeof calculatedPricesMap[option.id] === "number" ? (
                             convertToLocale({
                               amount: calculatedPricesMap[option.id],
                               currency_code: cart?.currency_code,
@@ -387,6 +400,7 @@ const Shipping: React.FC<ShippingProps> = ({
           <div>
             <ErrorMessage
               error={error}
+              id="delivery-option-error"
               data-testid="delivery-option-error-message"
             />
             <Button
@@ -395,6 +409,7 @@ const Shipping: React.FC<ShippingProps> = ({
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={!cart.shipping_methods?.[0]}
+              aria-describedby={error ? "delivery-option-error" : undefined}
               data-testid="submit-delivery-option-button"
             >
               Tiếp tục thanh toán
@@ -405,7 +420,7 @@ const Shipping: React.FC<ShippingProps> = ({
         <div>
           <div className="text-small-regular">
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
-              <div className="flex flex-col w-1/3">
+              <div className="flex flex-col w-full small:w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   Phương thức
                 </Text>

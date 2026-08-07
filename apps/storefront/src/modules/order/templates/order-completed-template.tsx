@@ -9,6 +9,8 @@ import OrderDetails from "@modules/order/components/order-details"
 import ShippingDetails from "@modules/order/components/shipping-details"
 import PaymentDetails from "@modules/order/components/payment-details"
 import { HttpTypes } from "@medusajs/types"
+import { retrieveCustomer } from "@lib/data/customer"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type OrderCompletedTemplateProps = {
   order: HttpTypes.StoreOrder
@@ -20,6 +22,7 @@ export default async function OrderCompletedTemplate({
   const cookies = await nextCookies()
 
   const isOnboarding = cookies.get("_medusa_onboarding")?.value === "true"
+  const customer = await retrieveCustomer()
 
   return (
     <div className="py-6 min-h-[calc(100vh-64px)]">
@@ -33,10 +36,30 @@ export default async function OrderCompletedTemplate({
             level="h1"
             className="flex flex-col gap-y-3 text-ui-fg-base text-3xl mb-4"
           >
-            <span>Thank you!</span>
-            <span>Your order was placed successfully.</span>
+            <span>Cảm ơn bạn!</span>
+            <span>Đơn hàng đã được ghi nhận.</span>
           </Heading>
-          <OrderDetails order={order} />
+          <OrderDetails order={order} showStatus />
+          <div
+            className="rounded-md border border-ui-border-base bg-ui-bg-subtle p-4"
+            role="status"
+            aria-live="polite"
+            data-testid="order-next-steps"
+          >
+            {["captured", "authorized", "paid"].includes(String(order.payment_status)) ? (
+              <p>Thanh toán đã được xác nhận. Chúng tôi sẽ cập nhật trạng thái giao hàng khi đơn được xử lý.</p>
+            ) : (
+              <p>Đơn hàng đang chờ xác nhận thanh toán hoặc xử lý giao hàng. Không cần tạo tài khoản để tiếp tục theo dõi đơn khách.</p>
+            )}
+            {customer && (
+              <LocalizedClientLink
+                href={`/account/orders/details/${order.id}`}
+                className="mt-3 inline-flex text-ui-fg-interactive underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-fg-interactive"
+              >
+                Xem chi tiết trong tài khoản
+              </LocalizedClientLink>
+            )}
+          </div>
           <Heading level="h2" className="flex flex-row text-3xl-regular">
             Summary
           </Heading>

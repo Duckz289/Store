@@ -1,4 +1,5 @@
 import { Container, Heading, Text } from "@modules/common/components/ui"
+import { CreditCard } from "@medusajs/icons"
 
 import { isStripeLike, isVietQr, paymentInfoMap } from "@lib/constants"
 import Divider from "@modules/common/components/divider"
@@ -14,6 +15,15 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
   const payment = order.payment_collections?.[0].payments?.[0]
   const vietQrSession = order.payment_collections?.[0].payment_sessions?.find(
     (session) => isVietQr(session.provider_id)
+  )
+  const paymentInfo = payment
+    ? paymentInfoMap[payment.provider_id] ?? {
+        title: payment.provider_id,
+        icon: <CreditCard />,
+      }
+    : null
+  const settled = ["captured", "authorized", "paid"].includes(
+    String(order.payment_status)
   )
 
   return (
@@ -32,7 +42,7 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method"
               >
-                {paymentInfoMap[payment.provider_id].title}
+                {paymentInfo?.title}
               </Text>
             </div>
             <div className="flex flex-col w-2/3">
@@ -41,17 +51,15 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
               </Text>
               <div className="flex gap-2 txt-medium text-ui-fg-subtle items-center">
                 <Container className="flex items-center h-7 w-fit p-2 bg-ui-button-neutral-hover">
-                  {paymentInfoMap[payment.provider_id].icon}
+                  {paymentInfo?.icon}
                 </Container>
                 <Text data-testid="payment-amount">
                   {isStripeLike(payment.provider_id) && payment.data?.card_last4
                     ? `**** **** **** ${payment.data.card_last4}`
-                    : `${convertToLocale({
+                    : `${settled ? "Đã thanh toán" : isVietQr(payment.provider_id) ? "Đang chờ xác nhận" : "Chưa thanh toán"} · ${convertToLocale({
                         amount: payment.amount,
                         currency_code: order.currency_code,
-                      })} paid at ${new Date(
-                        payment.created_at ?? ""
-                      ).toLocaleString()}`}
+                      })}`}
                 </Text>
               </div>
             </div>
@@ -60,7 +68,9 @@ const PaymentDetails = ({ order }: PaymentDetailsProps) => {
         {!payment && vietQrSession ? (
           <div className="rounded-lg border border-ui-border-base p-4">
             <Text className="txt-medium-plus text-ui-fg-base">
-              Chuyển khoản VietQR đang chờ xác nhận
+              {new Date(String(vietQrSession.data?.expires_at)).getTime() <= Date.now()
+                ? "Mã VietQR đã hết hạn — cần nhân viên kiểm tra thủ công"
+                : "Chuyển khoản VietQR đang chờ xác nhận"}
             </Text>
             {typeof vietQrSession.data?.qr_image_url === "string" ? (
               <Image

@@ -4,7 +4,10 @@ import { sdk } from "@lib/config"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { HttpTypes } from "@medusajs/types"
 
-export const listCartPaymentMethods = async (regionId: string) => {
+export const listCartPaymentMethods = async (
+  regionId: string,
+  cacheMode: "force-cache" | "no-store" = "force-cache"
+) => {
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -20,8 +23,8 @@ export const listCartPaymentMethods = async (regionId: string) => {
         method: "GET",
         query: { region_id: regionId },
         headers,
-        next,
-        cache: "force-cache",
+        ...(cacheMode === "force-cache" ? { next } : {}),
+        cache: cacheMode,
       }
     )
     .then(({ payment_providers }) =>

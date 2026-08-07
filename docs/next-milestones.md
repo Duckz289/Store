@@ -129,3 +129,38 @@ observability.
 - Audit lại production graph; không thêm critical/high mới chưa được xử lý hoặc exception có owner/expiry.
 - ADR cho quyết định ảnh hưởng module boundary, provider contract, state machine hoặc dữ liệu lịch sử.
 - Không sửa core Medusa; extension bằng module, provider, workflow, subscriber, job, API route và Admin extension chính thức.
+
+## 7. Cart + Checkout production-grade UX
+
+Trạng thái 07/08/2026: **đã triển khai cho development nội bộ**; production
+chưa được duyệt.
+
+- Cart dùng Store API để add/update/remove/persist line item; quantity không
+  còn có giới hạn tồn kho giả ở client. Giá, promotion, shipping, total và
+  inventory luôn do Medusa server tính lại; lỗi 409/401 được chuyển thành
+  thông báo có thể xử lý.
+- Checkout guest và customer dùng cùng một flow; customer có thể dùng địa chỉ
+  đã lưu nhưng không phải điều kiện. Checkout đọc cart/shipping/payment options
+  `no-store` để tránh review dữ liệu cũ, có shipping fee recalculation, lỗi
+  saved address stale và guard double-submit.
+- COD tạo order nhưng không hiển thị là đã thanh toán. VietQR giữ pending,
+  hiển thị reference/expiry/status do backend tạo và không coi return page hay
+  ảnh biên lai là bằng chứng thanh toán.
+- Order result hiển thị order reference, item/total/shipping, payment và
+  fulfillment status, hướng dẫn tiếp theo và link order detail chỉ khi đã đăng
+  nhập; guest không bị ép tạo account.
+- Form labels được liên kết với input, lỗi dùng `role=alert`/`aria-live`, focus
+  ring và layout checkout/cart có breakpoint mobile; radio indicator không tạo
+  thêm điểm tab không cần thiết.
+- Không thêm schema commerce, package hoặc sửa core Medusa. Thay đổi chỉ nằm ở
+  storefront data actions/components và dùng extension/provider hiện có.
+- Gate đã chạy: frozen install, workspace lint, typecheck, unit 40/40, module
+  integration 18/18, HTTP integration 16/16, backend/Admin/storefront build,
+  Store API smoke, guest checkout, authenticated checkout, COD, duplicate
+  complete cùng order id, inventory over-quantity trả 400 và security export
+  giữ nguyên 0 critical / 6 risk-accepted high / 11 moderate production.
+- Regression command được lưu tại `corepack pnpm run test:checkout-smoke` để
+  lặp lại các kiểm tra guest/auth/COD/duplicate/inventory mà không in token.
+- VietQR provider không bật trong local `.env`; provider unit/module/HTTP
+  security tests vẫn pass, còn Store API VietQR smoke runtime cần bật sandbox
+  provider bằng cấu hình test riêng trước khi coi là production evidence.

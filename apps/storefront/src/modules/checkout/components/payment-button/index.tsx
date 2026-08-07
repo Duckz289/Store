@@ -81,6 +81,7 @@ const StripePaymentButton = ({
   const disabled = !stripe || !elements ? true : false
 
   const handlePayment = async () => {
+    if (submitting) return
     setSubmitting(true)
 
     if (!stripe || !elements || !card || !cart) {
@@ -88,8 +89,16 @@ const StripePaymentButton = ({
       return
     }
 
+    if (typeof session?.data?.client_secret !== "string") {
+      setErrorMessage(
+        "Phiên thanh toán đã hết hạn. Vui lòng chọn lại phương thức thanh toán."
+      )
+      setSubmitting(false)
+      return
+    }
+
     await stripe
-      .confirmCardPayment(session?.data.client_secret as string, {
+      .confirmCardPayment(session.data.client_secret, {
         payment_method: {
           card: card,
           billing_details: {
@@ -127,12 +136,20 @@ const StripePaymentButton = ({
 
         if (
           (paymentIntent && paymentIntent.status === "requires_capture") ||
-          paymentIntent.status === "succeeded"
+          paymentIntent?.status === "succeeded"
         ) {
           return onPaymentCompleted()
         }
 
         return
+      })
+      .catch((err) => {
+        setErrorMessage(
+          err instanceof Error ? err.message : "Không thể xử lý thanh toán."
+        )
+      })
+      .finally(() => {
+        setSubmitting(false)
       })
   }
 
@@ -149,13 +166,20 @@ const StripePaymentButton = ({
       </Button>
       <ErrorMessage
         error={errorMessage}
+        id="stripe-payment-error"
         data-testid="stripe-payment-error-message"
       />
     </>
   )
 }
 
-const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
+const ManualTestPaymentButton = ({
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  notReady: boolean
+  "data-testid"?: string
+}) => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -170,6 +194,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   }
 
   const handlePayment = () => {
+    if (submitting) return
     setSubmitting(true)
 
     onPaymentCompleted()
@@ -182,23 +207,31 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         isLoading={submitting}
         onClick={handlePayment}
         size="large"
-        data-testid="submit-order-button"
+        data-testid={dataTestId || "submit-order-button"}
       >
         Đặt hàng COD
       </Button>
       <ErrorMessage
         error={errorMessage}
+        id="manual-payment-error"
         data-testid="manual-payment-error-message"
       />
     </>
   )
 }
 
-const VietQrPaymentButton = ({ notReady }: { notReady: boolean }) => {
+const VietQrPaymentButton = ({
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  notReady: boolean
+  "data-testid"?: string
+}) => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handlePayment = async () => {
+    if (submitting) return
     setSubmitting(true)
     await placeOrder()
       .catch((err) => setErrorMessage(err.message))
@@ -212,12 +245,13 @@ const VietQrPaymentButton = ({ notReady }: { notReady: boolean }) => {
         isLoading={submitting}
         onClick={handlePayment}
         size="large"
-        data-testid="submit-vietqr-order-button"
+        data-testid={dataTestId || "submit-vietqr-order-button"}
       >
         Đặt hàng và chờ xác nhận VietQR
       </Button>
       <ErrorMessage
         error={errorMessage}
+        id="vietqr-payment-error"
         data-testid="vietqr-payment-error-message"
       />
     </>

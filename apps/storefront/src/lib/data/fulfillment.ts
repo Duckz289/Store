@@ -4,7 +4,10 @@ import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 
-export const listCartShippingMethods = async (cartId: string) => {
+export const listCartShippingMethods = async (
+  cartId: string,
+  cacheMode: "force-cache" | "no-store" = "force-cache"
+) => {
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -22,8 +25,8 @@ export const listCartShippingMethods = async (cartId: string) => {
           cart_id: cartId,
         },
         headers,
-        next,
-        cache: "force-cache",
+        ...(cacheMode === "force-cache" ? { next } : {}),
+        cache: cacheMode,
       }
     )
     .then(({ shipping_options }) => shipping_options)

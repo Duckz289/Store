@@ -87,6 +87,38 @@ Mục tiêu: fulfillment provider/adapters có thể thay nhà vận chuyển m�
 
 Exit criteria: contract test dùng sandbox/mock chính thức; duplicate/out-of-order webhook, carrier outage, retry/reconcile và COD reconciliation pass.
 
+## 6. Customer Account Foundation
+
+Mục tiêu: thêm account tùy chọn cho customer mà không biến account thành
+điều kiện checkout và không trộn customer actor với Admin Auth/RBAC.
+
+Trạng thái: **đã triển khai nền tảng cho development nội bộ; chưa production-approved**.
+
+- Dùng native Customer Module và `emailpass` Auth Provider của Medusa 2.18.0;
+  guest checkout vẫn first-class, customer ID luôn derive từ authenticated
+  context, password không đi qua custom table.
+- Register/Login/Logout, generic auth errors, password policy cho register/reset,
+  reset UI dùng token one-time của Medusa, profile tối thiểu, địa chỉ Việt Nam
+  có server-side validation và order history có pagination.
+- Native `GET /store/orders/:id` của Medusa 2.18.0 không filter customer dù
+  list route có filter. Route override trong `src/api/store/orders/[id]` bắt
+  customer authentication và truyền `customer_id` từ `auth_context` vào
+  official `getOrderDetailWorkflow`; core không bị sửa.
+- Workspace chưa có Notification Provider/subscriber cho `auth.password_reset`.
+  Recovery UI không được coi là delivery-ready cho tới khi có provider chính
+  thức, template và secret ngoài source. Không thêm provider giả hoặc log reset
+  token.
+- Repair linking mới chỉ giữ boundary; chưa mở customer repair dashboard hoặc
+  expose repair PII.
+
+Unit tests hiện pass (36 tests) và security exporter không phát hiện production
+critical/high mới; snapshot live ghi nhận 0 critical, 6 production high đã
+risk-accept, 11 moderate, cùng 17 development-only findings (9 high, 4
+moderate, 4 low). Exit gate còn mở: chạy HTTP integration với PostgreSQL
+reachable để kiểm tra customer A/B ownership, address CRUD và order detail
+override; chạy Store API/guest checkout regression, Admin auth/MFA smoke và
+responsive/accessibility review sau khi môi trường test được khởi động.
+
 ## Gate chung cho mọi milestone
 
 - Frozen install, lint, typecheck, unit/integration tests, backend/Admin build, storefront build, Store API smoke và Admin auth smoke.

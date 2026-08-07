@@ -30,31 +30,31 @@ const AccountNav = ({
         {route !== `/${countryCode}/account` ? (
           <LocalizedClientLink
             href="/account"
-            className="flex items-center gap-x-2 text-small-regular py-2"
+            className="flex min-h-11 items-center gap-x-2 text-sm font-medium text-[var(--hp-ink)]"
             data-testid="account-main-link"
           >
             <>
               <ChevronDown className="transform rotate-90" />
-              <span>Account</span>
+              <span>Tài khoản</span>
             </>
           </LocalizedClientLink>
         ) : (
           <>
-            <div className="text-xl-semi mb-4 px-8">
-              Hello {customer?.first_name}
+            <div className="type-product-title mb-3">
+              Xin chào, {customer?.first_name || "bạn"}
             </div>
             <div className="text-base-regular">
               <ul>
                 <li>
                   <LocalizedClientLink
                     href="/account/profile"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex min-h-12 items-center justify-between border-b border-[var(--hp-line)] py-3"
                     data-testid="profile-link"
                   >
                     <>
                       <div className="flex items-center gap-x-2">
                         <User size={20} />
-                        <span>Profile</span>
+                        <span>Thông tin tài khoản</span>
                       </div>
                       <ChevronDown className="transform -rotate-90" />
                     </>
@@ -63,13 +63,13 @@ const AccountNav = ({
                 <li>
                   <LocalizedClientLink
                     href="/account/addresses"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex min-h-12 items-center justify-between border-b border-[var(--hp-line)] py-3"
                     data-testid="addresses-link"
                   >
                     <>
                       <div className="flex items-center gap-x-2">
                         <MapPin size={20} />
-                        <span>Addresses</span>
+                        <span>Địa chỉ đã lưu</span>
                       </div>
                       <ChevronDown className="transform -rotate-90" />
                     </>
@@ -78,12 +78,12 @@ const AccountNav = ({
                 <li>
                   <LocalizedClientLink
                     href="/account/orders"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    className="flex min-h-12 items-center justify-between border-b border-[var(--hp-line)] py-3"
                     data-testid="orders-link"
                   >
                     <div className="flex items-center gap-x-2">
                       <Package size={20} />
-                      <span>Orders</span>
+                      <span>Đơn hàng của tôi</span>
                     </div>
                     <ChevronDown className="transform -rotate-90" />
                   </LocalizedClientLink>
@@ -91,13 +91,13 @@ const AccountNav = ({
                 <li>
                   <button
                     type="button"
-                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8 w-full"
+                    className="flex min-h-12 w-full items-center justify-between border-b border-[var(--hp-line)] py-3"
                     onClick={handleLogout}
                     data-testid="logout-button"
                   >
                     <div className="flex items-center gap-x-2">
                       <ArrowRightOnRectangle />
-                      <span>Log out</span>
+                      <span>Đăng xuất</span>
                     </div>
                     <ChevronDown className="transform -rotate-90" />
                   </button>
@@ -109,18 +109,18 @@ const AccountNav = ({
       </div>
       <div className="hidden small:block" data-testid="account-nav">
         <div>
-          <div className="pb-4">
-            <h3 className="text-base-semi">Account</h3>
+          <div className="border-b border-[var(--hp-line)] pb-3">
+            <h3 className="type-product-title">Tài khoản</h3>
           </div>
-          <div className="text-base-regular">
-            <ul className="flex mb-0 justify-start items-start flex-col gap-y-4">
+          <div className="mt-3 text-sm">
+            <ul className="mb-0 flex flex-col gap-1">
               <li>
                 <AccountNavLink
                   href="/account"
                   route={route!}
                   data-testid="overview-link"
                 >
-                  Overview
+                  Tổng quan
                 </AccountNavLink>
               </li>
               <li>
@@ -129,7 +129,7 @@ const AccountNav = ({
                   route={route!}
                   data-testid="profile-link"
                 >
-                  Profile
+                  Thông tin tài khoản
                 </AccountNavLink>
               </li>
               <li>
@@ -138,7 +138,7 @@ const AccountNav = ({
                   route={route!}
                   data-testid="addresses-link"
                 >
-                  Addresses
+                  Địa chỉ đã lưu
                 </AccountNavLink>
               </li>
               <li>
@@ -147,16 +147,16 @@ const AccountNav = ({
                   route={route!}
                   data-testid="orders-link"
                 >
-                  Orders
+                  Đơn hàng của tôi
                 </AccountNavLink>
               </li>
-              <li className="text-grey-700">
+              <li className="mt-2 border-t border-[var(--hp-line)] pt-3">
                 <button
                   type="button"
                   onClick={handleLogout}
                   data-testid="logout-button"
                 >
-                  Log out
+                  Đăng xuất
                 </button>
               </li>
             </ul>
@@ -186,8 +186,8 @@ const AccountNavLink = ({
   return (
     <LocalizedClientLink
       href={href}
-      className={clx("text-ui-fg-subtle hover:text-ui-fg-base", {
-        "text-ui-fg-base font-semibold": active,
+      className={clx("flex min-h-10 items-center rounded-[var(--hp-radius-control)] px-3 text-[var(--hp-muted)] hover:bg-[var(--hp-paper)] hover:text-[var(--hp-ink)]", {
+        "bg-[var(--hp-accent-soft)] font-semibold text-[var(--hp-accent)]": active,
       })}
       data-testid={dataTestId}
     >

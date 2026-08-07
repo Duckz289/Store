@@ -6,32 +6,16 @@ import Input from "@modules/common/components/input"
 
 import AccountInfo from "../account-info"
 import { HttpTypes } from "@medusajs/types"
-import { updateCustomer } from "@lib/data/customer"
+import { updateCustomerProfile } from "@lib/data/customer"
 
 type MyInformationProps = {
   customer: HttpTypes.StoreCustomer
 }
 
-const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
+const ProfilePhone: React.FC<MyInformationProps> = ({ customer }) => {
   const [successState, setSuccessState] = React.useState(false)
 
-  const updateCustomerPhone = async (
-    _currentState: Record<string, unknown>,
-    formData: FormData
-  ) => {
-    const customer = {
-      phone: formData.get("phone") as string,
-    }
-
-    try {
-      await updateCustomer(customer)
-      return { success: true, error: null }
-    } catch (error) {
-      return { success: false, error: String(error) }
-    }
-  }
-
-  const [state, formAction] = useActionState(updateCustomerPhone, {
+  const [state, formAction] = useActionState(updateCustomerProfile, {
     error: null as string | null,
     success: false,
   })
@@ -47,7 +31,7 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
   return (
     <form action={formAction} className="w-full">
       <AccountInfo
-        label="Phone"
+        label="Số điện thoại"
         currentInfo={`${customer.phone}`}
         isSuccess={successState}
         isError={!!state.error}
@@ -59,9 +43,8 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
           <Input
             label="Phone"
             name="phone"
-            type="phone"
-            autoComplete="phone"
-            required
+            type="tel"
+            autoComplete="tel"
             defaultValue={customer.phone ?? ""}
             data-testid="phone-input"
           />
@@ -71,4 +54,4 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
   )
 }
 
-export default ProfileEmail
+export default ProfilePhone

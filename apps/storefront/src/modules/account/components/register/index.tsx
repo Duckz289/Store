@@ -20,20 +20,17 @@ const Register = ({ setCurrentView }: Props) => {
       className="max-w-sm flex flex-col items-center"
       data-testid="register-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
-      </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+      <h1 className="type-section-title mb-3 text-center">Tạo tài khoản</h1>
+      <p className="type-body mb-5 text-center text-[var(--hp-muted)]">
+        Lưu thông tin cần thiết để xem đơn hàng và địa chỉ đã dùng.
       </p>
       {message?.state === "verification_required" && (
         <div
           className="w-full mb-4 text-center text-base-regular text-ui-fg-base bg-ui-bg-subtle border border-ui-border-base rounded-rounded p-4"
           data-testid="register-verification-message"
         >
-          We sent a verification link to <strong>{message.email}</strong>.
-          Please check your inbox to verify your email, then sign in.
+          Chúng tôi đã gửi liên kết xác minh tới <strong>{message.email}</strong>.
+          Vui lòng kiểm tra hộp thư rồi đăng nhập.
         </div>
       )}
       <form className="w-full flex flex-col" action={formAction}>
@@ -75,39 +72,47 @@ const Register = ({ setCurrentView }: Props) => {
             autoComplete="new-password"
             data-testid="password-input"
           />
+          <Input
+            label="Confirm password"
+            name="password_confirmation"
+            required
+            type="password"
+            autoComplete="new-password"
+            data-testid="password-confirmation-input"
+          />
         </div>
         <ErrorMessage
           error={message?.state === "error" ? message.error : null}
           data-testid="register-error"
         />
         <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
+          Khi tạo tài khoản, bạn đồng ý với{" "}
           <LocalizedClientLink
             href="/content/privacy-policy"
             className="underline"
           >
-            Privacy Policy
+            Chính sách bảo mật
           </LocalizedClientLink>{" "}
           and{" "}
           <LocalizedClientLink
             href="/content/terms-of-use"
             className="underline"
           >
-            Terms of Use
+            Điều khoản sử dụng
           </LocalizedClientLink>
           .
         </span>
         <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+          Tạo tài khoản
         </SubmitButton>
       </form>
       <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Already a member?{" "}
+        Đã có tài khoản?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
           className="underline"
         >
-          Sign in
+          Đăng nhập
         </button>
         .
       </span>

@@ -60,6 +60,38 @@ export const listOrders = async (
     .catch((err) => medusaError(err))
 }
 
+export const listCustomerOrdersPage = async (
+  limit: number = 10,
+  offset: number = 0
+) => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("orders")),
+  }
+
+  return sdk.client
+    .fetch<HttpTypes.StoreOrderListResponse>(`/store/orders`, {
+      method: "GET",
+      query: {
+        limit,
+        offset,
+        order: "-created_at",
+        fields: "*items,+items.metadata,*items.variant,*items.product",
+      },
+      headers,
+      next,
+      cache: "force-cache",
+    })
+    .then(({ orders, count }) => ({
+      orders,
+      count: count ?? orders.length,
+    }))
+    .catch((err) => medusaError(err))
+}
+
 export const createTransferRequest = async (
   state: {
     success: boolean

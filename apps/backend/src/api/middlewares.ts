@@ -36,6 +36,7 @@ import {
 } from "./vietqr-validators"
 
 const adminAuthentication = authenticate("user", ["session", "bearer", "api-key"])
+const customerAuthentication = authenticate("customer", ["session", "bearer"])
 
 const middlewareConfiguration = {
   routes: [
@@ -228,6 +229,11 @@ const middlewareConfiguration = {
       matcher: "/store/repairs",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(CreateStoreRepairSchema)],
+    },
+    {
+      matcher: "/store/orders/:id",
+      methods: ["GET"],
+      middlewares: [customerAuthentication],
     },
     {
       matcher: "/store/repairs/:code",

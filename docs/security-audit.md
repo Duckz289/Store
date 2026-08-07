@@ -134,6 +134,27 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
 - Snapshot: [`security/pnpm-audit-milestone-2-repair-2026-08-06.json`](security/pnpm-audit-milestone-2-repair-2026-08-06.json) và [`security/pnpm-audit-milestone-2-repair-2026-08-06.csv`](security/pnpm-audit-milestone-2-repair-2026-08-06.csv).
 - Sáu high đã risk-accept trước đó không thay đổi phạm vi, biện pháp giảm thiểu hay hạn 2026-09-06. Milestone 2 vẫn không production-approved.
 
+## Customer Account Foundation — dependency check 07/08/2026
+
+- Milestone không thêm package, không thay `pnpm-lock.yaml` và không thay
+  Medusa/Next major version. Auth và Customer Module dùng primitive `2.18.0`
+  đã có trong workspace.
+- Live exporter ngày 07/08/2026 xác nhận production graph **17 finding / 17
+  advisory: 0 critical, 6 high đã risk-accept, 11 moderate, 0 low**.
+  Development-only graph có **17 finding: 9 high, 4 moderate, 4 low**;
+  hai high `js-yaml` mới (registry IDs `1138114`, `1138115`) chỉ đi qua Jest
+  và ESLint tooling, không có đường chạy trong backend/storefront runtime.
+  Đây là thay đổi advisory database, không phải dependency resolution mới.
+- Không có dependency resolution, production critical/high hoặc runtime
+  reachability mới do milestone account. Snapshot live:
+  [`security/pnpm-audit-current.json`](security/pnpm-audit-current.json) và
+  [`security/pnpm-audit-current.csv`](security/pnpm-audit-current.csv).
+- Account thêm route override để vá ownership native order-detail; đây là
+  source/workflow authorization, không phát sinh npm advisory.
+- Risk acceptance sáu high và các biện pháp hiện có giữ nguyên. HTTP
+  integration gate chưa pass trong workspace vì PostgreSQL test database
+  không reachable; không coi exception hạ tầng này là security approval.
+
 ## Milestone 3 VietQR — kiểm tra dependency 06/08/2026
 
 Live exporter tạo hai artifact:

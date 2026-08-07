@@ -7,7 +7,6 @@ import {
 import useToggleState from "@lib/hooks/use-toggle-state"
 import { PencilSquare as Edit, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import CountrySelect from "@modules/checkout/components/country-select"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
 import Modal from "@modules/common/components/modal"
@@ -16,13 +15,11 @@ import Spinner from "@modules/common/icons/spinner"
 import React, { useActionState, useEffect, useState } from "react"
 
 type EditAddressProps = {
-  region: HttpTypes.StoreRegion
   address: HttpTypes.StoreCustomerAddress
   isActive?: boolean
 }
 
 const EditAddress: React.FC<EditAddressProps> = ({
-  region,
   address,
   isActive = false,
 }) => {
@@ -63,7 +60,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
     <>
       <div
         className={clx(
-          "border rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between transition-colors",
+            "min-h-[220px] h-full w-full rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] p-5 transition-colors",
           {
             "border-gray-900": isActive,
           }
@@ -106,7 +103,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
             data-testid="address-edit-button"
           >
             <Edit />
-            Edit
+            Sửa
           </button>
           <button
             className="text-small-regular text-ui-fg-base flex items-center gap-x-2"
@@ -114,14 +111,14 @@ const EditAddress: React.FC<EditAddressProps> = ({
             data-testid="address-delete-button"
           >
             {removing ? <Spinner /> : <Trash />}
-            Remove
+            Xóa
           </button>
         </div>
       </div>
 
       <Modal isOpen={state} close={close} data-testid="edit-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Edit address</Heading>
+          <Heading className="mb-2">Cập nhật địa chỉ</Heading>
         </Modal.Title>
         <form action={formAction}>
           <input type="hidden" name="addressId" value={address.id} />
@@ -129,7 +126,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
             <div className="grid grid-cols-1 gap-y-2">
               <div className="grid grid-cols-2 gap-x-2">
                 <Input
-                  label="First name"
+                label="Tên"
                   name="first_name"
                   required
                   autoComplete="given-name"
@@ -137,7 +134,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
                   data-testid="first-name-input"
                 />
                 <Input
-                  label="Last name"
+                label="Họ"
                   name="last_name"
                   required
                   autoComplete="family-name"
@@ -146,14 +143,14 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 />
               </div>
               <Input
-                label="Company"
+                label="Công ty (không bắt buộc)"
                 name="company"
                 autoComplete="organization"
                 defaultValue={address.company || undefined}
                 data-testid="company-input"
               />
               <Input
-                label="Address"
+                label="Địa chỉ"
                 name="address_1"
                 required
                 autoComplete="address-line1"
@@ -161,7 +158,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 data-testid="address-1-input"
               />
               <Input
-                label="Apartment, suite, etc."
+                label="Tòa nhà, căn hộ (không bắt buộc)"
                 name="address_2"
                 autoComplete="address-line2"
                 defaultValue={address.address_2 || undefined}
@@ -169,15 +166,14 @@ const EditAddress: React.FC<EditAddressProps> = ({
               />
               <div className="grid grid-cols-[144px_1fr] gap-x-2">
                 <Input
-                  label="Postal code"
+                  label="Mã bưu chính (không bắt buộc)"
                   name="postal_code"
-                  required
                   autoComplete="postal-code"
                   defaultValue={address.postal_code || undefined}
                   data-testid="postal-code-input"
                 />
                 <Input
-                  label="City"
+                  label="Thành phố / quận huyện"
                   name="city"
                   required
                   autoComplete="locality"
@@ -186,30 +182,43 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 />
               </div>
               <Input
-                label="Province / State"
+                label="Tỉnh / thành phố"
                 name="province"
+                required
                 autoComplete="address-level1"
                 defaultValue={address.province || undefined}
                 data-testid="state-input"
               />
-              <CountrySelect
-                name="country_code"
-                region={region}
-                required
-                autoComplete="country"
-                defaultValue={address.country_code || undefined}
-                data-testid="country-select"
-              />
               <Input
-                label="Phone"
+                label="Số điện thoại (không bắt buộc)"
                 name="phone"
-                autoComplete="phone"
+                type="tel"
+                autoComplete="tel"
                 defaultValue={address.phone || undefined}
                 data-testid="phone-input"
               />
+              <p className="type-product-spec text-[var(--hp-muted)]">
+                Địa chỉ được lưu tại Việt Nam.
+              </p>
+              <label className="flex min-h-11 items-center gap-2 text-sm text-[var(--hp-ink)]">
+                <input
+                  type="checkbox"
+                  name="is_default_shipping"
+                  defaultChecked={address.is_default_shipping}
+                />
+                Dùng làm địa chỉ giao hàng mặc định
+              </label>
+              <label className="flex min-h-11 items-center gap-2 text-sm text-[var(--hp-ink)]">
+                <input
+                  type="checkbox"
+                  name="is_default_billing"
+                  defaultChecked={address.is_default_billing}
+                />
+                Dùng làm địa chỉ thanh toán mặc định
+              </label>
             </div>
             {formState.error && (
-              <div className="text-rose-500 text-small-regular py-2">
+              <div className="type-product-spec py-2 text-[var(--hp-danger)]" role="alert">
                 {formState.error}
               </div>
             )}
@@ -223,9 +232,9 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 className="h-10"
                 data-testid="cancel-button"
               >
-                Cancel
+                Hủy
               </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+              <SubmitButton data-testid="save-button">Lưu địa chỉ</SubmitButton>
             </div>
           </Modal.Footer>
         </form>

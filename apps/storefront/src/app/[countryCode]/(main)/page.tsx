@@ -26,20 +26,36 @@ export default async function Home(props: {
 
   const region = await getRegion(countryCode)
 
-  const [{ collections }, categories, productResult] = await Promise.all([
-    listCollections({
-      fields: "id, handle, title",
-    }),
-    listCategories().catch(() => []),
-    listProducts({
-      regionId: region?.id,
-      queryParams: {
-        limit: 10,
-        fields:
-          "*variants.calculated_price,+variants.inventory_quantity,*images,+thumbnail,+subtitle",
-      },
-    }).catch(() => ({ response: { products: [], count: 0 }, nextPage: null })),
-  ])
+  const { collections } = await listCollections({
+    fields: "id, handle, title",
+  })
+
+  const flashDealCollection = collections.find(
+    (collection) => collection.handle === "flash-deal"
+  )
+  const [categories, productResult, flashDealResult] =
+    await Promise.all([
+      listCategories().catch(() => []),
+      listProducts({
+        regionId: region?.id,
+        queryParams: {
+          limit: 10,
+          fields:
+            "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*images,+thumbnail,+subtitle",
+        },
+      }).catch(() => ({ response: { products: [], count: 0 }, nextPage: null })),
+      flashDealCollection
+        ? listProducts({
+            regionId: region?.id,
+            queryParams: {
+              limit: 5,
+              collection_id: [flashDealCollection.id],
+              fields:
+                "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*images,+thumbnail,+subtitle",
+            },
+          }).catch(() => ({ response: { products: [], count: 0 }, nextPage: null }))
+        : Promise.resolve({ response: { products: [], count: 0 }, nextPage: null }),
+    ])
 
   if (!collections || !region) {
     return null
@@ -47,13 +63,27 @@ export default async function Home(props: {
 
   return (
     <>
-      <Hero categories={categories} products={productResult.response.products} />
+      <Hero
+        categories={categories}
+        products={productResult.response.products}
+        promotionalProducts={flashDealResult.response.products}
+      />
       <CategoryShortcuts categories={categories} />
-      <FlashDeal products={productResult.response.products} />
+      <FlashDeal products={flashDealResult.response.products} />
       <TrustBar />
       <div className="py-6 sm:py-8">
         <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
+          <FeaturedProducts
+            collections={collections.filter(
+              (collection) => collection.handle === "flash-deal"
+            )}
+            region={region}
+            productOverrides={
+              flashDealCollection
+                ? { [flashDealCollection.id]: flashDealResult.response.products }
+                : undefined
+            }
+          />
         </ul>
       </div>
       <section

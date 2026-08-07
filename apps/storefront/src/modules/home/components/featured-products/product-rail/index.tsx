@@ -6,19 +6,24 @@ import SalesProductCard from "@modules/home/components/sales-product-card"
 export default async function ProductRail({
   collection,
   region,
+  products,
 }: {
   collection: HttpTypes.StoreCollection
   region: HttpTypes.StoreRegion
+  products?: HttpTypes.StoreProduct[]
 }) {
-  const {
-    response: { products: pricedProducts },
-  } = await listProducts({
-    regionId: region.id,
-    queryParams: {
-      collection_id: collection.id,
-      fields: "*variants.calculated_price",
-    },
-  })
+  const pricedProducts = products
+    ? products
+    : (
+        await listProducts({
+          regionId: region.id,
+          queryParams: {
+            collection_id: [collection.id],
+            fields:
+              "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels",
+          },
+        })
+      ).response.products
 
   if (!pricedProducts?.length) {
     return null

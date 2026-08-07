@@ -24,6 +24,26 @@ Nếu không còn mã MFA, Owner phải xử lý theo quy trình khôi phục qu
 - Vào **Inventory** để điều chỉnh tồn kho tại stock location đang dùng. Ghi lý do nội bộ cho mọi điều chỉnh và không sửa bảng database trực tiếp.
 - Sau thay đổi quan trọng, kiểm tra lại trang sản phẩm và thêm thử một biến thể vào giỏ hàng.
 
+## Chuẩn catalog và quy trình vận hành
+
+Medusa Admin là nguồn dữ liệu vận hành chính cho catalog. Product Type là **loại
+sản phẩm lớn**; Category là **danh mục khách dùng để duyệt/lọc**; Collection là
+**nhóm marketing như Flash Deal**; Variant là **phiên bản bán được**; SKU là **mã
+duy nhất cho variant**; Inventory là **tồn kho do Medusa quản lý**.
+
+Quy trình shop operator:
+
+1. Tạo product trong **Products**, chọn Product Type và Category.
+2. Tạo variant, mô tả options và gán SKU duy nhất.
+3. Đặt giá trong VND cho region Việt Nam và sales channel đang dùng.
+4. Mở Inventory của variant và nhập tồn tại **Kho chính Hưng Phát**.
+5. Thêm hoặc gỡ product khỏi Collection **Flash Deal** nếu cần.
+6. Publish hoặc unpublish bằng trạng thái native của Medusa.
+
+Flash Deal và các rail sản phẩm trên homepage lấy membership từ Collection trong
+Medusa. Storefront chỉ giữ branding và layout. Chi tiết taxonomy, SKU, mapping
+và ranh giới tương lai xem `docs/catalog-operations.md`.
+
 ## Đơn hàng, COD và khách hàng
 
 - Vào **Orders** để xem đơn và trạng thái fulfillment/payment. Tìm đơn theo mã đơn hoặc email khách.

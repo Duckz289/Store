@@ -83,7 +83,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     queryParams: {
       handle,
       fields:
-        "*variants.calculated_price,+variants.inventory_quantity,*variants.images,*variants.options,*images,+thumbnail,+metadata,+tags,*categories,*collection,*type",
+        "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*variants.images,*variants.options,*images,+thumbnail,+metadata,+tags,*categories,*collection,*type",
     },
   }).then(({ response }) => response.products[0])
 
@@ -118,7 +118,7 @@ export default async function ProductPage(props: Props) {
     queryParams: {
       handle: params.handle,
       fields:
-        "*variants.calculated_price,+variants.inventory_quantity,*variants.images,*variants.options,*images,+thumbnail,+metadata,+tags,*categories,*collection,*type",
+        "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*variants.images,*variants.options,*images,+thumbnail,+metadata,+tags,*categories,*collection,*type",
     },
   }).then(({ response }) => response.products[0])
 

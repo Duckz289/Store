@@ -90,22 +90,19 @@ const PromoTile = ({ product }: { product?: HttpTypes.StoreProduct }) => {
 const Hero = ({
   categories,
   products,
+  promotionalProducts,
 }: {
   categories: HttpTypes.StoreProductCategory[]
   products: HttpTypes.StoreProduct[]
+  promotionalProducts: HttpTypes.StoreProduct[]
 }) => {
   const topCategories = categories
     .filter((category) => !category.parent_category)
     .slice(0, 8)
-  const mainProduct =
-    products.find((product) => product.handle.includes("dien-thoai")) ||
-    products[0]
-  const laptopProduct = products.find((product) =>
-    product.handle.includes("laptop")
-  )
-  const accessoryProduct = products.find((product) =>
-    product.handle.includes("sac-")
-  )
+  const heroProducts = promotionalProducts.length ? promotionalProducts : products
+  const mainProduct = heroProducts[0]
+  const laptopProduct = heroProducts[1]
+  const accessoryProduct = heroProducts[2]
   const mainPrice = mainProduct
     ? getProductPrice({ product: mainProduct }).cheapestPrice
     : null

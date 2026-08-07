@@ -97,6 +97,11 @@ DB_NAME=hungphat_commerce
 
 Set-EnvValue $backendEnvPath "MEDUSA_FF_RBAC" "true"
 Set-EnvValue $backendEnvPath "MFA_STEP_UP_TTL_SECONDS" "600"
+Set-EnvValue $backendEnvPath "STOREFRONT_URL" "http://localhost:8010"
+Set-EnvValue $backendEnvPath "STOREFRONT_DEFAULT_COUNTRY" "vn"
+Set-EnvValue $backendEnvPath "NOTIFICATION_PROVIDER" "sandbox"
+Set-EnvValue $backendEnvPath "NOTIFICATION_OUTBOX_PATH" ".local/notification-outbox.jsonl"
+Set-EnvValue $backendEnvPath "NOTIFICATION_SANDBOX_FAILURE" "false"
 
 if (-not (Test-Path -LiteralPath $storefrontEnvPath)) {
   Write-Utf8NoBom $storefrontEnvPath @"

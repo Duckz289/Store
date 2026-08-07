@@ -7,8 +7,8 @@ Customer account là tùy chọn. Guest checkout vẫn là luồng mặc định
 tự xây: Medusa 2.18.0 sở hữu identity, credential và Customer Module sở hữu hồ
 sơ cùng địa chỉ đã lưu.
 
-Không có ADR mới: milestone này dùng đúng boundary Customer/Auth có sẵn của
-Medusa, không tạo module hoặc quan hệ core mới.
+Foundation không tạo module hoặc quan hệ core mới. Notification delivery được
+ghi riêng trong [ADR-005](adr/ADR-005-customer-notification-provider.md).
 
 ## Audit capability (Medusa 2.18.0 + DTC Starter)
 
@@ -38,11 +38,12 @@ workspace, `@medusajs/auth-emailpass@2.18.0`, và tài liệu chính thức Medu
   `req.auth_context.actor_id` vào `getOrderDetailWorkflow`. Không sửa core.
 - Login và đăng ký trả thông báo chung; không phản chiếu raw backend error,
   password hoặc token.
-- Email reset luôn trả thông báo chung. Workspace hiện chưa có Notification
-  Provider và subscriber gửi `auth.password_reset`, vì vậy **không được xem là
-  delivery-ready hoặc production-approved**. Chỉ bật delivery sau khi chọn
-  provider chính thức, cấu hình secret ngoài source, template `password-reset`,
-  và subscriber không log token/reset URL.
+- Email reset luôn trả thông báo chung. Workspace hiện có Notification Module
+  provider sandbox và subscriber chính thức cho `auth.password_reset`; sandbox
+  chỉ ghi delivery record vào `.local` bị ignore để kiểm thử và không log
+  token/reset URL. Provider SendGrid chính thức có thể chọn bằng env khi có
+  credential sandbox, nhưng milestone vẫn **chưa production-approved** vì
+  cần provider thật, shared rate limit và observability theo deployment.
 - Địa chỉ Việt Nam dùng country code `vn`, không hard-code quận/huyện. Các
   trường bắt buộc và giới hạn độ dài được kiểm tra trong server action trước
   khi gọi Store API.
@@ -65,11 +66,9 @@ server-side; khi không có đơn, UI trả empty state thay vì suy đoán dữ
 
 ## Hạn chế/việc tiếp theo có chủ đích
 
-1. Rate limit cho auth/reset cần đặt ở reverse proxy hoặc layer chống abuse có
-   trạng thái dùng chung. Workspace chưa có layer đó; không thêm in-memory
-   limiter chỉ để tạo cảm giác an toàn.
-2. Email delivery/reset end-to-end cần lựa chọn Notification Provider và
-   credential/template ngoài source. Đây là authority/deployment decision còn
-   mở, không được giả lập webhook hay tự gửi token.
+1. Rate limit trong workspace chỉ là in-memory guard cho development; production
+   cần reverse proxy hoặc layer chống abuse có trạng thái dùng chung.
+2. Email delivery/reset end-to-end vẫn cần chọn provider thật và
+   credential/template ngoài source. Không giả lập webhook hay tự gửi token.
 3. Customer repair history cần endpoint serializer riêng, ownership test và
    privacy review; không nối trực tiếp vào Repair Module trong milestone này.

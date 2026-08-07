@@ -28,6 +28,8 @@ import {
 } from "./repair-validators"
 import { captureAuditTrail } from "./middlewares/audit-trail"
 import { blockNativeVietQrRefund } from "./middlewares/block-native-vietqr-refund"
+import { auditPasswordRecovery } from "./middlewares/password-recovery-audit"
+import { passwordRecoveryRateLimit } from "./middlewares/password-recovery-rate-limit"
 import { requireMfaStepUp } from "./middlewares/require-mfa-step-up"
 import { revokeMfaAssurance } from "./middlewares/revoke-mfa-assurance"
 import {
@@ -40,6 +42,16 @@ const customerAuthentication = authenticate("customer", ["session", "bearer"])
 
 const middlewareConfiguration = {
   routes: [
+    {
+      matcher: "/auth/customer/emailpass/reset-password",
+      methods: ["POST"],
+      middlewares: [auditPasswordRecovery, passwordRecoveryRateLimit],
+    },
+    {
+      matcher: "/auth/customer/emailpass/update",
+      methods: ["POST"],
+      middlewares: [auditPasswordRecovery, passwordRecoveryRateLimit],
+    },
     {
       matcher: /^\/auth\/(user|mfa|session)(\/.*)?$/,
       middlewares: [captureAuditTrail],

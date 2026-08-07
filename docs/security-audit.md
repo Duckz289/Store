@@ -155,6 +155,33 @@ Lần lint đầu trong sandbox bị `EPERM` khi Medusa CLI đọc `C:\Users\Adm
   integration gate chưa pass trong workspace vì PostgreSQL test database
   không reachable; không coi exception hạ tầng này là security approval.
 
+## Customer account notifications and runtime verification — 07/08/2026
+
+- This milestone adds no package and does not change `pnpm-lock.yaml`. The
+  security graph therefore remains the previously accepted baseline: **0
+  critical, 6 risk-accepted high, 11 moderate production findings**, with no
+  new critical/high advisory or dependency resolution.
+- Password recovery uses Medusa 2.18.0's native `auth.password_reset` event,
+  official Notification Module provider boundary, and native one-time reset
+  token. Core Medusa source is unchanged.
+- The local provider writes only to the ignored `.local` outbox for test
+  inspection. Unlike Medusa's local notification provider, it does not log
+  notification data, so reset tokens, URLs, and recipient PII do not enter
+  application logs. The outbox is development-only and is not production
+  delivery approval.
+- Recovery request/update and notification delivery audit events store a
+  SHA-256 identifier hash and correlation ID; raw email, password, token, URL,
+  and provider secret are excluded. The route keeps non-enumerating responses.
+- A bounded in-memory limiter is enabled for local development. Production
+  deployment must add a shared edge/Redis limiter before exposing multiple
+  backend instances. Provider failures are generic to callers and observable
+  without recipient/token disclosure.
+- Runtime gates completed against local PostgreSQL/backend/storefront: HTTP
+  integration (5 suites, 16 tests), Store API smoke, register/login/logout,
+  profile update, address CRUD, order history/ownership, and guest checkout.
+  Production approval remains blocked until a real provider sandbox,
+  deployment-specific monitoring, and shared rate limiting are configured.
+
 ## Milestone 3 VietQR — kiểm tra dependency 06/08/2026
 
 Live exporter tạo hai artifact:

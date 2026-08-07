@@ -92,7 +92,8 @@ Exit criteria: contract test dùng sandbox/mock chính thức; duplicate/out-of-
 Mục tiêu: thêm account tùy chọn cho customer mà không biến account thành
 điều kiện checkout và không trộn customer actor với Admin Auth/RBAC.
 
-Trạng thái: **đã triển khai nền tảng cho development nội bộ; chưa production-approved**.
+Trạng thái: **đã triển khai và đóng gate runtime cho development nội bộ;
+chưa production-approved**.
 
 - Dùng native Customer Module và `emailpass` Auth Provider của Medusa 2.18.0;
   guest checkout vẫn first-class, customer ID luôn derive từ authenticated
@@ -104,20 +105,23 @@ Trạng thái: **đã triển khai nền tảng cho development nội bộ; chư
   list route có filter. Route override trong `src/api/store/orders/[id]` bắt
   customer authentication và truyền `customer_id` từ `auth_context` vào
   official `getOrderDetailWorkflow`; core không bị sửa.
-- Workspace chưa có Notification Provider/subscriber cho `auth.password_reset`.
-  Recovery UI không được coi là delivery-ready cho tới khi có provider chính
-  thức, template và secret ngoài source. Không thêm provider giả hoặc log reset
-  token.
+- Workspace có Notification Module sandbox provider/subscriber cho
+  `auth.password_reset`; delivery record local bị ignore và không log reset
+  token. Provider SendGrid chính thức có thể bật qua backend env khi có sandbox
+  credential. Production vẫn cần provider thật, shared rate limit và
+  observability; không đưa secret/token vào source hoặc log.
 - Repair linking mới chỉ giữ boundary; chưa mở customer repair dashboard hoặc
   expose repair PII.
 
-Unit tests hiện pass (36 tests) và security exporter không phát hiện production
-critical/high mới; snapshot live ghi nhận 0 critical, 6 production high đã
-risk-accept, 11 moderate, cùng 17 development-only findings (9 high, 4
-moderate, 4 low). Exit gate còn mở: chạy HTTP integration với PostgreSQL
-reachable để kiểm tra customer A/B ownership, address CRUD và order detail
-override; chạy Store API/guest checkout regression, Admin auth/MFA smoke và
-responsive/accessibility review sau khi môi trường test được khởi động.
+Unit tests hiện pass (40 tests), HTTP integration pass (5 suites, 16 tests),
+Store API smoke, register/login/logout/profile/address/order ownership, guest
+checkout và Admin auth/MFA smoke đều đã được kiểm chứng với
+PostgreSQL/backend/storefront local. Security exporter không phát hiện
+production critical/high mới; snapshot live ghi nhận 0 critical, 6
+production high đã risk-accept, 11 moderate và 17 development-only findings
+(9 high, 4 moderate, 4 low). Account runtime gate đã đóng cho development nội
+bộ; production vẫn cần provider email thật, shared rate limit và deployment
+observability.
 
 ## Gate chung cho mọi milestone
 

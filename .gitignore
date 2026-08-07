@@ -25,6 +25,9 @@ coverage
 **/build
 **/dist
 
+# Medusa local file provider output
+apps/backend/static/
+
 # Misc
 *.pem
 

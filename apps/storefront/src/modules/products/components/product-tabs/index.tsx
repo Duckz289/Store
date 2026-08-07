@@ -1,6 +1,7 @@
 import { HttpTypes } from "@medusajs/types"
 import { ShieldCheck, TruckFast } from "@medusajs/icons"
 import Accordion from "./accordion"
+import { asCatalogProduct } from "types/catalog"
 
 type ProductTabsProps = {
   product: HttpTypes.StoreProduct
@@ -16,15 +17,26 @@ const metadataValue = (metadata: Record<string, unknown> | null | undefined, key
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
+  const catalog = asCatalogProduct(product).catalog
   const warranty = metadataValue(product.metadata, ["warranty", "warranty_period", "bao_hanh"])
   const shipping = metadataValue(product.metadata, ["shipping", "shipping_note", "delivery"])
-  const specifications = [
+  const nativeSpecifications = [
     ["Chất liệu", product.material],
     ["Xuất xứ", product.origin_country],
     ["Loại sản phẩm", product.type?.value],
     ["Khối lượng", product.weight ? `${product.weight} g` : null],
     ["Kích thước", product.length && product.width && product.height ? `${product.length} × ${product.width} × ${product.height}` : null],
   ].filter((item): item is [string, string] => Boolean(item[1]))
+  const specifications = [
+    ...(catalog?.specifications?.items ?? []).map(
+      (item) =>
+        [
+          item.label,
+          `${item.value}${item.unit ? ` ${item.unit}` : ""}`,
+        ] as [string, string]
+    ),
+    ...nativeSpecifications,
+  ]
 
   return (
     <div className="rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] px-5">

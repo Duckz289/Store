@@ -3,15 +3,18 @@ import { getProductImage } from "@lib/util/product-image"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
+import { asCatalogProduct } from "types/catalog"
 
 const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
   const { cheapestPrice } = getProductPrice({ product })
   const image = getProductImage(product)
+  const catalog = asCatalogProduct(product).catalog
   const stock = product.variants?.reduce(
     (total, variant) => total + Math.max(0, variant.inventory_quantity || 0),
     0
   )
   const specification =
+    [catalog?.brand?.name, catalog?.model].filter(Boolean).join(" · ") ||
     product.subtitle ||
     product.variants?.[0]?.title ||
     "Thông tin cấu hình được cập nhật theo phiên bản"
@@ -33,7 +36,7 @@ const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
         {image ? (
           <Image
             src={image}
-            alt={product.title}
+            alt={catalog?.media_alt_text?.[image] || product.title}
             fill
             sizes="(max-width: 640px) 78vw, (max-width: 1280px) 33vw, 280px"
             className="object-contain p-3 transition-transform duration-200 group-hover:scale-[1.02]"

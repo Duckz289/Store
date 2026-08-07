@@ -77,6 +77,11 @@ export default async function PaginatedProducts({
     sortBy,
     countryCode,
     optionValueIds,
+    merchandisingContext: categoryId
+      ? { kind: "categories", id: categoryId }
+      : collectionId
+      ? { kind: "collections", id: collectionId }
+      : undefined,
   })
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)

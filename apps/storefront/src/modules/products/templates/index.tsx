@@ -13,9 +13,10 @@ type ProductTemplateProps = {
   region: HttpTypes.StoreRegion
   countryCode: string
   images: HttpTypes.StoreProductImage[]
+  preview?: boolean
 }
 
-const ProductTemplate = ({ product, region, countryCode, images }: ProductTemplateProps) => {
+const ProductTemplate = ({ product, region, countryCode, images, preview = false }: ProductTemplateProps) => {
   if (!product?.id) notFound()
 
   return (
@@ -30,7 +31,12 @@ const ProductTemplate = ({ product, region, countryCode, images }: ProductTempla
           <ImageGallery product={product} images={images} />
           <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-28 lg:self-start">
             <ProductInfo product={product} />
-            <ProductActionsWrapper id={product.id} region={region} />
+            <ProductActionsWrapper
+              id={product.id}
+              region={region}
+              product={preview ? product : undefined}
+              disabled={preview}
+            />
             <ProductTabs product={product} />
           </div>
         </div>

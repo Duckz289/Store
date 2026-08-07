@@ -11,6 +11,8 @@ import "../policies/repair"
 import "../policies/vietqr"
 import { ListAuditEventsSchema } from "./admin/security/audit-events/route"
 import { VerifyMfaStepUpSchema } from "./admin/security/mfa/challenges/[id]/verify/route"
+import { CreateCatalogBrandSchema } from "./admin/catalog/brands/route"
+import { UpdateProductCatalogSchema } from "./admin/products/[id]/catalog/route"
 import {
   AddRepairAttachmentSchema,
   AddRepairPartUsageSchema,
@@ -32,6 +34,7 @@ import { auditPasswordRecovery } from "./middlewares/password-recovery-audit"
 import { passwordRecoveryRateLimit } from "./middlewares/password-recovery-rate-limit"
 import { requireMfaStepUp } from "./middlewares/require-mfa-step-up"
 import { revokeMfaAssurance } from "./middlewares/revoke-mfa-assurance"
+import { validateUniqueVariantSkus } from "./middlewares/validate-unique-variant-skus"
 import {
   ConfirmVietQrPaymentSchema,
   RefundVietQrPaymentSchema,
@@ -65,6 +68,26 @@ const middlewareConfiguration = {
       matcher: /^\/admin(\/.*)?$/,
       methods: ["POST", "PUT", "PATCH", "DELETE"],
       middlewares: [captureAuditTrail, requireMfaStepUp],
+    },
+    {
+      matcher: "/admin/products",
+      methods: ["POST"],
+      middlewares: [validateUniqueVariantSkus],
+    },
+    {
+      matcher: "/admin/products/:id",
+      methods: ["POST"],
+      middlewares: [validateUniqueVariantSkus],
+    },
+    {
+      matcher: "/admin/products/:id/variants",
+      methods: ["POST"],
+      middlewares: [validateUniqueVariantSkus],
+    },
+    {
+      matcher: "/admin/products/:id/variants/:variant_id",
+      methods: ["POST"],
+      middlewares: [validateUniqueVariantSkus],
     },
     {
       matcher: "/admin/security/mfa/challenges",
@@ -116,6 +139,37 @@ const middlewareConfiguration = {
           operation: PolicyOperation.read,
         },
       ],
+    },
+    {
+      matcher: "/admin/catalog/brands",
+      methods: ["GET"],
+      middlewares: [adminAuthentication],
+    },
+    {
+      matcher: "/admin/catalog/brands",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(CreateCatalogBrandSchema),
+      ],
+    },
+    {
+      matcher: "/admin/products/:id/catalog",
+      methods: ["GET"],
+      middlewares: [adminAuthentication],
+    },
+    {
+      matcher: "/admin/products/:id/catalog",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(UpdateProductCatalogSchema),
+      ],
+    },
+    {
+      matcher: "/admin/products/:id/preview",
+      methods: ["POST"],
+      middlewares: [adminAuthentication],
     },
     {
       matcher: /^\/admin\/repairs(\/.*)?$/,

@@ -1,4 +1,5 @@
 import {
+  CATALOG_BRANDS,
   CATALOG_CATEGORIES,
   CATALOG_COLLECTIONS,
   CATALOG_PRODUCTS,
@@ -52,10 +53,22 @@ describe("catalog seed contract", () => {
     for (const product of CATALOG_PRODUCTS) {
       expect(product.type).toBeTruthy()
       expect(product.category).toBeTruthy()
+      expect(product.brand).toBeTruthy()
+      expect(product.model).toBeTruthy()
+      expect(product.image).toMatch(/\.webp$/)
+      expect(product.specifications.length).toBeGreaterThan(0)
       for (const variant of product.variants) {
         expect(variant.price).toBeGreaterThan(0)
         expect(variant.sku).toMatch(/^[A-Z0-9-]+$/)
       }
     }
+  })
+
+  it("defines stable unique Brand identities for product relationships", () => {
+    const handles = CATALOG_BRANDS.map((brand) => brand.handle)
+    expect(new Set(handles).size).toBe(handles.length)
+    expect(
+      CATALOG_PRODUCTS.every((product) => handles.includes(product.brand))
+    ).toBe(true)
   })
 })

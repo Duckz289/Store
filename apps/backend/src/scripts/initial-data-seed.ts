@@ -1,4 +1,6 @@
 import { MedusaContainer } from "@medusajs/framework"
+import { readFile } from "fs/promises"
+import { resolve } from "path"
 import {
   ContainerRegistrationKeys,
   MedusaError,
@@ -27,6 +29,7 @@ import {
   updateProductVariantsWorkflow,
 } from "@medusajs/medusa/core-flows"
 import {
+  CATALOG_BRANDS,
   CATALOG_CATEGORIES,
   CATALOG_COLLECTIONS,
   CATALOG_PRODUCTS,
@@ -34,6 +37,9 @@ import {
   COLLECTION_PRODUCT_HANDLES,
   assertUniqueCatalogSkus,
 } from "./catalog"
+import { CATALOG_MODULE } from "../modules/catalog"
+import CatalogModuleService from "../modules/catalog/service"
+import { normalizeCatalogProfile } from "../utils/catalog-schema"
 import {
   VIETNAM_FREE_SHIPPING_THRESHOLD,
   VIETNAM_STANDARD_SHIPPING_FEE,
@@ -726,6 +732,147 @@ async function ensureProducts(
   return { productCount: allProducts.length, variantCount: allVariants.length }
 }
 
+async function ensureCatalogExtensions(container: MedusaContainer) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const link = container.resolve(ContainerRegistrationKeys.LINK)
+  const fileService = container.resolve(Modules.FILE)
+  const catalogService = container.resolve<CatalogModuleService>(CATALOG_MODULE)
+  const { data: existingBrands } = await query.graph({
+    entity: "catalog_brand",
+    fields: ["id", "name", "handle"],
+  })
+  const brands = new Map<string, QueryRecord>()
+
+  for (const expected of CATALOG_BRANDS) {
+    const byHandle = existingBrands.filter(
+      (brand) => brand.handle === expected.handle
+    )
+    const byName = existingBrands.filter((brand) => brand.name === expected.name)
+    const handleMatch = expectAtMostOne(
+      byHandle,
+      `brand handle "${expected.handle}"`
+    )
+    const nameMatch = expectAtMostOne(byName, `brand "${expected.name}"`)
+
+    if (handleMatch && nameMatch && handleMatch.id !== nameMatch.id) {
+      throwCatalogConflict(
+        `brand name "${expected.name}" and handle "${expected.handle}" refer to different records`
+      )
+    }
+
+    const brand = handleMatch || nameMatch
+    if (brand) {
+      if (brand.name !== expected.name || brand.handle !== expected.handle) {
+        throwCatalogConflict(
+          `brand "${expected.handle}" conflicts with the seeded identity`
+        )
+      }
+      brands.set(expected.handle, brand)
+      continue
+    }
+
+    const created = await catalogService.createCatalogBrands(expected)
+    brands.set(expected.handle, created)
+  }
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: [
+      "id",
+      "handle",
+      "title",
+      "thumbnail",
+      "images.*",
+      "categories.*",
+      "collection.*",
+      "catalog.*",
+      "catalog.brand.*",
+    ],
+    filters: { handle: CATALOG_PRODUCTS.map((product) => product.handle) },
+  })
+  const productsByHandle = new Map(
+    products.map((product) => [product.handle, product])
+  )
+
+  for (const [position, expected] of CATALOG_PRODUCTS.entries()) {
+    const product = productsByHandle.get(expected.handle)
+    const brand = brands.get(expected.brand)
+    if (!product || !brand) {
+      throwCatalogConflict(
+        `missing product or brand extension identity for "${expected.handle}"`
+      )
+    }
+
+    let imageUrl = product.thumbnail || product.images?.[0]?.url
+    if (!imageUrl) {
+      const imagePath = resolve(
+        process.cwd(),
+        "../storefront/public/images/products",
+        expected.image
+      )
+      let content: Buffer
+      try {
+        content = await readFile(imagePath)
+      } catch {
+        throwCatalogConflict(
+          `seed media is missing for product "${expected.handle}" at ${imagePath}`
+        )
+      }
+      const file = await fileService.createFiles({
+        filename: expected.image,
+        mimeType: "image/webp",
+        content: content.toString("base64"),
+        access: "public",
+      })
+      imageUrl = file.url
+      await updateProductsWorkflow(container).run({
+        input: {
+          products: [
+            {
+              id: product.id,
+              thumbnail: imageUrl,
+              images: [{ url: imageUrl }],
+            },
+          ],
+        },
+      })
+    }
+
+    if (product.catalog?.id) {
+      if (
+        product.catalog.brand?.id &&
+        product.catalog.brand.id !== brand.id
+      ) {
+        throwCatalogConflict(
+          `product "${expected.handle}" is assigned to a different Brand`
+        )
+      }
+      continue
+    }
+
+    const categoryId = product.categories?.[0]?.id
+    const collectionId = product.collection?.id
+    const normalized = normalizeCatalogProfile({
+      model: expected.model,
+      specifications: expected.specifications,
+      media_alt_text: imageUrl ? { [imageUrl]: expected.title } : {},
+      merchandising: {
+        categories: categoryId ? { [categoryId]: position } : {},
+        collections: collectionId ? { [collectionId]: position } : {},
+        homepage: { "flash-deal": position },
+      },
+    })
+    const profile = await catalogService.createCatalogProductProfiles({
+      ...normalized,
+      brand_id: brand.id,
+    })
+    await link.create({
+      [Modules.PRODUCT]: { product_id: product.id },
+      [CATALOG_MODULE]: { catalog_product_profile_id: profile.id },
+    })
+  }
+}
+
 export default async function initialDataSeed({
   container,
 }: {
@@ -745,6 +892,7 @@ export default async function initialDataSeed({
     })).data[0]?.id,
     stockLocationId: operationalData.stockLocation.id,
   }, entities)
+  await ensureCatalogExtensions(container)
 
   const publishableKeyQuery = container.resolve(ContainerRegistrationKeys.QUERY)
   const { data: publishableKeys } = await publishableKeyQuery.graph({

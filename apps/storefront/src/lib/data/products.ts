@@ -70,7 +70,7 @@ export const listProducts = async ({
           offset,
           region_id: region?.id,
           fields:
-            "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*variants.images,*variants.options,+metadata,+tags,*categories,*collection,*type,",
+            "*variants.calculated_price,+variants.inventory_quantity,*variants.inventory_items.inventory.location_levels,*variants.images,*variants.options,+metadata,+tags,*categories,*collection,*type,+catalog.*,+catalog.brand.*",
           ...queryParams,
         },
         headers,
@@ -138,12 +138,17 @@ export const listProductsWithSort = async ({
   sortBy = "created_at",
   countryCode,
   optionValueIds,
+  merchandisingContext,
 }: {
   page?: number
   queryParams?: ProductListQueryParams
   sortBy?: SortOptions
   countryCode: string
   optionValueIds?: OptionValueIds
+  merchandisingContext?: {
+    kind: "categories" | "collections" | "homepage"
+    id: string
+  }
 }): Promise<{
   response: { products: HttpTypes.StoreProduct[]; count: number }
   nextPage: number | null
@@ -166,7 +171,7 @@ export const listProductsWithSort = async ({
     countryCode,
   })
 
-  const sortedProducts = sortProducts(products, sortBy)
+  const sortedProducts = sortProducts(products, sortBy, merchandisingContext)
 
   const pageParam = (page - 1) * limit
 

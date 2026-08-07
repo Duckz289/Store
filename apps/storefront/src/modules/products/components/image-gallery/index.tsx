@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "@medusajs/icons"
 import { getProductImage } from "@lib/util/product-image"
 import Image from "next/image"
 import { useMemo, useState } from "react"
+import { asCatalogProduct } from "types/catalog"
 
 type ImageGalleryProps = {
   product: HttpTypes.StoreProduct
@@ -12,6 +13,7 @@ type ImageGalleryProps = {
 }
 
 const ImageGallery = ({ product, images }: ImageGalleryProps) => {
+  const mediaAltText = asCatalogProduct(product).catalog?.media_alt_text
   const galleryImages = useMemo(() => {
     const sourceImages = images.filter((image) => image.url)
     const fallback = getProductImage(product)
@@ -49,7 +51,13 @@ const ImageGallery = ({ product, images }: ImageGalleryProps) => {
               aria-label={`Xem hình ${index + 1} của ${product.title}`}
               aria-current={activeIndex === index ? "true" : undefined}
             >
-              <Image src={image.url!} alt="" fill sizes="64px" className="object-contain p-1" />
+              <Image
+                src={image.url!}
+                alt={mediaAltText?.[image.url!] || `${product.title} ${index + 1}`}
+                fill
+                sizes="64px"
+                className="object-contain p-1"
+              />
             </button>
           ))}
         </div>
@@ -57,7 +65,7 @@ const ImageGallery = ({ product, images }: ImageGalleryProps) => {
       <div className="group relative order-1 aspect-square overflow-hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] sm:order-2">
         <Image
           src={activeImage.url}
-          alt={product.title}
+          alt={mediaAltText?.[activeImage.url] || product.title}
           fill
           priority
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 66vw, 760px"

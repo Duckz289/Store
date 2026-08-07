@@ -22,6 +22,13 @@ export const CATALOG_COLLECTIONS = [
   { title: "Ưu đãi nổi bật", handle: "uu-dai-noi-bat" },
 ] as const
 
+export const CATALOG_BRANDS = [
+  { name: "Nova", handle: "nova" },
+  { name: "WorkPro", handle: "workpro" },
+  { name: "Hưng Phát", handle: "hung-phat" },
+  { name: "NetWave", handle: "netwave" },
+] as const
+
 export const CATALOG_PRODUCTS = [
   {
     title: "Điện thoại Nova X1",
@@ -30,6 +37,16 @@ export const CATALOG_PRODUCTS = [
       "Điện thoại 5G màn hình OLED, pin dung lượng lớn và bảo hành 12 tháng.",
     category: "Điện thoại",
     type: "Điện thoại",
+    brand: "nova",
+    model: "Nova X1",
+    image: "dien-thoai-nova-x1.webp",
+    specifications: [
+      { key: "chipset", label: "Chipset", value: "5G Octa-core", position: 0 },
+      { key: "ram", label: "RAM", value: "6 GB / 8 GB", position: 1 },
+      { key: "storage", label: "Bộ nhớ", value: "128 GB / 256 GB", position: 2 },
+      { key: "display", label: "Màn hình", value: "OLED", position: 3 },
+      { key: "battery", label: "Pin", value: "Dung lượng lớn", position: 4 },
+    ],
     options: {
       title: "Cấu hình điện thoại",
       values: ["6 GB / 128 GB", "8 GB / 256 GB"],
@@ -56,6 +73,15 @@ export const CATALOG_PRODUCTS = [
       "Laptop 14 inch dành cho công việc, vỏ kim loại và bảo hành 24 tháng.",
     category: "Laptop",
     type: "Laptop",
+    brand: "workpro",
+    model: "WorkPro 14",
+    image: "laptop-workpro-14.webp",
+    specifications: [
+      { key: "cpu", label: "CPU", value: "Bộ xử lý hiệu năng cao", position: 0 },
+      { key: "ram", label: "RAM", value: "16 GB / 32 GB", position: 1 },
+      { key: "ssd", label: "SSD", value: "512 GB / 1 TB", position: 2 },
+      { key: "display_size", label: "Kích thước màn hình", value: "14", unit: "inch", position: 3 },
+    ],
     options: {
       title: "Cấu hình laptop",
       values: ["16 GB / 512 GB", "32 GB / 1 TB"],
@@ -82,6 +108,14 @@ export const CATALOG_PRODUCTS = [
       "Củ sạc USB-C Power Delivery nhỏ gọn, phù hợp điện thoại và laptop.",
     category: "Phụ kiện",
     type: "Phụ kiện",
+    brand: "hung-phat",
+    model: "HP-C65",
+    image: "sac-nhanh-usb-c-65w.webp",
+    specifications: [
+      { key: "connector", label: "Cổng kết nối", value: "USB-C", position: 0 },
+      { key: "power", label: "Công suất", value: "65", unit: "W", position: 1 },
+      { key: "compatibility", label: "Tương thích", value: "Điện thoại và laptop USB-C PD", position: 2 },
+    ],
     options: {
       title: "Công suất",
       values: ["65 W"],
@@ -102,6 +136,14 @@ export const CATALOG_PRODUCTS = [
       "Router Wi-Fi 6 băng tần kép cho gia đình và văn phòng nhỏ.",
     category: "Thiết bị mạng",
     type: "Thiết bị mạng",
+    brand: "netwave",
+    model: "AX1800",
+    image: "router-wifi-6-ax1800.webp",
+    specifications: [
+      { key: "wifi_standard", label: "Chuẩn Wi-Fi", value: "Wi-Fi 6", position: 0 },
+      { key: "speed_class", label: "Cấp tốc độ", value: "AX1800", position: 1 },
+      { key: "bands", label: "Băng tần", value: "2.4 GHz / 5 GHz", position: 2 },
+    ],
     options: {
       title: "Chuẩn Wi-Fi",
       values: ["Wi-Fi 6 AX1800"],

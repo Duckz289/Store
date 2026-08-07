@@ -3,7 +3,11 @@
 import { ChevronDownMini } from "@medusajs/icons"
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 
-export type SortOptions = "price_asc" | "price_desc" | "created_at"
+export type SortOptions =
+  | "merchandising"
+  | "price_asc"
+  | "price_desc"
+  | "created_at"
 
 type SortProductsProps = {
   sortBy: SortOptions
@@ -13,6 +17,10 @@ type SortProductsProps = {
 }
 
 const sortOptions = [
+  {
+    value: "merchandising",
+    label: "Nổi bật",
+  },
   {
     value: "created_at",
     label: "Mới cập nhật",

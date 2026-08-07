@@ -2,11 +2,17 @@ import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import DealCountdown from "../deal-countdown"
 import SalesProductCard from "../sales-product-card"
+import { sortProducts } from "@lib/util/sort-products"
 
 const FlashDeal = ({ products }: { products: HttpTypes.StoreProduct[] }) => {
   if (!products.length) {
     return null
   }
+
+  const orderedProducts = sortProducts(products, "merchandising", {
+    kind: "homepage",
+    id: "flash-deal",
+  })
 
   return (
     <section className="content-container py-8 sm:py-10" aria-labelledby="flash-deal-heading">
@@ -25,7 +31,7 @@ const FlashDeal = ({ products }: { products: HttpTypes.StoreProduct[] }) => {
         </LocalizedClientLink>
       </div>
       <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
-        {products.slice(0, 5).map((product) => (
+        {orderedProducts.slice(0, 5).map((product) => (
           <li key={product.id} className="w-[78vw] max-w-[290px] shrink-0 snap-start sm:w-auto sm:max-w-none">
             <SalesProductCard product={product} />
           </li>

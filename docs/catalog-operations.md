@@ -17,6 +17,10 @@ not maintain a second product, price, or inventory database.
   pretending that a product belongs to several native collections at once.
 - **Tags**: optional flexible metadata. Tags are not a replacement for Product
   Type, Category, or Collection.
+- **Brand**: manufacturer/consumer brand from the Catalog extension. A Brand has
+  a stable ID, handle, and name; never infer it from a product title or tag.
+- **Model**: product model/family identifier stored in the linked Catalog
+  profile.
 - **Variant**: phiên bản bán được, with its own options, price, SKU, and stock
   relationship.
 - **SKU**: mã duy nhất cho variant.
@@ -30,6 +34,7 @@ parent category relationship; do not compare display labels in storefront code.
 | Data | Source of truth |
 | --- | --- |
 | Product identity, title, handle, media | Medusa Product |
+| Brand, model, specifications, image alt text | Catalog profile linked to Medusa Product |
 | Product Type, Category, Collection | Medusa catalog entities |
 | Variant options and SKU | Medusa Product Variant |
 | VND price and calculated promotion price | Medusa Pricing/Promotion modules |
@@ -38,6 +43,94 @@ parent category relationship; do not compare display labels in storefront code.
 
 The storefront reads published products through the Store API. Draft, rejected,
 or unpublished products must not be made visible by frontend configuration.
+
+## Complete product workflow
+
+### A. Create product
+
+In **Products → Create**, enter the native Medusa product name, description, and
+stable handle. Save as Draft while the product is incomplete. Do not put Brand,
+Model, Category, or price copies in metadata.
+
+### B. Add media
+
+Use the native **Media** section to upload the thumbnail and gallery through the
+configured Medusa File Module. Reorder, replace, or remove images there. After
+saving the product, use **Brand, model and specifications → Image alt text** for
+an accessible description of each current image. Production storage is selected
+through the File Module provider; it is not a storefront concern.
+
+### C. Set Brand and Model
+
+In **Brand, model and specifications**, select an existing Brand or create one
+inline. Brand handles are stable lowercase hyphenated identifiers. Enter Model as
+the manufacturer's model/family value. These fields are linked to the native
+product and are returned to the storefront with it.
+
+### D. Set Type and Category
+
+Use native **Product organization** to select Product Type and one or more
+Categories. Type is the high-level kind; Category is the customer navigation
+hierarchy. Do not use Collection for taxonomy.
+
+### E. Add specifications
+
+Add rows in the catalog widget. Each row has a stable `snake_case` key, display
+label, value, and optional unit. Keys must be unique within the product. Rows are
+ordered explicitly and may vary by Category; the storefront renders the rows it
+receives instead of checking product names.
+
+### F. Add variants and options
+
+Use native **Options** and **Variants**. A physical sellable configuration is a
+variant, not a separate custom product record. Set title, option values, barcode
+only when used, shipping dimensions/weight when relevant, and keep backorder off
+unless the business explicitly allows it.
+
+### G. Assign SKU
+
+Every physical sellable variant must have one non-empty globally unique SKU.
+Use the convention below. The Admin guard reports duplicate SKUs before Medusa's
+native workflow can reuse a variant, and the native unique index remains the
+database constraint. Repair the conflicting variant rather than regenerating
+unrelated valid SKUs.
+
+### H. Set VND base price
+
+Open the variant's native Prices editor, select the Vietnam region/sales channel,
+and set the normal VND base price. Confirm the effective base price in Admin and
+the calculated VND price in Preview. Promotions, coupons, sales, crossed-out
+prices, and price lists are separate work and are not managed by this workflow.
+
+### I. Set inventory
+
+Keep `manage_inventory=true` for normal physical variants and `allow_backorder=false`
+unless explicitly approved. Use native Inventory to link the Inventory Item and
+adjust stock at **Kho chính Hưng Phát**. Inspect stocked, reserved, and available
+quantities in Medusa; never write stock with SQL or product metadata.
+
+### J. Preview product
+
+Save the product, then click **Preview storefront** in the catalog widget. The
+preview page reuses the real Product Card and PDP and provides Desktop/Mobile
+frames. Preview is read-only. Its signed link expires after five minutes, is
+bound to one product, is issued only to an authenticated Admin, is no-store and
+no-index, and does not add to cart or change inventory/order/payment state.
+Unsaved form edits are not included; save before previewing.
+
+### K. Publish or unpublish
+
+Use native product status. Draft/rejected products stay out of normal Store API
+responses. Publish only after media, variant, SKU, VND price, inventory, preview,
+and sales-channel assignment have been checked. Unpublish with the same native
+status control; URLs/handles remain unchanged.
+
+### L. Add or remove from Collection
+
+Use native Product Collection membership for merchandising groups. A product has
+one native primary Collection in this Medusa version. Configure the Collection
+position in the catalog widget separately from each Category and from Homepage
+Flash Deal position. Changing Flash Deal order never changes Category order.
 
 ## Stock-location policy
 
@@ -64,24 +157,11 @@ hyphens and without spaces. For example, `HP-WORKPRO14-16-512`.
 - Flash Deal products come from the Medusa `flash-deal` Collection.
 - The homepage’s secondary rail reuses that same native Collection response so
   membership is controlled in Admin without an extra merchandising database.
+- Category, Collection, and Homepage positions are context-specific values in
+  the linked Catalog profile. Lower values appear first; missing values fall
+  back after positioned products.
 - Prices, variants, and stock are requested from the Store API for the Vietnam
   region and VND sales context.
-
-## Shop-operator workflows
-
-1. **Add a new product**: Admin → Products → Create; enter identity, media,
-   description, Product Type, and Category.
-2. **Add a variant/SKU**: create the sellable option combination, assign a unique
-   SKU, and enable inventory management for physical stock.
-3. **Set VND price**: set the price for the Vietnam region/sales channel in VND.
-4. **Add inventory**: open the variant Inventory action and set stock at Kho chính
-   Hưng Phát.
-5. **Assign category/type**: use Product Organization; do not encode these in
-   tags or frontend labels.
-6. **Add/remove Flash Deal membership**: open the Flash Deal Collection and
-   manage product membership.
-7. **Publish/unpublish**: use Medusa’s native product status. Unpublish when a
-   product should no longer appear in the storefront.
 
 ## Future extension boundaries
 
@@ -96,6 +176,7 @@ The following are deliberately **future work and are not implemented now**:
 - Barcode workflow
 - Reorder point
 - Cost accounting
+- Promotions, coupons, and sale campaigns
 
 Do not introduce a parallel inventory or merchandising database to implement
 these later milestones.

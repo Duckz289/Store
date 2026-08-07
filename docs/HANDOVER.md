@@ -33,12 +33,25 @@ duy nhất cho variant**; Inventory là **tồn kho do Medusa quản lý**.
 
 Quy trình shop operator:
 
-1. Tạo product trong **Products**, chọn Product Type và Category.
-2. Tạo variant, mô tả options và gán SKU duy nhất.
-3. Đặt giá trong VND cho region Việt Nam và sales channel đang dùng.
-4. Mở Inventory của variant và nhập tồn tại **Kho chính Hưng Phát**.
-5. Thêm hoặc gỡ product khỏi Collection **Flash Deal** nếu cần.
-6. Publish hoặc unpublish bằng trạng thái native của Medusa.
+1. **A — Create:** tạo Product, nhập tên, mô tả và handle; giữ trạng thái Draft.
+2. **B — Media:** tải thumbnail/gallery bằng Media native, sắp xếp hoặc thay ảnh;
+   nhập alt text trong widget **Brand, model and specifications**.
+3. **C — Brand/Model:** chọn hoặc tạo Brand có handle ổn định, rồi nhập Model.
+4. **D — Type/Category:** chọn Product Type và Category trong Product organization.
+5. **E — Specifications:** thêm thông số có key `snake_case` duy nhất, label,
+   value và unit; không hardcode theo tên product.
+6. **F — Variants/options:** tạo option và các variant bán được bằng editor native.
+7. **G — SKU:** gán SKU duy nhất cho từng variant; không đổi SKU hợp lệ đang dùng.
+8. **H — VND price:** đặt giá base VND đúng region Việt Nam/sales channel. Promotion,
+   coupon và sale được quản lý riêng, không thuộc quy trình catalog này.
+9. **I — Inventory:** bật manage inventory cho hàng vật lý, giữ backorder tắt và
+   điều chỉnh tồn tại **Kho chính Hưng Phát** bằng Inventory native.
+10. **J — Preview:** lưu product, bấm **Preview storefront**, kiểm tra Product Card
+    và PDP ở Desktop/Mobile. Link chỉ đọc, hết hạn sau 5 phút; edit chưa lưu không hiện.
+11. **K — Publish:** chỉ Publish sau khi kiểm tra media, SKU, giá, tồn kho và preview;
+    dùng status native để unpublish.
+12. **L — Collection:** thêm/gỡ Collection native và đặt thứ tự Collection riêng
+    với thứ tự Category và Homepage Flash Deal.
 
 Flash Deal và các rail sản phẩm trên homepage lấy membership từ Collection trong
 Medusa. Storefront chỉ giữ branding và layout. Chi tiết taxonomy, SKU, mapping
@@ -82,7 +95,7 @@ Thiết lập trong kho secret của môi trường backend, không commit vào 
 
 | Nhóm | Biến cần cấu hình |
 |---|---|
-| Core | `DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `AUTH_MFA_ENCRYPTION_KEY`, `MEDUSA_FF_RBAC`, `MFA_STEP_UP_TTL_SECONDS` |
+| Core | `DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET`, `PRODUCT_PREVIEW_SECRET`, `AUTH_MFA_ENCRYPTION_KEY`, `MEDUSA_FF_RBAC`, `MFA_STEP_UP_TTL_SECONDS` |
 | URL/CORS | `STORE_CORS`, `ADMIN_CORS`, `AUTH_CORS`, `STOREFRONT_URL`, `STOREFRONT_DEFAULT_COUNTRY` |
 | Email | `NOTIFICATION_PROVIDER`, `SENDGRID_API_KEY`, `SENDGRID_FROM` |
 | VietQR (chỉ khi được duyệt) | `VIETQR_ENABLED`, `VIETQR_BANK_BIN`, `VIETQR_ACCOUNT_NUMBER`, `VIETQR_ACCOUNT_NAME`, `VIETQR_CONFIRMATION_SECRET`, `VIETQR_EXPIRY_MINUTES`, `VIETQR_QR_TEMPLATE` |

@@ -8,18 +8,26 @@ import ProductActions from "@modules/products/components/product-actions"
 export default async function ProductActionsWrapper({
   id,
   region,
+  product: previewProduct,
+  disabled = false,
 }: {
   id: string
   region: HttpTypes.StoreRegion
+  product?: HttpTypes.StoreProduct
+  disabled?: boolean
 }) {
-  const product = await listProducts({
-    queryParams: { id: [id] },
-    regionId: region.id,
-  }).then(({ response }) => response.products[0])
+  const product =
+    previewProduct ??
+    (await listProducts({
+      queryParams: { id: [id] },
+      regionId: region.id,
+    }).then(({ response }) => response.products[0]))
 
   if (!product) {
     return null
   }
 
-  return <ProductActions product={product} region={region} />
+  return (
+    <ProductActions product={product} region={region} disabled={disabled} />
+  )
 }

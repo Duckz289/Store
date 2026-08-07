@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { asCatalogProduct } from "types/catalog"
 
 interface MinPricedProduct extends HttpTypes.StoreProduct {
   _minPrice?: number
@@ -13,9 +14,33 @@ interface MinPricedProduct extends HttpTypes.StoreProduct {
  */
 export function sortProducts(
   products: HttpTypes.StoreProduct[],
-  sortBy: SortOptions
+  sortBy: SortOptions,
+  merchandisingContext?: {
+    kind: "categories" | "collections" | "homepage"
+    id: string
+  }
 ): HttpTypes.StoreProduct[] {
-  const sortedProducts = products as MinPricedProduct[]
+  const sortedProducts = [...products] as MinPricedProduct[]
+
+  if (sortBy === "merchandising" && merchandisingContext) {
+    sortedProducts.sort((left, right) => {
+      const leftPosition =
+        asCatalogProduct(left).catalog?.merchandising?.[
+          merchandisingContext.kind
+        ]?.[merchandisingContext.id]
+      const rightPosition =
+        asCatalogProduct(right).catalog?.merchandising?.[
+          merchandisingContext.kind
+        ]?.[merchandisingContext.id]
+
+      return (
+        (leftPosition ?? Number.MAX_SAFE_INTEGER) -
+          (rightPosition ?? Number.MAX_SAFE_INTEGER) ||
+        new Date(right.created_at!).getTime() -
+          new Date(left.created_at!).getTime()
+      )
+    })
+  }
 
   if (["price_asc", "price_desc"].includes(sortBy)) {
     // Precompute the minimum price for each product

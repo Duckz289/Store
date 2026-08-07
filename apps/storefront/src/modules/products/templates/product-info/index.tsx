@@ -1,11 +1,14 @@
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { asCatalogProduct } from "types/catalog"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
 }
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
+  const catalog = asCatalogProduct(product).catalog
+
   return (
     <div id="product-info">
       <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--hp-muted)]">
@@ -21,6 +24,11 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
           </LocalizedClientLink>
         ) : null}
       </div>
+      {catalog?.brand || catalog?.model ? (
+        <p className="mt-3 text-sm font-semibold text-[var(--hp-accent)]">
+          {[catalog.brand?.name, catalog.model].filter(Boolean).join(" · ")}
+        </p>
+      ) : null}
       <h1 className="mt-3 text-[28px] font-bold leading-[1.22] tracking-[-0.02em] text-[var(--hp-ink)] sm:text-[34px]" data-testid="product-title">
         {product.title}
       </h1>

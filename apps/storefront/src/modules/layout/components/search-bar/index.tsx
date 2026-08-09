@@ -110,7 +110,7 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
             placeholder="Bạn muốn tìm sản phẩm nào?"
             aria-label="Tìm kiếm sản phẩm"
             aria-autocomplete="list"
-            className="min-w-0 flex-1 bg-transparent text-[14px] font-normal leading-5 text-[var(--hp-ink)] outline-none placeholder:text-[var(--hp-muted)]"
+            className="min-w-0 flex-1 border-none bg-transparent text-[14px] font-normal leading-5 text-[var(--hp-ink)] outline-none placeholder:text-[var(--hp-muted)] focus:border-none focus:outline-none focus-visible:outline-none focus:ring-0"
           />
         </div>
         {query && (

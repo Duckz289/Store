@@ -9,6 +9,7 @@ import QRCode from "qrcode"
 import { FormEvent, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
+import { clearMfaReturnPath, getMfaReturnPath } from "../../../lib/mfa-return-path"
 import { sdk } from "../../../lib/sdk"
 
 type MfaFactor = {
@@ -61,6 +62,7 @@ const MfaEnrollmentPage = () => {
   const [code, setCode] = useState("")
   const [qrCodeUrl, setQrCodeUrl] = useState("")
   const [qrCodeError, setQrCodeError] = useState(false)
+  const [returnPath] = useState(getMfaReturnPath)
   const mfaText = (key: string, defaultValue: string) =>
     t(`mfa.${key}`, { defaultValue })
 
@@ -164,7 +166,8 @@ const MfaEnrollmentPage = () => {
         { method: "POST", body: { method: "totp", code } }
       ),
     onSuccess: () => {
-      window.location.assign("/app/settings/profile")
+      clearMfaReturnPath()
+      window.location.assign(returnPath)
     },
   })
 

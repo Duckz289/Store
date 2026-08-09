@@ -51,6 +51,29 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes hp-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.hp-marquee-track {
+  display: inline-flex;
+  min-width: max-content;
+  animation: hp-marquee 18s linear infinite;
+  will-change: transform;
+}
+
+.hp-marquee-copy {
+  flex-shrink: 0;
+  padding-right: 4rem;
+  white-space: nowrap;
+}
+
 button,
 input,
 select,
@@ -80,6 +103,15 @@ textarea {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .hp-marquee-track {
+    animation: none;
+    transform: none;
+  }
+
+  .hp-marquee-copy[aria-hidden="true"] {
+    display: none;
   }
 }
 

@@ -15,6 +15,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useMemo, useState } from "react"
 
+import { rememberCurrentAdminPath } from "../lib/mfa-return-path"
 import { sdk } from "../lib/sdk"
 import type {
   CatalogBrand,
@@ -65,6 +66,11 @@ const ProductCatalogWidget = ({
   const queryClient = useQueryClient()
   const [form, setForm] = useState<CatalogForm>(emptyForm)
   const [newBrandName, setNewBrandName] = useState("")
+
+  useEffect(() => {
+    rememberCurrentAdminPath()
+  }, [])
+
   const catalogQuery = useQuery({
     queryKey: ["product-catalog", data.id],
     queryFn: () =>

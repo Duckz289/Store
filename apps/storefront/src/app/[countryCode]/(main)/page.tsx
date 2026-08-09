@@ -1,9 +1,9 @@
 import { Metadata } from "next"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
 import CategoryShortcuts from "@modules/home/components/category-shortcuts"
 import FlashDeal from "@modules/home/components/flash-deal"
+import RecommendedProducts from "@modules/home/components/recommended-products"
 import TrustBar from "@modules/home/components/trust-bar"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { listCategories } from "@lib/data/categories"
@@ -61,6 +61,10 @@ export default async function Home(props: {
     return null
   }
 
+  const recommendedProducts = productResult.response.products.length
+    ? productResult.response.products
+    : flashDealResult.response.products
+
   return (
     <>
       <Hero
@@ -71,21 +75,7 @@ export default async function Home(props: {
       <CategoryShortcuts categories={categories} />
       <FlashDeal products={flashDealResult.response.products} />
       <TrustBar />
-      <div className="py-6 sm:py-8">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts
-            collections={collections.filter(
-              (collection) => collection.handle === "flash-deal"
-            )}
-            region={region}
-            productOverrides={
-              flashDealCollection
-                ? { [flashDealCollection.id]: flashDealResult.response.products }
-                : undefined
-            }
-          />
-        </ul>
-      </div>
+      <RecommendedProducts products={recommendedProducts} />
       <section
         id="repair"
         className="content-container pb-16 pt-4 sm:pb-24"

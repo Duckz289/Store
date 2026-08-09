@@ -23,7 +23,23 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
     <div className="sticky inset-x-0 top-0 z-50">
       <div className="hidden border-b border-[var(--hp-accent-soft)] bg-[var(--hp-accent)] text-white lg:block">
         <div className="content-container flex h-7 items-center justify-between text-[12px] font-medium">
-          <p>Miễn phí giao hàng từ 500K · Hàng chính hãng</p>
+          <div
+            className="hp-marquee min-w-0 flex-1 overflow-hidden"
+            role="region"
+            aria-label="Thông báo cửa hàng"
+          >
+            <span className="sr-only">
+              Miễn phí giao hàng từ 500K. Hàng chính hãng.
+            </span>
+            <div className="hp-marquee-track" aria-hidden="true">
+              <span className="hp-marquee-copy">
+                Miễn phí giao hàng từ 500K · Hàng chính hãng
+              </span>
+              <span className="hp-marquee-copy" aria-hidden="true">
+                Miễn phí giao hàng từ 500K · Hàng chính hãng
+              </span>
+            </div>
+          </div>
           <div className="flex items-center gap-6 text-white/90">
             <LocalizedClientLink href="/#repair" className="hover:text-white">
               Dịch vụ sửa chữa

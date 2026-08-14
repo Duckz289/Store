@@ -30,6 +30,7 @@ apps/backend/static/
 
 # Misc
 *.pem
+**/*.tsbuildinfo
 
 # Debug
 npm-debug.log*

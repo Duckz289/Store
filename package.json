@@ -16,6 +16,7 @@
     "test:checkout-smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/smoke-checkout.ps1",
     "backend:seed": "corepack pnpm --filter @dtc/backend run seed",
     "backend:dev": "corepack pnpm --filter @dtc/backend run dev",
+    "admin:dev": "corepack pnpm --filter @dtc/admin run dev",
     "storefront:dev": "corepack pnpm --filter @dtc/storefront run dev",
     "security:audit:export": "node ./scripts/security/export-pnpm-audit.mjs"
   },

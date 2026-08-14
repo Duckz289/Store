@@ -9,11 +9,19 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SearchBar from "@modules/layout/components/search-bar"
 import SideMenu from "@modules/layout/components/side-menu"
-import { ShoppingBag, ShoppingCart, User, Wrench } from "@medusajs/icons"
+import {
+  Mailbox,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+  Wrench,
+} from "@medusajs/icons"
 
 export default async function Nav({ countryCode }: { countryCode: string }) {
   const [regions, locales, currentLocale, categories] = await Promise.all([
-    listRegions().then((regions: StoreRegion[]) => regions).catch(() => []),
+    listRegions()
+      .then((regions: StoreRegion[]) => regions)
+      .catch(() => []),
     listLocales().catch(() => []),
     getLocale().catch(() => null),
     listCategories().catch(() => [] as HttpTypes.StoreProductCategory[]),
@@ -41,10 +49,13 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
             </div>
           </div>
           <div className="flex items-center gap-6 text-white/90">
-            <LocalizedClientLink href="/#repair" className="hover:text-white">
+            <LocalizedClientLink href="/repair" className="hover:text-white">
               Dịch vụ sửa chữa
             </LocalizedClientLink>
-            <LocalizedClientLink href="/account/orders" className="hover:text-white">
+            <LocalizedClientLink
+              href="/account/orders"
+              className="hover:text-white"
+            >
               Tra cứu đơn hàng
             </LocalizedClientLink>
           </div>
@@ -87,10 +98,18 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
             </LocalizedClientLink>
             <LocalizedClientLink
               className="type-header-label hidden w-[74px] flex-col items-center justify-center gap-1 text-center hover:text-[var(--hp-accent)] lg:flex"
-              href="/#repair"
+              href="/repair"
             >
               <Wrench className="h-5 w-5" />
               Sửa chữa
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              className="type-header-label hidden w-[74px] flex-col items-center justify-center gap-1 text-center hover:text-[var(--hp-accent)] lg:flex"
+              href="/repair/inbox"
+              data-testid="nav-repair-inbox-link"
+            >
+              <Mailbox className="h-5 w-5" />
+              Báo giá
             </LocalizedClientLink>
             <LocalizedClientLink
               className="type-header-label flex w-[70px] flex-col items-center justify-center gap-1 whitespace-nowrap text-center hover:text-[var(--hp-accent)]"

@@ -55,10 +55,23 @@ export type Order = {
   payment_status?: string
   fulfillment_status?: string
   status?: string
-  customer?: { id?: string; first_name?: string; last_name?: string; email?: string }
+  customer?: {
+    id?: string
+    first_name?: string
+    last_name?: string
+    email?: string
+  }
   shipping_address?: Address | null
   billing_address?: Address | null
-  items?: { id: string; title?: string; variant_title?: string; quantity: number; unit_price?: number; total?: number; variant?: { sku?: string | null } }[]
+  items?: {
+    id: string
+    title?: string
+    variant_title?: string
+    quantity: number
+    unit_price?: number
+    total?: number
+    variant?: { sku?: string | null }
+  }[]
 }
 
 export type Address = {
@@ -80,7 +93,12 @@ export type Promotion = {
   status?: string
   starts_at?: string | null
   ends_at?: string | null
-  campaign?: { name?: string | null }
+  campaign?: {
+    id: string
+    name?: string | null
+    starts_at?: string | null
+    ends_at?: string | null
+  }
   application_method?: {
     type?: string
     target_type?: string
@@ -91,9 +109,16 @@ export type Promotion = {
 }
 
 export type RepairStatus =
-  | "intake" | "diagnosis" | "quote" | "awaiting_customer_decision"
-  | "repair" | "quality_assurance" | "return_ready" | "returned"
-  | "closed" | "canceled"
+  | "intake"
+  | "diagnosis"
+  | "quote"
+  | "awaiting_customer_decision"
+  | "repair"
+  | "quality_assurance"
+  | "return_ready"
+  | "returned"
+  | "closed"
+  | "canceled"
 
 export type RepairCase = {
   id: string
@@ -104,19 +129,72 @@ export type RepairCase = {
   sla_due_at?: string | null
   created_at: string
   updated_at: string
-  device?: { device_type: string; brand?: string | null; model: string; serial_number?: string | null; condition_summary?: string; sku?: string | null } | null
-  diagnoses?: { id: string; version: number; severity: string; findings: string; recommended_action: string; diagnosed_by_name?: string | null; completed_at: string }[]
-  quotes?: { id: string; version: number; status: string; currency_code: string; total: number; valid_until?: string | null; items?: { id: string; title: string; sku?: string | null; quantity: number; line_total: number }[] }[]
-  parts?: { id: string; status: string; title: string; sku?: string | null; quantity: number }[]
-  assignments?: { id: string; technician_name: string; assigned_at: string; ended_at?: string | null }[]
-  status_history?: { id: string; from_status?: RepairStatus | null; to_status: RepairStatus; occurred_at: string; sequence: number }[]
+  device?: {
+    device_type: string
+    brand?: string | null
+    model: string
+    serial_number?: string | null
+    condition_summary?: string
+    sku?: string | null
+  } | null
+  diagnoses?: {
+    id: string
+    version: number
+    severity: string
+    findings: string
+    recommended_action: string
+    diagnosed_by_name?: string | null
+    completed_at: string
+  }[]
+  quotes?: {
+    id: string
+    version: number
+    status: string
+    currency_code: string
+    total: number
+    valid_until?: string | null
+    items?: {
+      id: string
+      title: string
+      sku?: string | null
+      quantity: number
+      line_total: number
+    }[]
+  }[]
+  parts?: {
+    id: string
+    status: string
+    title: string
+    sku?: string | null
+    quantity: number
+  }[]
+  assignments?: {
+    id: string
+    technician_name: string
+    assigned_at: string
+    ended_at?: string | null
+  }[]
+  status_history?: {
+    id: string
+    from_status?: RepairStatus | null
+    to_status: RepairStatus
+    occurred_at: string
+    sequence: number
+  }[]
 }
 
 export type InventoryItem = {
   id: string
   sku?: string | null
   title?: string | null
-  location_levels?: { id?: string; location_id?: string; stocked_quantity?: number; reserved_quantity?: number; available_quantity?: number; location?: { name?: string } }[]
+  location_levels?: {
+    id?: string
+    location_id?: string
+    stocked_quantity?: number
+    reserved_quantity?: number
+    available_quantity?: number
+    location?: { name?: string }
+  }[]
 }
 
 export type Customer = {

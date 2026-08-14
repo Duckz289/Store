@@ -43,8 +43,40 @@ export const CreateAdminRepairSchema = z.object({
   sla_due_at: z.string().datetime().nullish(),
 })
 
+export const StoreRepairAttachmentSchema = z.object({
+  file_id: z.string().trim().min(1).max(128),
+  file_reference: z.string().trim().min(1).max(1000),
+  mime_type: z.enum([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+  ]),
+  size_bytes: z
+    .number()
+    .int()
+    .positive()
+    .max(8 * 1024 * 1024),
+  checksum: z
+    .string()
+    .trim()
+    .regex(/^[a-fA-F0-9]{64}$/),
+})
+
 export const CreateStoreRepairSchema = CreateAdminRepairSchema.omit({
   references: true,
+}).extend({
+  attachments: z.array(StoreRepairAttachmentSchema).max(5).optional(),
+})
+
+export const UploadStoreRepairImageSchema = z.object({
+  filename: z.string().trim().min(1).max(180),
+  mime_type: StoreRepairAttachmentSchema.shape.mime_type,
+  content: z
+    .string()
+    .min(4)
+    .max(12 * 1024 * 1024),
 })
 
 export const ListAdminRepairsSchema = z.object({
@@ -124,7 +156,7 @@ export const SaveRepairQuoteSchema = z.object({
         quantity: z.number().int().positive(),
         unit_price: z.number().int(),
         internal_cost: z.number().int().nonnegative().nullish(),
-      })
+      }),
     )
     .min(1)
     .max(100),
@@ -172,6 +204,13 @@ export const AddRepairAttachmentSchema = z.object({
     "handover_document",
   ]),
   mime_type: z.string().trim().min(3).max(128),
-  size_bytes: z.number().int().positive().max(20 * 1024 * 1024),
-  checksum: z.string().trim().regex(/^[a-fA-F0-9]{64}$/),
+  size_bytes: z
+    .number()
+    .int()
+    .positive()
+    .max(20 * 1024 * 1024),
+  checksum: z
+    .string()
+    .trim()
+    .regex(/^[a-fA-F0-9]{64}$/),
 })

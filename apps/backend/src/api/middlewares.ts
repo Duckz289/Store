@@ -27,12 +27,14 @@ import {
   StoreRepairLookupSchema,
   SubmitRepairQuoteSchema,
   TransitionRepairSchema,
+  UploadStoreRepairImageSchema,
 } from "./repair-validators"
 import { captureAuditTrail } from "./middlewares/audit-trail"
 import { blockNativeVietQrRefund } from "./middlewares/block-native-vietqr-refund"
 import { auditPasswordRecovery } from "./middlewares/password-recovery-audit"
 import { passwordRecoveryRateLimit } from "./middlewares/password-recovery-rate-limit"
 import { requireMfaStepUp } from "./middlewares/require-mfa-step-up"
+import { repairIntakeRateLimit } from "./middlewares/repair-intake-rate-limit"
 import { revokeMfaAssurance } from "./middlewares/revoke-mfa-assurance"
 import { validateUniqueVariantSkus } from "./middlewares/validate-unique-variant-skus"
 import {
@@ -40,7 +42,11 @@ import {
   RefundVietQrPaymentSchema,
 } from "./vietqr-validators"
 
-const adminAuthentication = authenticate("user", ["session", "bearer", "api-key"])
+const adminAuthentication = authenticate("user", [
+  "session",
+  "bearer",
+  "api-key",
+])
 const customerAuthentication = authenticate("customer", ["session", "bearer"])
 
 const middlewareConfiguration = {
@@ -200,9 +206,7 @@ const middlewareConfiguration = {
     {
       matcher: "/admin/repairs/:id/contact",
       methods: ["GET"],
-      policies: [
-        { resource: "repair_contact", operation: "read_sensitive" },
-      ],
+      policies: [{ resource: "repair_contact", operation: "read_sensitive" }],
     },
     {
       matcher: "/admin/repairs/:id/transitions",
@@ -231,9 +235,7 @@ const middlewareConfiguration = {
     {
       matcher: "/admin/repairs/:id/assignments",
       methods: ["POST"],
-      middlewares: [
-        validateAndTransformBody(AssignRepairTechnicianSchema),
-      ],
+      middlewares: [validateAndTransformBody(AssignRepairTechnicianSchema)],
       policies: [{ resource: "repair_assignment", operation: "create" }],
     },
     {
@@ -245,9 +247,7 @@ const middlewareConfiguration = {
     {
       matcher: "/admin/repairs/:id/parts/:partId/reverse",
       methods: ["POST"],
-      middlewares: [
-        validateAndTransformBody(ReverseRepairPartUsageSchema),
-      ],
+      middlewares: [validateAndTransformBody(ReverseRepairPartUsageSchema)],
       policies: [{ resource: "repair_part_usage", operation: "reverse" }],
     },
     {
@@ -294,7 +294,19 @@ const middlewareConfiguration = {
     {
       matcher: "/store/repairs",
       methods: ["POST"],
-      middlewares: [validateAndTransformBody(CreateStoreRepairSchema)],
+      middlewares: [
+        repairIntakeRateLimit,
+        validateAndTransformBody(CreateStoreRepairSchema),
+      ],
+    },
+    {
+      matcher: "/store/repair-uploads",
+      methods: ["POST"],
+      bodyParser: { sizeLimit: "13mb" },
+      middlewares: [
+        repairIntakeRateLimit,
+        validateAndTransformBody(UploadStoreRepairImageSchema),
+      ],
     },
     {
       matcher: "/store/orders/:id",
@@ -322,5 +334,5 @@ const middlewareConfiguration = {
 // Medusa 2.18 executes route-level `policies`, but its public middleware
 // configuration type doesn't include that runtime-supported property yet.
 export default defineMiddlewares(
-  middlewareConfiguration as Parameters<typeof defineMiddlewares>[0]
+  middlewareConfiguration as Parameters<typeof defineMiddlewares>[0],
 )

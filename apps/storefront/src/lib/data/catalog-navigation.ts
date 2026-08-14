@@ -6,7 +6,7 @@ import { listProducts } from "./products"
 
 export type CatalogNavigationGroup = {
   categoryId: string
-  brands: { name: string; handle: string; count: number }[]
+  brands: { name: string; handle: string; count: number; logoUrl?: string | null }[]
   products: { id: string; title: string; handle: string }[]
 }
 
@@ -21,7 +21,10 @@ export const getCatalogNavigation = async (countryCode: string) => {
     string,
     {
       categoryId: string
-      brandCounts: Map<string, { name: string; handle: string; count: number }>
+      brandCounts: Map<
+        string,
+        { name: string; handle: string; count: number; logoUrl?: string | null }
+      >
       products: { id: string; title: string; handle: string }[]
     }
   >()
@@ -47,6 +50,7 @@ export const getCatalogNavigation = async (countryCode: string) => {
           name: catalog.brand.name,
           handle: catalog.brand.handle,
           count: (current?.count ?? 0) + 1,
+          logoUrl: catalog.brand.logo_url ?? current?.logoUrl ?? null,
         })
       }
       groups.set(category.id, group)

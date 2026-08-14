@@ -26,7 +26,12 @@ export type Product = {
   }[]
 }
 
-export type CatalogBrand = { id: string; name: string; handle: string }
+export type CatalogBrand = {
+  id: string
+  name: string
+  handle: string
+  logo_url?: string | null
+}
 export type CatalogSpecification = {
   key: string
   label: string

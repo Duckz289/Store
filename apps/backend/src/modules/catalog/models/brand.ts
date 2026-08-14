@@ -7,6 +7,7 @@ const Brand = model
     id: model.id({ prefix: "brand" }).primaryKey(),
     name: model.text(),
     handle: model.text(),
+    logo_url: model.text().nullable(),
     products: model.hasMany(() => ProductCatalogProfile, {
       mappedBy: "brand",
     }),

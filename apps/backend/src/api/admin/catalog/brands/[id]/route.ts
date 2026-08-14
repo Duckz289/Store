@@ -14,6 +14,7 @@ export const UpdateCatalogBrandSchema = z.object({
     .min(1)
     .max(120)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  logo_url: z.string().trim().url().max(2048).nullable().optional(),
 })
 
 type UpdateCatalogBrandBody = z.infer<typeof UpdateCatalogBrandSchema>

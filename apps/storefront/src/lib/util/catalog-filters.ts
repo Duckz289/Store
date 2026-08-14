@@ -16,6 +16,7 @@ export type CatalogFacetValue = {
   value: string
   label: string
   count: number
+  logoUrl?: string | null
 }
 
 export type CatalogFacetGroup = {
@@ -138,6 +139,7 @@ export function buildCatalogFacets(products: HttpTypes.StoreProduct[]) {
         value: brand.handle,
         label: brand.name,
         count: (current?.count ?? 0) + 1,
+        logoUrl: brand.logo_url ?? current?.logoUrl ?? null,
       })
     }
 
@@ -147,7 +149,7 @@ export function buildCatalogFacets(products: HttpTypes.StoreProduct[]) {
       const currentGroup = specificationGroups.get(specification.key) ?? {
         key: specification.key,
         label: specification.label,
-        group: specification.group || "Thông số",
+        group: displaySpecificationGroup(specification.key, specification.group),
         values: [],
         counts: new Map<string, CatalogFacetValue>(),
       }
@@ -169,7 +171,11 @@ export function buildCatalogFacets(products: HttpTypes.StoreProduct[]) {
         ...group,
         values: sortFacetValues(Array.from(counts.values())).slice(0, 16),
       }))
-      .filter((group) => group.values.length > 1)
+      .filter(
+        (group) =>
+          group.values.length > 1 ||
+          ["Cấu hình", "Nhu cầu sử dụng"].includes(group.group),
+      )
       .sort((left, right) => left.label.localeCompare(right.label, "vi"))
       .slice(0, 10),
   } satisfies CatalogFacets
@@ -199,6 +205,21 @@ function normalizeFacetValue(value: string, unit?: string) {
     ? `${normalized} ${normalizedUnit}`
     : normalized
 }
+
+function displaySpecificationGroup(key: string, group?: string) {
+  if (group && group !== "Thông số") return group
+  return CONFIGURATION_SPECIFICATION_KEYS.has(key) ? "Cấu hình" : "Thông số"
+}
+
+const CONFIGURATION_SPECIFICATION_KEYS = new Set([
+  "cpu",
+  "chipset",
+  "ram",
+  "ssd",
+  "storage",
+  "graphics",
+  "display_size",
+])
 
 function sortFacetValues(values: CatalogFacetValue[]) {
   return values.sort(

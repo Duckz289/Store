@@ -11,6 +11,14 @@ const common: SpecificationPreset[] = [
     filterable: false,
     featured: false,
   },
+  {
+    key: "purpose",
+    label: "Phù hợp cho",
+    unit: "",
+    group: "Nhu cầu sử dụng",
+    filterable: true,
+    featured: true,
+  },
 ]
 
 const presets: Record<string, SpecificationPreset[]> = {

@@ -505,6 +505,12 @@ function SpecificationsInput({
               placeholder="Đơn vị"
             />
             <input
+              value={item.group}
+              onChange={(event) => onChange(index, "group", event.target.value)}
+              placeholder="Nhóm lọc"
+              list="catalog-specification-groups"
+            />
+            <input
               value={item.key}
               onChange={(event) => onChange(index, "key", event.target.value)}
               placeholder="Mã"
@@ -540,6 +546,13 @@ function SpecificationsInput({
           </div>
         ))}
       </div>
+      <datalist id="catalog-specification-groups">
+        <option value="Cấu hình" />
+        <option value="Nhu cầu sử dụng" />
+        <option value="Tính năng" />
+        <option value="Kết nối" />
+        <option value="Vận hành" />
+      </datalist>
       {!values.length ? (
         <button type="button" className="text-button" onClick={onAdd}>
           + Thêm thông số đầu tiên
@@ -691,7 +704,7 @@ function blankSpecification(position: number): CatalogSpecification {
     label: "",
     value: "",
     unit: "",
-    group: "Thông số",
+    group: "Cấu hình",
     filterable: true,
     featured: false,
     position,

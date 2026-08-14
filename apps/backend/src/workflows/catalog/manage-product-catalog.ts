@@ -91,6 +91,7 @@ export const upsertProductCatalogWorkflow = createWorkflow(
 export type CreateBrandInput = {
   name: string
   handle: string
+  logo_url?: string | null
 }
 
 const createBrandStep = createStep(
@@ -113,7 +114,11 @@ const createBrandStep = createStep(
       )
     }
 
-    const brand = await catalogService.createCatalogBrands({ name, handle })
+    const brand = await catalogService.createCatalogBrands({
+      name,
+      handle,
+      logo_url: input.logo_url?.trim() || null,
+    })
     return new StepResponse(brand, brand.id)
   },
   async (brandId, { container }) => {
@@ -139,6 +144,7 @@ export type UpdateBrandInput = {
   id: string
   name: string
   handle: string
+  logo_url?: string | null
 }
 
 const updateBrandStep = createStep(
@@ -174,12 +180,14 @@ const updateBrandStep = createStep(
       id: input.id,
       name,
       handle,
+      logo_url: input.logo_url?.trim() || null,
     })
 
     return new StepResponse(brand, {
       id: previous.id,
       name: previous.name,
       handle: previous.handle,
+      logo_url: previous.logo_url,
     })
   },
   async (previous, { container }) => {

@@ -13,6 +13,7 @@ import {
 } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import BrandMark from "@modules/common/components/brand-mark"
 import { clx } from "@modules/common/components/ui"
 import { Fragment, useEffect, useMemo, useState } from "react"
 
@@ -203,8 +204,12 @@ const SideMenu = ({
                                 key={brand.handle}
                                 href={`/categories/${activeCategory.handle}?brand=${encodeURIComponent(brand.handle)}`}
                                 onClick={close}
-                                className="rounded-[var(--hp-radius-control)] bg-[var(--hp-paper)] px-3 py-2 text-sm font-bold hover:text-[var(--hp-accent)]"
+                                className="inline-flex items-center gap-2 rounded-[var(--hp-radius-control)] bg-[var(--hp-paper)] px-2 py-1.5 text-sm font-bold hover:text-[var(--hp-accent)]"
                               >
+                                <BrandMark
+                                  name={brand.name}
+                                  logoUrl={brand.logoUrl}
+                                />
                                 {brand.name}
                               </LocalizedClientLink>
                             ))}

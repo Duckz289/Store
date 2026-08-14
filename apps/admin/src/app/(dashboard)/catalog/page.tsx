@@ -1,7 +1,8 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { FormEvent, useMemo, useState } from "react"
+import Image from "next/image"
+import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react"
 
 import {
   ErrorState,
@@ -12,12 +13,18 @@ import {
 } from "@/components/ui"
 import { adminFetch } from "@/lib/api"
 import { slugifyCatalogValue } from "@/lib/catalog-presets"
+import { sdk } from "@/lib/sdk"
 import type { CatalogBrand, ProductCategory } from "@/lib/types"
 
 export default function CatalogPage() {
   const queryClient = useQueryClient()
   const [brandName, setBrandName] = useState("")
   const [brandHandle, setBrandHandle] = useState("")
+  const [brandLogoUrl, setBrandLogoUrl] = useState("")
+  const [isUploadingBrandLogo, setIsUploadingBrandLogo] = useState(false)
+  const [brandLogoError, setBrandLogoError] = useState<string | null>(null)
+  const newBrandLogoInputRef = useRef<HTMLInputElement>(null)
+  const editBrandLogoInputRef = useRef<HTMLInputElement>(null)
   const [editingBrand, setEditingBrand] = useState<CatalogBrand | null>(null)
   const [categoryName, setCategoryName] = useState("")
   const [categoryHandle, setCategoryHandle] = useState("")
@@ -44,11 +51,13 @@ export default function CatalogPage() {
           name: brandName.trim(),
           handle:
             brandHandle.trim() || slugifyCatalogValue(brandName.trim()),
+          logo_url: brandLogoUrl.trim() || null,
         },
       }),
     onSuccess: async () => {
       setBrandName("")
       setBrandHandle("")
+      setBrandLogoUrl("")
       await queryClient.invalidateQueries({ queryKey: ["catalog-brands"] })
     },
   })
@@ -57,7 +66,11 @@ export default function CatalogPage() {
     mutationFn: (brand: CatalogBrand) =>
       adminFetch(`/admin/catalog/brands/${brand.id}`, {
         method: "POST",
-        body: { name: brand.name.trim(), handle: brand.handle.trim() },
+        body: {
+          name: brand.name.trim(),
+          handle: brand.handle.trim(),
+          logo_url: brand.logo_url?.trim() || null,
+        },
       }),
     onSuccess: async () => {
       setEditingBrand(null)
@@ -112,6 +125,30 @@ export default function CatalogPage() {
     if (categoryName.trim()) createCategory.mutate()
   }
 
+  const uploadBrandLogo = async (
+    event: ChangeEvent<HTMLInputElement>,
+    onUploaded: (url: string) => void,
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+    if (!file) return
+
+    setBrandLogoError(null)
+    setIsUploadingBrandLogo(true)
+    try {
+      const response = await sdk.admin.upload.create({ files: [file] })
+      const url = response.files[0]?.url
+      if (!url) throw new Error("Không nhận được URL logo từ Medusa.")
+      onUploaded(url)
+    } catch (error) {
+      setBrandLogoError(
+        error instanceof Error ? error.message : "Không thể tải logo lên.",
+      )
+    } finally {
+      setIsUploadingBrandLogo(false)
+    }
+  }
+
   return (
     <div className="stack">
       <PageHeader
@@ -147,6 +184,13 @@ export default function CatalogPage() {
               placeholder="panasonic"
             />
           </label>
+          <BrandLogoField
+            value={brandLogoUrl}
+            onChange={setBrandLogoUrl}
+            inputRef={newBrandLogoInputRef}
+            isUploading={isUploadingBrandLogo}
+            onUpload={(event) => uploadBrandLogo(event, setBrandLogoUrl)}
+          />
           <div className="field-span-2 form-actions form-actions-inline">
             <button className="button" disabled={createBrand.isPending}>
               {createBrand.isPending ? "Đang thêm..." : "Thêm thương hiệu"}
@@ -156,6 +200,7 @@ export default function CatalogPage() {
         {createBrand.isError ? (
           <div className="form-error">{createBrand.error.message}</div>
         ) : null}
+        {brandLogoError ? <div className="form-error">{brandLogoError}</div> : null}
         {brands.isLoading ? (
           <LoadingState />
         ) : brands.isError ? (
@@ -166,6 +211,7 @@ export default function CatalogPage() {
               <thead>
                 <tr>
                   <th>Tên hãng</th>
+                  <th>Logo</th>
                   <th>Handle</th>
                   <th>Thao tác</th>
                 </tr>
@@ -174,6 +220,9 @@ export default function CatalogPage() {
                 {brands.data?.brands.map((brand) => (
                   <tr key={brand.id}>
                     <td>{brand.name}</td>
+                    <td>
+                      <BrandLogoPreview brand={brand} />
+                    </td>
                     <td>/{brand.handle}</td>
                     <td>
                       <div className="row-actions">
@@ -318,6 +367,21 @@ export default function CatalogPage() {
                 }
               />
             </label>
+            <BrandLogoField
+              value={editingBrand.logo_url ?? ""}
+              onChange={(logo_url) =>
+                setEditingBrand({ ...editingBrand, logo_url })
+              }
+              inputRef={editBrandLogoInputRef}
+              isUploading={isUploadingBrandLogo}
+              onUpload={(event) =>
+                uploadBrandLogo(event, (logo_url) =>
+                  setEditingBrand((current) =>
+                    current ? { ...current, logo_url } : current,
+                  ),
+                )
+              }
+            />
             {updateBrand.isError ? (
               <div className="form-error">{updateBrand.error.message}</div>
             ) : null}
@@ -337,5 +401,84 @@ export default function CatalogPage() {
         </div>
       ) : null}
     </div>
+  )
+}
+
+function BrandLogoField({
+  value,
+  onChange,
+  inputRef,
+  isUploading,
+  onUpload,
+}: {
+  value: string
+  onChange: (value: string) => void
+  inputRef: React.RefObject<HTMLInputElement | null>
+  isUploading: boolean
+  onUpload: (event: ChangeEvent<HTMLInputElement>) => void
+}) {
+  return (
+    <label className="field field-span-2">
+      <span>Logo thương hiệu</span>
+      <div className="brand-logo-field">
+        <BrandLogoPreview
+          brand={{
+            id: "preview",
+            name: "Logo",
+            handle: "logo",
+            logo_url: value,
+          }}
+        />
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Dán URL ảnh logo hoặc tải ảnh lên"
+        />
+        <input
+          className="sr-only"
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={onUpload}
+        />
+        <button
+          type="button"
+          className="button button-secondary button-small"
+          onClick={() => inputRef.current?.click()}
+          disabled={isUploading}
+        >
+          {isUploading ? "Đang tải..." : "Tải logo"}
+        </button>
+      </div>
+      <small>Hiển thị trong menu danh mục và bộ lọc trên website.</small>
+    </label>
+  )
+}
+
+function BrandLogoPreview({ brand }: { brand: CatalogBrand }) {
+  const initials = brand.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+
+  return (
+    <span className="brand-logo-preview" aria-hidden="true">
+      <span>{initials || "?"}</span>
+      {brand.logo_url ? (
+        <Image
+          src={brand.logo_url}
+          alt=""
+          width={34}
+          height={34}
+          unoptimized
+          onError={(event) => {
+            event.currentTarget.style.display = "none"
+          }}
+        />
+      ) : null}
+    </span>
   )
 }

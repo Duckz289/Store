@@ -16,6 +16,7 @@ import {
   parseOptionValueIds,
 } from "@lib/util/product-option-filters"
 import { HttpTypes } from "@medusajs/types"
+import BrandMark from "@modules/common/components/brand-mark"
 import OptionsPicker from "./options-picker"
 import SortProducts, { SortOptions } from "./sort-products"
 
@@ -151,6 +152,7 @@ const RefinementList = ({
         <FacetGroup
           label="Hãng sản xuất"
           values={catalogFacets.brands}
+          showBrandMark
           selectedValues={selectedCatalogFilters.brands}
           onToggle={(value) =>
             toggleRepeatedQueryValue(CATALOG_BRAND_QUERY_KEY, value)
@@ -170,7 +172,11 @@ const RefinementList = ({
       {catalogFacets?.specifications.map((facet) => (
         <FacetGroup
           key={facet.key}
-          label={facet.label}
+          label={
+            facet.group === "Thông số"
+              ? facet.label
+              : `${facet.group} · ${facet.label}`
+          }
           values={facet.values}
           selectedValues={selectedCatalogFilters.specifications[facet.key] ?? []}
           onToggle={(value) =>
@@ -196,11 +202,18 @@ function FacetGroup({
   values,
   selectedValues,
   onToggle,
+  showBrandMark = false,
 }: {
   label: string
-  values: { value: string; label: string; count: number }[]
+  values: {
+    value: string
+    label: string
+    count: number
+    logoUrl?: string | null
+  }[]
   selectedValues: string[]
   onToggle: (value: string) => void
+  showBrandMark?: boolean
 }) {
   return (
     <fieldset className="flex flex-col gap-3">
@@ -215,13 +228,20 @@ function FacetGroup({
               key={item.value}
               type="button"
               onClick={() => onToggle(item.value)}
-              className={`min-h-10 rounded-[var(--hp-radius-control)] border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] focus-visible:ring-offset-2 ${
+              className={`inline-flex min-h-10 items-center rounded-[var(--hp-radius-control)] border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] focus-visible:ring-offset-2 ${
                 isSelected
                   ? "border-[var(--hp-accent)] bg-[var(--hp-accent-soft)] text-[var(--hp-accent)]"
                   : "border-[var(--hp-line)] bg-[var(--hp-surface)] text-[var(--hp-ink)] hover:border-[var(--hp-accent)]"
               }`}
               aria-pressed={isSelected}
             >
+              {showBrandMark ? (
+                <BrandMark
+                  name={item.label}
+                  logoUrl={item.logoUrl}
+                  className="mr-2 h-6 w-6 rounded"
+                />
+              ) : null}
               {item.label}
               <span className="ml-1 text-xs text-[var(--hp-muted)]">
                 {item.count}

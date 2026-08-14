@@ -1,14 +1,15 @@
 "use client"
 
-import { searchProducts, SearchProductSuggestion } from "@lib/data/products"
+import { searchCatalog, SearchCatalogResult } from "@lib/data/products"
 import { MagnifyingGlass, XMark } from "@medusajs/icons"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { FormEvent, useEffect, useRef, useState } from "react"
 
 const SearchBar = ({ countryCode }: { countryCode: string }) => {
   const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState<SearchProductSuggestion[]>([])
+  const [suggestions, setSuggestions] = useState<SearchCatalogResult>(emptyResults)
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
@@ -32,7 +33,7 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
     const trimmedQuery = query.trim()
 
     if (trimmedQuery.length < 2) {
-      setSuggestions([])
+      setSuggestions(emptyResults)
       setIsOpen(false)
       setIsLoading(false)
       setHasError(false)
@@ -45,18 +46,18 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
       setHasError(false)
 
       try {
-        const products = await searchProducts({
+        const results = await searchCatalog({
           countryCode,
           query: trimmedQuery,
         })
 
         if (!cancelled) {
-          setSuggestions(products)
+          setSuggestions(results)
           setIsOpen(true)
         }
       } catch {
         if (!cancelled) {
-          setSuggestions([])
+          setSuggestions(emptyResults)
           setIsOpen(true)
           setHasError(true)
         }
@@ -80,7 +81,7 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
 
   const clearSearch = () => {
     setQuery("")
-    setSuggestions([])
+    setSuggestions(emptyResults)
     setIsOpen(false)
     inputRef.current?.focus()
   }
@@ -145,16 +146,85 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
             <p className="px-4 py-3 text-sm text-[var(--hp-danger)]">
               Không thể tìm lúc này. Hãy thử lại sau.
             </p>
-          ) : suggestions.length ? (
-            <ul className="divide-y divide-[var(--hp-line)]">
-              {suggestions.map((product) => (
+          ) : hasSearchResults(suggestions) ? (
+            <div>
+              {suggestions.categories.length || suggestions.brands.length ? (
+                <div className="grid gap-4 border-b border-[var(--hp-line)] px-4 py-4 sm:grid-cols-2">
+                  {suggestions.categories.length ? (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold text-[var(--hp-muted)]">
+                        Danh mục
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {suggestions.categories.map((category) => (
+                          <LocalizedClientLink
+                            key={category.id}
+                            href={`/categories/${category.handle}`}
+                            onClick={() => setIsOpen(false)}
+                            className="rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--hp-ink)] hover:border-[var(--hp-accent)] hover:text-[var(--hp-accent)]"
+                          >
+                            {category.name}
+                          </LocalizedClientLink>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  {suggestions.brands.length ? (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold text-[var(--hp-muted)]">
+                        Hãng
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {suggestions.brands.map((brand) => (
+                          <LocalizedClientLink
+                            key={brand.handle}
+                            href={`/store?brand=${encodeURIComponent(brand.handle)}`}
+                            onClick={() => setIsOpen(false)}
+                            className="rounded-[var(--hp-radius-control)] bg-[var(--hp-paper)] px-2.5 py-1.5 text-xs font-semibold text-[var(--hp-ink)] hover:text-[var(--hp-accent)]"
+                          >
+                            {brand.name}
+                          </LocalizedClientLink>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+              <ul className="divide-y divide-[var(--hp-line)]">
+              {suggestions.products.map((product) => (
                 <li key={product.id} role="option" aria-selected="false">
                   <LocalizedClientLink
                     href={`/products/${product.handle}`}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--hp-ink)] hover:bg-[var(--hp-paper)]"
                   >
-                    <span className="line-clamp-2">{product.title}</span>
+                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[8px] bg-[var(--hp-paper)]">
+                      {product.thumbnail ? (
+                        <Image
+                          unoptimized
+                          fill
+                          sizes="48px"
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className="object-contain"
+                        />
+                      ) : null}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 font-semibold">
+                        {product.title}
+                      </span>
+                      <span className="mt-1 block text-xs text-[var(--hp-muted)]">
+                        {[product.brand, product.model]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </span>
+                    </span>
+                    {product.price ? (
+                      <span className="shrink-0 text-xs font-bold text-[var(--hp-accent)]">
+                        {formatVnd(product.price)}
+                      </span>
+                    ) : null}
                   </LocalizedClientLink>
                 </li>
               ))}
@@ -168,7 +238,8 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
                   Xem tất cả kết quả cho “{query.trim()}”
                 </button>
               </li>
-            </ul>
+              </ul>
+            </div>
           ) : (
             <p className="px-4 py-3 text-sm text-[var(--hp-muted)]">
               Chưa tìm thấy sản phẩm phù hợp.
@@ -178,6 +249,22 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
       )}
     </div>
   )
+}
+
+const emptyResults: SearchCatalogResult = {
+  products: [],
+  categories: [],
+  brands: [],
+}
+
+function hasSearchResults(results: SearchCatalogResult) {
+  return Boolean(
+    results.products.length || results.categories.length || results.brands.length,
+  )
+}
+
+function formatVnd(amount: number) {
+  return `${new Intl.NumberFormat("vi-VN").format(amount)} đ`
 }
 
 export default SearchBar

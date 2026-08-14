@@ -12,6 +12,8 @@ export type CatalogSpecification = {
   value: string
   unit?: string
   group?: string
+  filterable?: boolean
+  featured?: boolean
   position: number
 }
 

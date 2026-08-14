@@ -12,6 +12,8 @@ export const catalogSpecificationSchema = z.object({
   value: z.string().trim().min(1).max(500),
   unit: z.string().trim().max(40).optional().default(""),
   group: z.string().trim().max(80).optional().default("general"),
+  filterable: z.boolean().optional().default(true),
+  featured: z.boolean().optional().default(false),
   position: z.number().int().min(0).max(10_000),
 })
 

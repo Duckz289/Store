@@ -2,20 +2,29 @@
 
 import { Popover, PopoverPanel, Transition } from "@headlessui/react"
 import useToggleState from "@lib/hooks/use-toggle-state"
-import { ArrowRightMini, GridLayout, XMark } from "@medusajs/icons"
+import { Locale } from "@lib/data/locales"
+import type { CatalogNavigationGroup } from "@lib/data/catalog-navigation"
+import {
+  ArrowRightMini,
+  GridLayout,
+  Mailbox,
+  Wrench,
+  XMark,
+} from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Text, clx } from "@modules/common/components/ui"
-import { Fragment } from "react"
+import { clx } from "@modules/common/components/ui"
+import { Fragment, useEffect, useMemo, useState } from "react"
+
 import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
-import { Locale } from "@lib/data/locales"
 
 type SideMenuProps = {
   categories: HttpTypes.StoreProductCategory[] | null
   regions: HttpTypes.StoreRegion[] | null
   locales: Locale[] | null
   currentLocale: string | null
+  catalogNavigation: CatalogNavigationGroup[]
 }
 
 const SideMenu = ({
@@ -23,12 +32,54 @@ const SideMenu = ({
   regions,
   locales,
   currentLocale,
+  catalogNavigation,
 }: SideMenuProps) => {
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
-  const topLevelCategories = (categories ?? [])
-    .filter((category) => !category.parent_category)
-    .slice(0, 12)
+  const topLevelCategories = useMemo(
+    () =>
+      (categories ?? [])
+        .filter((category) => !category.parent_category)
+        .slice(0, 12),
+    [categories],
+  )
+  const [activeCategoryId, setActiveCategoryId] = useState(
+    topLevelCategories[0]?.id ?? "",
+  )
+
+  useEffect(() => {
+    if (
+      topLevelCategories.length &&
+      !topLevelCategories.some((category) => category.id === activeCategoryId)
+    ) {
+      setActiveCategoryId(topLevelCategories[0].id)
+    }
+  }, [activeCategoryId, topLevelCategories])
+
+  const activeCategory =
+    topLevelCategories.find((category) => category.id === activeCategoryId) ??
+    topLevelCategories[0]
+  const activeCategoryIds = new Set([
+    activeCategory?.id,
+    ...(activeCategory?.category_children ?? []).map((category) => category.id),
+  ])
+  const activeNavigation = catalogNavigation.filter((group) =>
+    activeCategoryIds.has(group.categoryId),
+  )
+  const activeBrands = Array.from(
+    new Map(
+      activeNavigation
+        .flatMap((group) => group.brands)
+        .map((brand) => [brand.handle, brand]),
+    ).values(),
+  ).slice(0, 12)
+  const activeProducts = Array.from(
+    new Map(
+      activeNavigation
+        .flatMap((group) => group.products)
+        .map((product) => [product.id, product]),
+    ).values(),
+  ).slice(0, 8)
 
   return (
     <Popover className="relative">
@@ -42,14 +93,14 @@ const SideMenu = ({
             <span className="hidden sm:inline">Danh mục</span>
           </Popover.Button>
 
-          {open && (
+          {open ? (
             <button
               type="button"
               aria-label="Đóng danh mục"
-              className="fixed inset-0 z-[50] cursor-default bg-black/20"
+              className="fixed inset-0 z-[50] cursor-default bg-black/35"
               onClick={close}
             />
-          )}
+          ) : null}
 
           <Transition
             show={open}
@@ -61,12 +112,12 @@ const SideMenu = ({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 -translate-y-2"
           >
-            <PopoverPanel className="absolute left-0 top-[calc(100%+10px)] z-[60] w-[min(92vw,520px)] rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-4 text-[var(--hp-ink)] shadow-[var(--hp-shadow-card)]">
-              <div className="mb-3 flex items-center justify-between border-b border-[var(--hp-line)] pb-3">
+            <PopoverPanel className="fixed inset-x-4 top-[76px] z-[60] max-h-[calc(100dvh-92px)] overflow-hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] text-[var(--hp-ink)] shadow-[var(--hp-shadow-card)] lg:left-1/2 lg:right-auto lg:top-[108px] lg:w-[min(1080px,calc(100vw-32px))] lg:-translate-x-1/2">
+              <div className="flex items-center justify-between border-b border-[var(--hp-line)] px-4 py-3 lg:px-5">
                 <div>
                   <p className="text-base font-bold">Danh mục sản phẩm</p>
                   <p className="mt-1 text-xs text-[var(--hp-muted)]">
-                    Chọn nhóm sản phẩm để bắt đầu
+                    Tìm theo loại thiết bị, hãng hoặc sản phẩm
                   </p>
                 </div>
                 <button
@@ -79,75 +130,171 @@ const SideMenu = ({
                 </button>
               </div>
 
-              <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                {topLevelCategories.map((category) => (
-                  <li key={category.id}>
-                    <LocalizedClientLink
-                      href={`/categories/${category.handle}`}
-                      onClick={close}
-                      className="flex items-center justify-between rounded-[var(--hp-radius-control)] px-3 py-3 text-sm font-semibold hover:bg-[var(--hp-accent-soft)] hover:text-[var(--hp-accent)]"
-                    >
-                      {category.name}
-                      <ArrowRightMini className="h-4 w-4" />
-                    </LocalizedClientLink>
-                  </li>
-                ))}
-              </ul>
+              <div className="max-h-[calc(100dvh-204px)] overflow-y-auto lg:grid lg:grid-cols-[238px_minmax(0,1fr)]">
+                <div className="flex gap-2 overflow-x-auto border-b border-[var(--hp-line)] p-3 lg:block lg:border-b-0 lg:border-r lg:p-3">
+                  {topLevelCategories.map((category) => {
+                    const active = category.id === activeCategory?.id
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onMouseEnter={() => setActiveCategoryId(category.id)}
+                        onFocus={() => setActiveCategoryId(category.id)}
+                        onClick={() => setActiveCategoryId(category.id)}
+                        className={clx(
+                          "flex shrink-0 items-center justify-between gap-3 rounded-[var(--hp-radius-control)] px-3 py-3 text-left text-sm font-semibold transition-colors lg:mb-1 lg:w-full",
+                          active
+                            ? "bg-[var(--hp-accent-soft)] text-[var(--hp-accent)]"
+                            : "hover:bg-[var(--hp-paper)]",
+                        )}
+                        aria-pressed={active}
+                      >
+                        {category.name}
+                        <ArrowRightMini className="hidden h-4 w-4 lg:block" />
+                      </button>
+                    )
+                  })}
+                </div>
 
-              {!topLevelCategories.length && (
-                <p className="py-4 text-sm text-[var(--hp-muted)]">
-                  Danh mục đang được cập nhật.
-                </p>
-              )}
+                <section className="min-w-0 p-4 lg:p-6">
+                  {activeCategory ? (
+                    <>
+                      <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-lg font-bold">
+                          {activeCategory.name}
+                        </h2>
+                        <LocalizedClientLink
+                          href={`/categories/${activeCategory.handle}`}
+                          onClick={close}
+                          className="shrink-0 text-sm font-semibold text-[var(--hp-accent)] hover:text-[var(--hp-accent-strong)]"
+                        >
+                          Xem tất cả
+                        </LocalizedClientLink>
+                      </div>
 
-              <div className="mt-4 flex flex-col gap-3 border-t border-[var(--hp-line)] pt-4 text-sm">
+                      {activeCategory.category_children?.length ? (
+                        <div className="mt-5">
+                          <h3 className="text-xs font-semibold text-[var(--hp-muted)]">
+                            Loại thiết bị
+                          </h3>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {activeCategory.category_children.map((category) => (
+                              <LocalizedClientLink
+                                key={category.id}
+                                href={`/categories/${category.handle}`}
+                                onClick={close}
+                                className="rounded-[var(--hp-radius-control)] border border-[var(--hp-line)] px-3 py-2 text-sm font-semibold hover:border-[var(--hp-accent)] hover:text-[var(--hp-accent)]"
+                              >
+                                {category.name}
+                              </LocalizedClientLink>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {activeBrands.length ? (
+                        <div className="mt-5">
+                          <h3 className="text-xs font-semibold text-[var(--hp-muted)]">
+                            Hãng đang có hàng
+                          </h3>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {activeBrands.map((brand) => (
+                              <LocalizedClientLink
+                                key={brand.handle}
+                                href={`/categories/${activeCategory.handle}?brand=${encodeURIComponent(brand.handle)}`}
+                                onClick={close}
+                                className="rounded-[var(--hp-radius-control)] bg-[var(--hp-paper)] px-3 py-2 text-sm font-bold hover:text-[var(--hp-accent)]"
+                              >
+                                {brand.name}
+                              </LocalizedClientLink>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {activeProducts.length ? (
+                        <div className="mt-5">
+                          <h3 className="text-xs font-semibold text-[var(--hp-muted)]">
+                            Sản phẩm gợi ý
+                          </h3>
+                          <div className="mt-2 grid gap-x-5 gap-y-1 sm:grid-cols-2">
+                            {activeProducts.map((product) => (
+                              <LocalizedClientLink
+                                key={product.id}
+                                href={`/products/${product.handle}`}
+                                onClick={close}
+                                className="flex items-center justify-between gap-3 rounded-[var(--hp-radius-control)] px-2 py-2.5 text-sm hover:bg-[var(--hp-paper)] hover:text-[var(--hp-accent)]"
+                              >
+                                <span className="line-clamp-1">{product.title}</span>
+                                <ArrowRightMini className="h-4 w-4 shrink-0" />
+                              </LocalizedClientLink>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-6 rounded-[var(--hp-radius-control)] border border-dashed border-[var(--hp-line)] p-5 text-sm text-[var(--hp-muted)]">
+                          Danh mục đang được cập nhật sản phẩm. Bạn vẫn có thể tạo sản phẩm mới trong Admin.
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm text-[var(--hp-muted)]">
+                      Danh mục đang được cập nhật.
+                    </p>
+                  )}
+                </section>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 border-t border-[var(--hp-line)] bg-[var(--hp-paper)] px-4 py-3 text-sm">
                 <LocalizedClientLink
                   href="/store"
                   onClick={close}
-                  className="font-semibold text-[var(--hp-accent)] hover:text-[var(--hp-accent-strong)]"
+                  className="font-semibold text-[var(--hp-accent)]"
                 >
-                  Xem tất cả sản phẩm
+                  Tất cả sản phẩm
                 </LocalizedClientLink>
-                {!!locales?.length && (
-                  <div
-                    className="flex items-center justify-between"
-                    onMouseEnter={languageToggleState.open}
-                    onMouseLeave={languageToggleState.close}
-                  >
-                    <LanguageSelect
-                      toggleState={languageToggleState}
-                      locales={locales}
-                      currentLocale={currentLocale}
-                    />
-                    <ArrowRightMini
-                      className={clx(
-                        "h-4 w-4 transition-transform duration-150",
-                        languageToggleState.state ? "rotate-90" : ""
-                      )}
-                    />
-                  </div>
-                )}
-                {regions && (
-                  <div
-                    className="flex items-center justify-between"
-                    onMouseEnter={countryToggleState.open}
-                    onMouseLeave={countryToggleState.close}
-                  >
-                    <CountrySelect
-                      toggleState={countryToggleState}
-                      regions={regions}
-                    />
-                    <ArrowRightMini
-                      className={clx(
-                        "h-4 w-4 transition-transform duration-150",
-                        countryToggleState.state ? "rotate-90" : ""
-                      )}
-                    />
-                  </div>
-                )}
-                <Text className="pt-1 text-xs text-[var(--hp-muted)]">
-                  Thiết kế cho trải nghiệm mua sắm rõ ràng và dễ kiểm chứng.
-                </Text>
+                <span className="h-4 w-px bg-[var(--hp-line)]" />
+                <LocalizedClientLink
+                  href="/repair"
+                  onClick={close}
+                  className="inline-flex items-center gap-1.5 font-semibold"
+                >
+                  <Wrench className="h-4 w-4" />
+                  Sửa chữa
+                </LocalizedClientLink>
+                <LocalizedClientLink
+                  href="/repair/inbox"
+                  onClick={close}
+                  className="inline-flex items-center gap-1.5 font-semibold"
+                >
+                  <Mailbox className="h-4 w-4" />
+                  Tra cứu báo giá
+                </LocalizedClientLink>
+                <div className="ml-auto flex items-center gap-3">
+                  {!!locales?.length ? (
+                    <div
+                      onMouseEnter={languageToggleState.open}
+                      onMouseLeave={languageToggleState.close}
+                    >
+                      <LanguageSelect
+                        toggleState={languageToggleState}
+                        locales={locales}
+                        currentLocale={currentLocale}
+                      />
+                    </div>
+                  ) : null}
+                  {regions ? (
+                    <div
+                      onMouseEnter={countryToggleState.open}
+                      onMouseLeave={countryToggleState.close}
+                    >
+                      <CountrySelect
+                        toggleState={countryToggleState}
+                        regions={regions}
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </PopoverPanel>
           </Transition>

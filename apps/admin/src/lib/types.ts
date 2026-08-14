@@ -12,8 +12,9 @@ export type Product = {
   status?: string
   thumbnail?: string | null
   images?: { id?: string; url: string }[]
-  categories?: { id: string; name: string }[]
+  categories?: { id: string; name: string; handle?: string }[]
   collection?: { id: string; title: string } | null
+  catalog?: ProductCatalog | null
   variants?: {
     id: string
     title?: string
@@ -32,7 +33,19 @@ export type CatalogSpecification = {
   value: string
   unit: string
   group: string
+  filterable?: boolean
+  featured?: boolean
   position: number
+}
+
+export type ProductCategory = {
+  id: string
+  name: string
+  handle: string
+  is_active?: boolean
+  rank?: number
+  parent_category_id?: string | null
+  parent_category?: { id: string; name: string; handle?: string } | null
 }
 export type ProductCatalog = {
   brand?: CatalogBrand | null

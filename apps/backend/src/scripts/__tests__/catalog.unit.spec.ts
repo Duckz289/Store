@@ -11,21 +11,40 @@ import {
 describe("catalog seed contract", () => {
   it("defines the required Product Types without duplicates", () => {
     expect(CATALOG_PRODUCT_TYPES).toEqual([
-      "Điện thoại",
       "Laptop",
       "Phụ kiện",
       "Thiết bị mạng",
+      "Đồ gia dụng",
+      "Điện lạnh",
+      "Thiết bị điện",
+      "Âm thanh & TV",
     ])
     expect(new Set(CATALOG_PRODUCT_TYPES).size).toBe(CATALOG_PRODUCT_TYPES.length)
   })
 
   it("keeps current category URLs stable and supports parent-ready categories", () => {
-    expect(CATALOG_CATEGORIES.map((category) => category.handle)).toEqual([
-      "điện-thoại",
-      "laptop",
-      "phụ-kiện",
-      "thiết-bị-mạng",
-    ])
+    const handles = CATALOG_CATEGORIES.map((category) => category.handle)
+    expect(handles).toEqual(
+      expect.arrayContaining(["laptop", "phụ-kiện", "thiết-bị-mạng"])
+    )
+    expect(handles).toEqual(
+      expect.arrayContaining([
+        "do-gia-dung",
+        "dien-lanh",
+        "thiet-bi-dien",
+        "am-thanh-tv",
+      ])
+    )
+    expect(new Set(handles).size).toBe(handles.length)
+    expect(
+      CATALOG_CATEGORIES.every(
+        (category, index) =>
+          !category.parent ||
+          CATALOG_CATEGORIES.findIndex(
+            (candidate) => candidate.name === category.parent
+          ) < index
+      )
+    ).toBe(true)
     expect(CATALOG_CATEGORIES.every((category) => category.name && category.handle)).toBe(
       true
     )
@@ -46,6 +65,9 @@ describe("catalog seed contract", () => {
     ])
     expect(COLLECTION_PRODUCT_HANDLES["flash-deal"]).toEqual(
       CATALOG_PRODUCTS.map((product) => product.handle)
+    )
+    expect(CATALOG_PRODUCTS.map((product) => String(product.handle))).not.toContain(
+      "dien-thoai-nova-x1"
     )
   })
 

@@ -12,6 +12,7 @@ import "../policies/vietqr"
 import { ListAuditEventsSchema } from "./admin/security/audit-events/route"
 import { VerifyMfaStepUpSchema } from "./admin/security/mfa/challenges/[id]/verify/route"
 import { CreateCatalogBrandSchema } from "./admin/catalog/brands/route"
+import { UpdateCatalogBrandSchema } from "./admin/catalog/brands/[id]/route"
 import { UpdateProductCatalogSchema } from "./admin/products/[id]/catalog/route"
 import {
   AddRepairAttachmentSchema,
@@ -149,6 +150,19 @@ const middlewareConfiguration = {
     {
       matcher: "/admin/catalog/brands",
       methods: ["GET"],
+      middlewares: [adminAuthentication],
+    },
+    {
+      matcher: "/admin/catalog/brands/:id",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(UpdateCatalogBrandSchema),
+      ],
+    },
+    {
+      matcher: "/admin/catalog/brands/:id",
+      methods: ["DELETE"],
       middlewares: [adminAuthentication],
     },
     {

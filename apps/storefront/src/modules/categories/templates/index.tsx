@@ -2,6 +2,8 @@ import { notFound } from "next/navigation"
 import { Suspense } from "react"
 
 import { OptionValueIds } from "@lib/util/product-option-filters"
+import { listCatalogFacets } from "@lib/data/products"
+import type { CatalogFilterSelection } from "@lib/util/catalog-filters"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
@@ -9,18 +11,20 @@ import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   category,
   sortBy,
   page,
   countryCode,
   optionValueIds,
+  catalogFilters,
 }: {
   category: HttpTypes.StoreProductCategory
   sortBy?: SortOptions
   page?: string
   countryCode: string
   optionValueIds?: OptionValueIds
+  catalogFilters?: CatalogFilterSelection
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "merchandising"
@@ -36,10 +40,20 @@ export default function CategoryTemplate({
   }
   getParents(category)
 
+  const catalogFacets = await listCatalogFacets({
+    countryCode,
+    categoryId: category.id,
+  }).catch(() => ({ brands: [], prices: [], specifications: [] }))
+
   return (
     <div className="content-container grid gap-6 py-6 lg:grid-cols-[244px_minmax(0,1fr)] lg:py-10" data-testid="category-container">
       <aside className="hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-5 lg:block">
-        <RefinementList sortBy={sort} data-testid="sort-by-container" hideSort />
+        <RefinementList
+          sortBy={sort}
+          data-testid="sort-by-container"
+          hideSort
+          catalogFacets={catalogFacets}
+        />
       </aside>
       <div className="min-w-0">
         <div className="mb-5">
@@ -70,7 +84,15 @@ export default function CategoryTemplate({
         ) : null}
 
         <Suspense fallback={<SkeletonProductGrid numberOfProducts={category.products?.length ?? 8} />}>
-          <PaginatedProducts sortBy={sort} page={pageNumber} categoryId={category.id} countryCode={countryCode} optionValueIds={optionValueIds} />
+          <PaginatedProducts
+            sortBy={sort}
+            page={pageNumber}
+            categoryId={category.id}
+            countryCode={countryCode}
+            optionValueIds={optionValueIds}
+            catalogFilters={catalogFilters}
+            catalogFacets={catalogFacets}
+          />
         </Suspense>
       </div>
     </div>

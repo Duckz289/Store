@@ -4,6 +4,7 @@ import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
 import { listRegions } from "@lib/data/regions"
 import { listCategories } from "@lib/data/categories"
+import { getCatalogNavigation } from "@lib/data/catalog-navigation"
 import { HttpTypes, StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
@@ -18,13 +19,14 @@ import {
 } from "@medusajs/icons"
 
 export default async function Nav({ countryCode }: { countryCode: string }) {
-  const [regions, locales, currentLocale, categories] = await Promise.all([
+  const [regions, locales, currentLocale, categories, catalogNavigation] = await Promise.all([
     listRegions()
       .then((regions: StoreRegion[]) => regions)
       .catch(() => []),
     listLocales().catch(() => []),
     getLocale().catch(() => null),
     listCategories().catch(() => [] as HttpTypes.StoreProductCategory[]),
+    getCatalogNavigation(countryCode).catch(() => []),
   ])
 
   return (
@@ -80,6 +82,7 @@ export default async function Nav({ countryCode }: { countryCode: string }) {
               regions={regions}
               locales={locales}
               currentLocale={currentLocale}
+              catalogNavigation={catalogNavigation}
             />
           </div>
 

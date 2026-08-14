@@ -26,6 +26,7 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
   updateProductsWorkflow,
+  updateProductCategoriesWorkflow,
   updateProductVariantsWorkflow,
 } from "@medusajs/medusa/core-flows"
 import {
@@ -52,6 +53,7 @@ const FULFILLMENT_SET_NAME = "Giao hàng từ kho chính"
 const SHIPPING_OPTION_NAME = "Giao hàng tiêu chuẩn"
 const DEFAULT_STOCK_QUANTITY = 25
 const PRIMARY_COLLECTION_HANDLE = "flash-deal"
+const UNSUPPORTED_PHONE_PRODUCT_HANDLES = ["dien-thoai-nova-x1"]
 
 type QueryRecord = Record<string, any>
 
@@ -77,6 +79,49 @@ function findNamedRecord(
     records.filter((record) => record[field] === name),
     `${label} "${name}"`
   )
+}
+
+async function retireUnsupportedPhoneCatalog(container: MedusaContainer) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const [{ data: products }, { data: categories }] = await Promise.all([
+    query.graph({
+      entity: "product",
+      fields: ["id", "handle", "status"],
+      filters: { handle: UNSUPPORTED_PHONE_PRODUCT_HANDLES },
+    }),
+    query.graph({
+      entity: "product_category",
+      fields: ["id", "name", "handle", "is_active"],
+    }),
+  ])
+
+  const productsToRetire = products.filter(
+    (product) => product.status !== ProductStatus.DRAFT
+  )
+  if (productsToRetire.length) {
+    await updateProductsWorkflow(container).run({
+      input: {
+        products: productsToRetire.map((product) => ({
+          id: product.id,
+          status: ProductStatus.DRAFT,
+        })),
+      },
+    })
+  }
+
+  const phoneCategory = categories.find(
+    (category) =>
+      category.name === "Điện thoại" ||
+      ["dien-thoai", "điện-thoại"].includes(category.handle)
+  )
+  if (phoneCategory?.is_active) {
+    await updateProductCategoriesWorkflow(container).run({
+      input: {
+        selector: { id: phoneCategory.id },
+        update: { is_active: false },
+      },
+    })
+  }
 }
 
 async function ensureOperationalData(container: MedusaContainer) {
@@ -367,6 +412,12 @@ async function ensureCatalogEntities(container: MedusaContainer) {
 
   const categories = new Map<string, QueryRecord>()
   for (const expected of CATALOG_CATEGORIES) {
+    const parent = expected.parent ? categories.get(expected.parent) : undefined
+    if (expected.parent && !parent) {
+      throwCatalogConflict(
+        `parent category "${expected.parent}" must be created before "${expected.name}"`
+      )
+    }
     const byHandle = existingCategories.filter(
       (category) => category.handle === expected.handle
     )
@@ -386,32 +437,35 @@ async function ensureCatalogEntities(container: MedusaContainer) {
         `category name "${expected.name}" and handle "${expected.handle}" refer to different records`
       )
     }
-    if (categoryByHandle || categoryByName) {
-      const category = categoryByHandle || categoryByName
-      if (!category.is_active || category.parent_category_id) {
+    const category = categoryByHandle || categoryByName
+    if (category) {
+      const expectedParentId = parent?.id ?? null
+      if (
+        !category.is_active ||
+        (category.parent_category_id ?? null) !== expectedParentId
+      ) {
         throwCatalogConflict(
-          `top-level category "${expected.name}" is inactive or has an unexpected parent`
+          `category "${expected.name}" is inactive or has an unexpected parent`
         )
       }
       categories.set(expected.name, category)
+      continue
     }
-  }
 
-  const missingCategories = CATALOG_CATEGORIES.filter(
-    (category) => !categories.has(category.name)
-  )
-  if (missingCategories.length) {
     const { result } = await createProductCategoriesWorkflow(container).run({
       input: {
-        product_categories: missingCategories.map((category) => ({
-          name: category.name,
-          handle: category.handle,
-          rank: category.rank,
-          is_active: true,
-        })),
+        product_categories: [
+          {
+            name: expected.name,
+            handle: expected.handle,
+            rank: expected.rank,
+            is_active: true,
+            parent_category_id: parent?.id ?? null,
+          },
+        ],
       },
     })
-    result.forEach((category) => categories.set(category.name, category))
+    categories.set(expected.name, result[0])
   }
 
   const collections = new Map<string, QueryRecord>()
@@ -882,6 +936,7 @@ export default async function initialDataSeed({
   assertUniqueCatalogSkus()
   logger.info("Đang chuẩn hóa catalog Medusa cho cửa hàng Việt Nam...")
 
+  await retireUnsupportedPhoneCatalog(container)
   const operationalData = await ensureOperationalData(container)
   const entities = await ensureCatalogEntities(container)
   const result = await ensureProducts(container, {

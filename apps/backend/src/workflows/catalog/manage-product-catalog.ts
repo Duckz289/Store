@@ -134,3 +134,103 @@ export const createBrandWorkflow = createWorkflow(
     return new WorkflowResponse(brand)
   }
 )
+
+export type UpdateBrandInput = {
+  id: string
+  name: string
+  handle: string
+}
+
+const updateBrandStep = createStep(
+  "update-brand",
+  async (input: UpdateBrandInput, { container }) => {
+    const catalogService = container.resolve<CatalogModuleService>(
+      CATALOG_MODULE
+    )
+    const name = input.name.trim()
+    const handle = input.handle.trim().toLowerCase()
+    const [current, byHandle, byName] = await Promise.all([
+      catalogService.listCatalogBrands({ id: input.id }),
+      catalogService.listCatalogBrands({ handle }),
+      catalogService.listCatalogBrands({ name }),
+    ])
+
+    if (!current.length) {
+      throw new MedusaError(MedusaError.Types.NOT_FOUND, "Brand not found")
+    }
+
+    if (
+      byHandle.some((brand) => brand.id !== input.id) ||
+      byName.some((brand) => brand.id !== input.id)
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.CONFLICT,
+        "A brand with this name or handle already exists"
+      )
+    }
+
+    const previous = current[0]
+    const brand = await catalogService.updateCatalogBrands({
+      id: input.id,
+      name,
+      handle,
+    })
+
+    return new StepResponse(brand, {
+      id: previous.id,
+      name: previous.name,
+      handle: previous.handle,
+    })
+  },
+  async (previous, { container }) => {
+    if (!previous) {
+      return
+    }
+    const catalogService = container.resolve<CatalogModuleService>(
+      CATALOG_MODULE
+    )
+    await catalogService.updateCatalogBrands(previous)
+  }
+)
+
+export const updateBrandWorkflow = createWorkflow(
+  "update-brand",
+  (input: UpdateBrandInput) => {
+    const brand = updateBrandStep(input)
+    return new WorkflowResponse(brand)
+  }
+)
+
+const deleteBrandStep = createStep(
+  "delete-brand",
+  async (id: string, { container }) => {
+    const catalogService = container.resolve<CatalogModuleService>(
+      CATALOG_MODULE
+    )
+    const brands = await catalogService.listCatalogBrands({ id })
+    if (!brands.length) {
+      throw new MedusaError(MedusaError.Types.NOT_FOUND, "Brand not found")
+    }
+
+    const linkedProfiles = await catalogService.listCatalogProductProfiles({
+      brand_id: id,
+    })
+    if (linkedProfiles.length) {
+      throw new MedusaError(
+        MedusaError.Types.CONFLICT,
+        "Brand is assigned to products and cannot be deleted"
+      )
+    }
+
+    await catalogService.deleteCatalogBrands(id)
+    return new StepResponse({ id })
+  }
+)
+
+export const deleteBrandWorkflow = createWorkflow(
+  "delete-brand",
+  (id: string) => {
+    const result = deleteBrandStep(id)
+    return new WorkflowResponse(result)
+  }
+)

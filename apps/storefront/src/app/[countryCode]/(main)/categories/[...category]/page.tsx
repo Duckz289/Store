@@ -7,6 +7,7 @@ import { HttpTypes, StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { parseOptionValueIds } from "@lib/util/product-option-filters"
+import { parseCatalogFilters } from "@lib/util/catalog-filters"
 
 type Props = {
   params: Promise<{ category: string[]; countryCode: string }>
@@ -51,12 +52,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   try {
     const productCategory = await getCategoryByHandle(params.category)
 
-    const title = productCategory.name + " | Medusa Store"
+    const title = productCategory.name
 
-    const description = productCategory.description ?? `${title} category.`
+    const description =
+      productCategory.description ??
+      `Sản phẩm ${title} đang có tại Điện Tử Hưng Phát.`
 
     return {
-      title: `${title} | Medusa Store`,
+      title: `${title} | Điện Tử Hưng Phát`,
       description,
       alternates: {
         canonical: `${params.category.join("/")}`,
@@ -72,6 +75,7 @@ export default async function CategoryPage(props: Props) {
   const params = await props.params
   const { sortBy, page } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
+  const catalogFilters = parseCatalogFilters(searchParams)
 
   const productCategory = await getCategoryByHandle(params.category)
 
@@ -86,6 +90,7 @@ export default async function CategoryPage(props: Props) {
       page={page}
       countryCode={params.countryCode}
       optionValueIds={optionValueIds}
+      catalogFilters={catalogFilters}
     />
   )
 }

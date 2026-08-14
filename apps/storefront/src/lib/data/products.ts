@@ -2,9 +2,16 @@
 
 import { sdk } from "@lib/config"
 import { OptionValueIds } from "@lib/util/product-option-filters"
+import {
+  buildCatalogFacets,
+  CatalogFilterSelection,
+  filterCatalogProducts,
+} from "@lib/util/catalog-filters"
 import { sortProducts } from "@lib/util/sort-products"
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { asCatalogProduct } from "types/catalog"
+import { listCategories } from "./categories"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
 
@@ -58,6 +65,7 @@ export const listProducts = async ({
 
   const next = {
     ...(await getCacheOptions("products")),
+    revalidate: 30,
   }
 
   return sdk.client
@@ -75,7 +83,6 @@ export const listProducts = async ({
         },
         headers,
         next,
-        cache: "force-cache",
       }
     )
     .then(({ products, count }) => {
@@ -92,40 +99,123 @@ export const listProducts = async ({
     })
 }
 
-export type SearchProductSuggestion = {
+export type SearchCatalogProductSuggestion = {
   id: string
   handle: string
   title: string
+  thumbnail?: string | null
+  brand?: string | null
+  model?: string | null
+  price?: number | null
+  currencyCode?: string | null
 }
 
-export const searchProducts = async ({
+export type SearchCatalogResult = {
+  products: SearchCatalogProductSuggestion[]
+  categories: { id: string; name: string; handle: string }[]
+  brands: { name: string; handle: string }[]
+}
+
+export const searchCatalog = async ({
   countryCode,
   query,
 }: {
   countryCode: string
   query: string
-}): Promise<SearchProductSuggestion[]> => {
+}): Promise<SearchCatalogResult> => {
   const trimmedQuery = query.trim()
 
   if (trimmedQuery.length < 2) {
-    return []
+    return { products: [], categories: [], brands: [] }
   }
 
-  const {
-    response: { products },
-  } = await listProducts({
-    countryCode,
-    queryParams: {
-      q: trimmedQuery,
-      limit: 6,
-    },
-  })
+  const [productResponse, categories] = await Promise.all([
+    listProducts({ countryCode, queryParams: { limit: 100 } }),
+    listCategories().catch(() => []),
+  ])
+  const normalizedQuery = normalizeSearchText(trimmedQuery)
+  const products = productResponse.response.products
+    .map((product) => ({ product, score: scoreProduct(product, normalizedQuery) }))
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 6)
+    .map(({ product }) => {
+      const catalog = asCatalogProduct(product).catalog
+      const price = product.variants?.[0]?.calculated_price
+      return {
+        id: product.id,
+        handle: product.handle,
+        title: product.title,
+        thumbnail: product.thumbnail,
+        brand: catalog?.brand?.name,
+        model: catalog?.model,
+        price: price?.calculated_amount,
+        currencyCode: price?.currency_code,
+      }
+    })
 
-  return products.map(({ id, handle, title }) => ({
-    id,
-    handle,
-    title,
-  }))
+  const matchedCategories = categories
+    .filter((category) =>
+      normalizeSearchText(`${category.name} ${category.handle}`).includes(
+        normalizedQuery,
+      ),
+    )
+    .slice(0, 5)
+    .map(({ id, name, handle }) => ({ id, name, handle }))
+
+  const matchedBrands = Array.from(
+    new Map(
+      productResponse.response.products
+        .map((product) => asCatalogProduct(product).catalog?.brand)
+        .filter((brand): brand is NonNullable<typeof brand> => Boolean(brand))
+        .filter((brand) =>
+          normalizeSearchText(`${brand.name} ${brand.handle}`).includes(
+            normalizedQuery,
+          ),
+        )
+        .map((brand) => [brand.handle, { name: brand.name, handle: brand.handle }]),
+    ).values(),
+  ).slice(0, 5)
+
+  return {
+    products,
+    categories: matchedCategories,
+    brands: matchedBrands,
+  }
+}
+
+function scoreProduct(product: HttpTypes.StoreProduct, query: string) {
+  const catalog = asCatalogProduct(product).catalog
+  const title = normalizeSearchText(product.title)
+  const handle = normalizeSearchText(product.handle)
+  const brand = normalizeSearchText(catalog?.brand?.name ?? "")
+  const model = normalizeSearchText(catalog?.model ?? "")
+  const specifications = normalizeSearchText(
+    (catalog?.specifications?.items ?? [])
+      .map((item) => `${item.label} ${item.value} ${item.unit ?? ""}`)
+      .join(" "),
+  )
+  const skus = normalizeSearchText(
+    (product.variants ?? []).map((variant) => variant.sku ?? "").join(" "),
+  )
+
+  if (title === query || model === query || skus === query) return 120
+  if (title.startsWith(query)) return 100
+  if (title.includes(query)) return 90
+  if (brand.includes(query)) return 80
+  if (model.includes(query) || skus.includes(query)) return 70
+  if (handle.includes(query) || specifications.includes(query)) return 50
+  return 0
+}
+
+function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim()
 }
 
 /**
@@ -139,6 +229,7 @@ export const listProductsWithSort = async ({
   countryCode,
   optionValueIds,
   merchandisingContext,
+  catalogFilters,
 }: {
   page?: number
   queryParams?: ProductListQueryParams
@@ -149,6 +240,7 @@ export const listProductsWithSort = async ({
     kind: "categories" | "collections" | "homepage"
     id: string
   }
+  catalogFilters?: CatalogFilterSelection
 }): Promise<{
   response: { products: HttpTypes.StoreProduct[]; count: number }
   nextPage: number | null
@@ -171,11 +263,16 @@ export const listProductsWithSort = async ({
     countryCode,
   })
 
-  const sortedProducts = sortProducts(products, sortBy, merchandisingContext)
+  const catalogFilteredProducts = filterCatalogProducts(products, catalogFilters)
+  const sortedProducts = sortProducts(
+    catalogFilteredProducts,
+    sortBy,
+    merchandisingContext,
+  )
 
   const pageParam = (page - 1) * limit
 
-  const filteredCount = products.length
+  const filteredCount = catalogFilteredProducts.length
 
   const nextPage = filteredCount > pageParam + limit ? pageParam + limit : null
 
@@ -189,4 +286,27 @@ export const listProductsWithSort = async ({
     nextPage,
     queryParams,
   }
+}
+
+export const listCatalogFacets = async ({
+  countryCode,
+  categoryId,
+  query,
+}: {
+  countryCode: string
+  categoryId?: string
+  query?: string
+}) => {
+  const {
+    response: { products },
+  } = await listProducts({
+    countryCode,
+    queryParams: {
+      limit: 100,
+      ...(categoryId ? { category_id: [categoryId] } : {}),
+      ...(query?.trim() ? { q: query.trim() } : {}),
+    },
+  })
+
+  return buildCatalogFacets(products)
 }

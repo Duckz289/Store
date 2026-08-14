@@ -14,12 +14,17 @@ import {
 
 import { Field, Panel } from "@/components/ui"
 import { adminFetch } from "@/lib/api"
+import {
+  getSpecificationPreset,
+  slugifyCatalogValue,
+} from "@/lib/catalog-presets"
 import { sdk } from "@/lib/sdk"
 import type {
   CatalogBrand,
   CatalogSpecification,
   Product,
   ProductCatalog,
+  ProductCategory,
 } from "@/lib/types"
 
 type ProductFormProps = { product?: Product; catalog?: ProductCatalog }
@@ -38,6 +43,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
     formatVndInput(variant?.prices?.[0]?.amount),
   )
   const [brandId, setBrandId] = useState(catalog?.brand?.id ?? "")
+  const [categoryId, setCategoryId] = useState(product?.categories?.[0]?.id ?? "")
   const [model, setModel] = useState(catalog?.model ?? "")
   const [specifications, setSpecifications] = useState(
     readSpecifications(catalog),
@@ -55,6 +61,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
     setSku(product.variants?.[0]?.sku ?? "")
     setPrice(formatVndInput(product.variants?.[0]?.prices?.[0]?.amount))
     setBrandId(catalog?.brand?.id ?? "")
+    setCategoryId(product.categories?.[0]?.id ?? "")
     setModel(catalog?.model ?? "")
     setSpecifications(readSpecifications(catalog))
     setMedia(readMedia(product, catalog))
@@ -64,6 +71,14 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
     queryKey: ["catalog-brands"],
     queryFn: () =>
       adminFetch<{ brands: CatalogBrand[] }>("/admin/catalog/brands"),
+  })
+
+  const categories = useQuery({
+    queryKey: ["product-categories"],
+    queryFn: () =>
+      adminFetch<{ product_categories: ProductCategory[] }>(
+        "/admin/product-categories?limit=100&fields=id,name,handle,parent_category_id,parent_category.*",
+      ),
   })
 
   const upload = useMutation({
@@ -91,6 +106,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               description,
               status,
               images,
+              categories: categoryId ? [{ id: categoryId }] : [],
             },
           },
         )
@@ -119,6 +135,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               description,
               status,
               images,
+              categories: categoryId ? [{ id: categoryId }] : [],
               options: [{ title: "Tùy chọn", values: ["Mặc định"] }],
               variants: [
                 {
@@ -188,14 +205,39 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
 
   const updateSpecification = (
     index: number,
-    key: keyof Pick<CatalogSpecification, "key" | "label" | "value" | "unit">,
-    value: string,
+    key: keyof Omit<CatalogSpecification, "position">,
+    value: string | boolean,
   ) => {
     setSpecifications((current) =>
       current.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, [key]: value } : item,
+        itemIndex === index
+          ? {
+              ...item,
+              [key]: value,
+              ...(key === "label" && !item.key
+                ? { key: slugifyCatalogValue(String(value), "_") }
+                : {}),
+            }
+          : item,
       ),
     )
+  }
+
+  const applySpecificationPreset = () => {
+    const selectedCategory = categories.data?.product_categories.find(
+      (category) => category.id === categoryId,
+    )
+    const handle =
+      selectedCategory?.parent_category?.handle ?? selectedCategory?.handle
+    const existingKeys = new Set(specifications.map((item) => item.key))
+    const additions = getSpecificationPreset(handle)
+      .filter((item) => !existingKeys.has(item.key))
+      .map((item, index) => ({
+        ...item,
+        value: "",
+        position: specifications.length + index,
+      }))
+    setSpecifications((current) => [...current, ...additions])
   }
 
   return (
@@ -265,6 +307,25 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               ))}
             </select>
           </Field>
+          <Field
+            label="Danh mục chính"
+            hint="Danh mục quyết định menu, bộ lọc và mẫu thông số trên website."
+          >
+            <select
+              value={categoryId}
+              onChange={(event) => setCategoryId(event.target.value)}
+            >
+              <option value="">Chưa chọn danh mục</option>
+              {categories.data?.product_categories.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.parent_category
+                    ? `${category.parent_category.name} / `
+                    : ""}
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </Field>
           <Field label="Model">
             <input
               value={model}
@@ -274,6 +335,8 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
           <div className="field-span-2">
             <SpecificationsInput
               values={specifications}
+              canApplyPreset={Boolean(categoryId)}
+              onApplyPreset={applySpecificationPreset}
               onAdd={() =>
                 setSpecifications((current) => [
                   ...current,
@@ -381,16 +444,20 @@ function MoneyInput({
 
 function SpecificationsInput({
   values,
+  canApplyPreset,
+  onApplyPreset,
   onAdd,
   onChange,
   onRemove,
 }: {
   values: CatalogSpecification[]
+  canApplyPreset: boolean
+  onApplyPreset: () => void
   onAdd: () => void
   onChange: (
     index: number,
-    key: keyof Pick<CatalogSpecification, "key" | "label" | "value" | "unit">,
-    value: string,
+    key: keyof Omit<CatalogSpecification, "position">,
+    value: string | boolean,
   ) => void
   onRemove: (index: number) => void
 }) {
@@ -401,13 +468,23 @@ function SpecificationsInput({
           <strong>Thông số</strong>
           <span>Thêm từng dòng, dễ sửa và kiểm tra trước khi lưu.</span>
         </div>
-        <button
-          type="button"
-          className="button button-secondary button-small"
-          onClick={onAdd}
-        >
-          Thêm thông số
-        </button>
+        <div className="editor-actions">
+          <button
+            type="button"
+            className="button button-secondary button-small"
+            onClick={onApplyPreset}
+            disabled={!canApplyPreset}
+          >
+            Điền mẫu theo danh mục
+          </button>
+          <button
+            type="button"
+            className="button button-secondary button-small"
+            onClick={onAdd}
+          >
+            Thêm thông số
+          </button>
+        </div>
       </div>
       <div className="specification-list">
         {values.map((item, index) => (
@@ -432,6 +509,26 @@ function SpecificationsInput({
               onChange={(event) => onChange(index, "key", event.target.value)}
               placeholder="Mã"
             />
+            <label className="specification-flag">
+              <input
+                type="checkbox"
+                checked={item.filterable !== false}
+                onChange={(event) =>
+                  onChange(index, "filterable", event.target.checked)
+                }
+              />
+              Dùng lọc
+            </label>
+            <label className="specification-flag">
+              <input
+                type="checkbox"
+                checked={item.featured === true}
+                onChange={(event) =>
+                  onChange(index, "featured", event.target.checked)
+                }
+              />
+              Nổi bật
+            </label>
             <button
               type="button"
               className="icon-button"
@@ -595,6 +692,8 @@ function blankSpecification(position: number): CatalogSpecification {
     value: "",
     unit: "",
     group: "Thông số",
+    filterable: true,
+    featured: false,
     position,
   }
 }

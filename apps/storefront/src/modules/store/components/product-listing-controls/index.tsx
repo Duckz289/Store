@@ -3,6 +3,7 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { Adjustments, X } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
+import type { CatalogFacets } from "@lib/util/catalog-filters"
 import RefinementList from "@modules/store/components/refinement-list"
 import SortProducts, {
   SortOptions,
@@ -14,12 +15,14 @@ type ProductListingControlsProps = {
   count: number
   sortBy: SortOptions
   categories?: HttpTypes.StoreProductCategory[]
+  catalogFacets?: CatalogFacets
 }
 
 const ProductListingControls = ({
   count,
   sortBy,
   categories,
+  catalogFacets,
 }: ProductListingControlsProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
@@ -85,7 +88,11 @@ const ProductListingControls = ({
                 </button>
               </div>
               <div className="overflow-y-auto px-5 py-5">
-                <RefinementList sortBy={sortBy} categories={categories} />
+                <RefinementList
+                  sortBy={sortBy}
+                  categories={categories}
+                  catalogFacets={catalogFacets}
+                />
               </div>
               <div className="border-t border-[var(--hp-line)] p-4">
                 <button

@@ -4,6 +4,14 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useMemo } from "react"
 
 import {
+  CATALOG_BRAND_QUERY_KEY,
+  CATALOG_SPEC_QUERY_KEY,
+  CATALOG_PRICE_QUERY_KEY,
+  CatalogFacets,
+  catalogSpecToken,
+  parseCatalogFilters,
+} from "@lib/util/catalog-filters"
+import {
   OPTION_VALUE_QUERY_KEY,
   parseOptionValueIds,
 } from "@lib/util/product-option-filters"
@@ -16,6 +24,7 @@ type RefinementListProps = {
   hideOptionsPicker?: boolean
   hideSort?: boolean
   categories?: HttpTypes.StoreProductCategory[]
+  catalogFacets?: CatalogFacets
   "data-testid"?: string
 }
 
@@ -24,6 +33,7 @@ const RefinementList = ({
   hideOptionsPicker = false,
   hideSort = false,
   categories = [],
+  catalogFacets,
   "data-testid": dataTestId,
 }: RefinementListProps) => {
   const router = useRouter()
@@ -67,11 +77,29 @@ const RefinementList = ({
       )
     })
 
+  const selectedCatalogFilters = useMemo(
+    () => parseCatalogFilters(searchParams),
+    [searchParams],
+  )
+
+  const toggleRepeatedQueryValue = (name: string, value: string) =>
+    updateQueryParams((params) => {
+      const current = params.getAll(name)
+      const next = current.includes(value)
+        ? current.filter((item) => item !== value)
+        : [...current, value]
+      params.delete(name)
+      next.forEach((item) => params.append(name, item))
+    })
+
   const clearRefinements = () =>
     updateQueryParams((params) => {
       params.delete("sortBy")
       params.delete(OPTION_VALUE_QUERY_KEY)
       params.delete("category_id")
+      params.delete(CATALOG_BRAND_QUERY_KEY)
+      params.delete(CATALOG_SPEC_QUERY_KEY)
+      params.delete(CATALOG_PRICE_QUERY_KEY)
     })
 
   return (
@@ -119,13 +147,90 @@ const RefinementList = ({
           </div>
         </fieldset>
       )}
-      {!hideOptionsPicker && (
+      {catalogFacets?.brands.length ? (
+        <FacetGroup
+          label="Hãng sản xuất"
+          values={catalogFacets.brands}
+          selectedValues={selectedCatalogFilters.brands}
+          onToggle={(value) =>
+            toggleRepeatedQueryValue(CATALOG_BRAND_QUERY_KEY, value)
+          }
+        />
+      ) : null}
+      {catalogFacets?.prices.length ? (
+        <FacetGroup
+          label="Khoảng giá"
+          values={catalogFacets.prices}
+          selectedValues={selectedCatalogFilters.prices}
+          onToggle={(value) =>
+            toggleRepeatedQueryValue(CATALOG_PRICE_QUERY_KEY, value)
+          }
+        />
+      ) : null}
+      {catalogFacets?.specifications.map((facet) => (
+        <FacetGroup
+          key={facet.key}
+          label={facet.label}
+          values={facet.values}
+          selectedValues={selectedCatalogFilters.specifications[facet.key] ?? []}
+          onToggle={(value) =>
+            toggleRepeatedQueryValue(
+              CATALOG_SPEC_QUERY_KEY,
+              catalogSpecToken(facet.key, value),
+            )
+          }
+        />
+      ))}
+      {!hideOptionsPicker && !catalogFacets && (
         <OptionsPicker
           selectedValueIds={selectedOptionValueIds}
           setOptionValueIds={setOptionValueIds}
         />
       )}
     </div>
+  )
+}
+
+function FacetGroup({
+  label,
+  values,
+  selectedValues,
+  onToggle,
+}: {
+  label: string
+  values: { value: string; label: string; count: number }[]
+  selectedValues: string[]
+  onToggle: (value: string) => void
+}) {
+  return (
+    <fieldset className="flex flex-col gap-3">
+      <legend className="text-sm font-semibold text-[var(--hp-ink)]">
+        {label}
+      </legend>
+      <div className="flex flex-wrap gap-2">
+        {values.map((item) => {
+          const isSelected = selectedValues.includes(item.value)
+          return (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => onToggle(item.value)}
+              className={`min-h-10 rounded-[var(--hp-radius-control)] border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--hp-accent)] focus-visible:ring-offset-2 ${
+                isSelected
+                  ? "border-[var(--hp-accent)] bg-[var(--hp-accent-soft)] text-[var(--hp-accent)]"
+                  : "border-[var(--hp-line)] bg-[var(--hp-surface)] text-[var(--hp-ink)] hover:border-[var(--hp-accent)]"
+              }`}
+              aria-pressed={isSelected}
+            >
+              {item.label}
+              <span className="ml-1 text-xs text-[var(--hp-muted)]">
+                {item.count}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </fieldset>
   )
 }
 

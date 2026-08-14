@@ -1,6 +1,10 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { OptionValueIds } from "@lib/util/product-option-filters"
+import type {
+  CatalogFacets,
+  CatalogFilterSelection,
+} from "@lib/util/catalog-filters"
 import { HttpTypes } from "@medusajs/types"
 import SalesProductCard from "@modules/home/components/sales-product-card"
 import { Pagination } from "@modules/store/components/pagination"
@@ -28,6 +32,8 @@ export default async function PaginatedProducts({
   query,
   optionValueIds,
   categories,
+  catalogFilters,
+  catalogFacets,
 }: {
   sortBy?: SortOptions
   page: number
@@ -38,6 +44,8 @@ export default async function PaginatedProducts({
   query?: string
   optionValueIds?: OptionValueIds
   categories?: HttpTypes.StoreProductCategory[]
+  catalogFilters?: CatalogFilterSelection
+  catalogFacets?: CatalogFacets
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -82,6 +90,7 @@ export default async function PaginatedProducts({
       : collectionId
       ? { kind: "collections", id: collectionId }
       : undefined,
+    catalogFilters,
   })
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
@@ -99,7 +108,12 @@ export default async function PaginatedProducts({
 
   return (
     <>
-      <ProductListingControls count={count} sortBy={sortBy || "created_at"} categories={categories} />
+      <ProductListingControls
+        count={count}
+        sortBy={sortBy || "created_at"}
+        categories={categories}
+        catalogFacets={catalogFacets}
+      />
       <ul
         className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         data-testid="products-list"

@@ -3,18 +3,55 @@ import { MedusaError } from "@medusajs/framework/utils"
 const vnd = (value: string) => Number(value)
 
 export const CATALOG_PRODUCT_TYPES = [
-  "Điện thoại",
   "Laptop",
   "Phụ kiện",
   "Thiết bị mạng",
+  "Đồ gia dụng",
+  "Điện lạnh",
+  "Thiết bị điện",
+  "Âm thanh & TV",
 ] as const
 
-export const CATALOG_CATEGORIES = [
-  { name: "Điện thoại", handle: "điện-thoại", rank: 0 },
-  { name: "Laptop", handle: "laptop", rank: 1 },
-  { name: "Phụ kiện", handle: "phụ-kiện", rank: 2 },
-  { name: "Thiết bị mạng", handle: "thiết-bị-mạng", rank: 3 },
-] as const
+type CatalogCategorySeed = {
+  name: string
+  handle: string
+  rank: number
+  parent?: string
+}
+
+export const CATALOG_CATEGORIES: CatalogCategorySeed[] = [
+  { name: "Laptop", handle: "laptop", rank: 0 },
+  { name: "Phụ kiện", handle: "phụ-kiện", rank: 1 },
+  { name: "Thiết bị mạng", handle: "thiết-bị-mạng", rank: 2 },
+  { name: "Đồ gia dụng", handle: "do-gia-dung", rank: 3 },
+  { name: "Điện lạnh", handle: "dien-lanh", rank: 4 },
+  { name: "Thiết bị điện", handle: "thiet-bi-dien", rank: 5 },
+  { name: "Âm thanh & TV", handle: "am-thanh-tv", rank: 6 },
+  { name: "Sạc và cáp", handle: "sac-va-cap", rank: 0, parent: "Phụ kiện" },
+  { name: "Tai nghe", handle: "tai-nghe", rank: 1, parent: "Phụ kiện" },
+  { name: "Router Wi-Fi", handle: "router-wifi", rank: 0, parent: "Thiết bị mạng" },
+  { name: "Switch và bộ chia mạng", handle: "switch-bo-chia-mang", rank: 1, parent: "Thiết bị mạng" },
+  { name: "Camera", handle: "camera", rank: 2, parent: "Thiết bị mạng" },
+  { name: "Nồi cơm điện", handle: "noi-com-dien", rank: 0, parent: "Đồ gia dụng" },
+  { name: "Bếp điện và bếp từ", handle: "bep-dien-bep-tu", rank: 1, parent: "Đồ gia dụng" },
+  { name: "Quạt điện", handle: "quat-dien", rank: 2, parent: "Đồ gia dụng" },
+  { name: "Ấm siêu tốc", handle: "am-sieu-toc", rank: 3, parent: "Đồ gia dụng" },
+  { name: "Máy xay và máy ép", handle: "may-xay-may-ep", rank: 4, parent: "Đồ gia dụng" },
+  { name: "Lò vi sóng và lò nướng", handle: "lo-vi-song-lo-nuong", rank: 5, parent: "Đồ gia dụng" },
+  { name: "Bàn ủi và chăm sóc quần áo", handle: "ban-ui-cham-soc-quan-ao", rank: 6, parent: "Đồ gia dụng" },
+  { name: "Máy hút bụi và vệ sinh", handle: "may-hut-bui-ve-sinh", rank: 7, parent: "Đồ gia dụng" },
+  { name: "Tủ lạnh", handle: "tu-lanh", rank: 0, parent: "Điện lạnh" },
+  { name: "Máy giặt và máy sấy", handle: "may-giat-may-say", rank: 1, parent: "Điện lạnh" },
+  { name: "Máy lạnh", handle: "may-lanh", rank: 2, parent: "Điện lạnh" },
+  { name: "Tủ đông và tủ mát", handle: "tu-dong-tu-mat", rank: 3, parent: "Điện lạnh" },
+  { name: "Ổ cắm và dây điện", handle: "o-cam-day-dien", rank: 0, parent: "Thiết bị điện" },
+  { name: "Đèn và chiếu sáng", handle: "den-chieu-sang", rank: 1, parent: "Thiết bị điện" },
+  { name: "Quạt thông gió", handle: "quat-thong-gio", rank: 2, parent: "Thiết bị điện" },
+  { name: "Máy bơm nước", handle: "may-bom-nuoc", rank: 3, parent: "Thiết bị điện" },
+  { name: "TV", handle: "tv", rank: 0, parent: "Âm thanh & TV" },
+  { name: "Loa", handle: "loa", rank: 1, parent: "Âm thanh & TV" },
+  { name: "Thiết bị âm thanh", handle: "thiet-bi-am-thanh", rank: 2, parent: "Âm thanh & TV" },
+]
 
 export const CATALOG_COLLECTIONS = [
   { title: "Flash Deal", handle: "flash-deal" },
@@ -23,13 +60,25 @@ export const CATALOG_COLLECTIONS = [
 ] as const
 
 export const CATALOG_BRANDS = [
-  { name: "Nova", handle: "nova" },
   { name: "WorkPro", handle: "workpro" },
   { name: "Hưng Phát", handle: "hung-phat" },
   { name: "NetWave", handle: "netwave" },
+  { name: "Samsung", handle: "samsung" },
+  { name: "Panasonic", handle: "panasonic" },
+  { name: "Toshiba", handle: "toshiba" },
+  { name: "Sharp", handle: "sharp" },
+  { name: "Philips", handle: "philips" },
+  { name: "Electrolux", handle: "electrolux" },
+  { name: "Sunhouse", handle: "sunhouse" },
+  { name: "Kangaroo", handle: "kangaroo" },
+  { name: "Aqua", handle: "aqua" },
+  { name: "LG", handle: "lg" },
+  { name: "Casper", handle: "casper" },
+  { name: "Midea", handle: "midea" },
+  { name: "Bosch", handle: "bosch" },
 ] as const
 
-export const CATALOG_PRODUCTS = [
+const CATALOG_PRODUCT_FIXTURES = [
   {
     title: "Điện thoại Nova X1",
     handle: "dien-thoai-nova-x1",
@@ -158,6 +207,10 @@ export const CATALOG_PRODUCTS = [
     ],
   },
 ] as const
+
+export const CATALOG_PRODUCTS = CATALOG_PRODUCT_FIXTURES.filter(
+  (product) => product.handle !== "dien-thoai-nova-x1"
+)
 
 export const COLLECTION_PRODUCT_HANDLES: Record<string, string[]> = {
   "flash-deal": CATALOG_PRODUCTS.map((product) => product.handle),

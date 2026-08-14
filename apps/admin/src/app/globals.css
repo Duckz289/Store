@@ -1119,6 +1119,52 @@ tbody tr:hover {
 .editor-heading span {
   display: block;
 }
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.form-actions-inline {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.form-submit-field {
+  display: flex;
+  align-items: flex-end;
+}
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.text-button-danger {
+  color: var(--danger);
+}
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(0 0 0 / 66%);
+}
+.dialog-card {
+  display: grid;
+  width: min(460px, 100%);
+  gap: 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  padding: 22px;
+  box-shadow: 0 28px 80px rgb(0 0 0 / 40%);
+}
+.dialog-card h2 {
+  color: var(--ink);
+  font-size: 18px;
+}
 .editor-heading strong {
   color: var(--ink);
   font-size: 12px;
@@ -1138,13 +1184,28 @@ tbody tr:hover {
   display: grid;
   grid-template-columns:
     minmax(130px, 1.3fr) minmax(120px, 1fr) minmax(90px, 0.65fr)
-    minmax(90px, 0.75fr) 32px;
+    minmax(90px, 0.75fr) auto auto 32px;
   gap: 8px;
   align-items: center;
 }
-.specification-row input {
+.specification-row > input {
   min-width: 0;
   padding: 8px 10px;
+}
+.specification-flag {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.specification-flag input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
 }
 .media-dropzone {
   display: grid;
@@ -1213,10 +1274,14 @@ tbody tr:hover {
 }
 @media (max-width: 760px) {
   .specification-row {
-    grid-template-columns: 1fr 1fr 1fr 32px;
+    grid-template-columns: 1fr 1fr 32px;
   }
-  .specification-row input:last-of-type {
-    grid-column: span 3;
+  .specification-row > input {
+    grid-column: span 1;
+  }
+  .specification-row > input:nth-of-type(1),
+  .specification-row > input:nth-of-type(2) {
+    grid-column: span 1;
   }
   .media-url {
     display: grid;

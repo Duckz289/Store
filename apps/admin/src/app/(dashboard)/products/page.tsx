@@ -18,19 +18,39 @@ import {
 } from "@/components/ui"
 import { adminFetch, queryString } from "@/lib/api"
 import { formatMoney } from "@/lib/format"
-import type { Product } from "@/lib/types"
+import type { CatalogBrand, Product, ProductCategory } from "@/lib/types"
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
   const [search, setSearch] = useState(searchParams.get("q") ?? "")
   const [status, setStatus] = useState("")
+  const [categoryId, setCategoryId] = useState("")
+  const [brandId, setBrandId] = useState("")
   const query = useQuery({
     queryKey: ["products", search, status],
     queryFn: () =>
       adminFetch<{ products: Product[]; count: number }>(
-        `/admin/products${queryString({ q: search || undefined, status: status ? [status] : undefined, limit: 100, fields: "+variants.prices,+variants.inventory_quantity" })}`,
+        `/admin/products${queryString({ q: search || undefined, status: status ? [status] : undefined, limit: 100, fields: "+variants.prices,+variants.inventory_quantity,+categories,+catalog.*,+catalog.brand.*" })}`,
       ),
   })
+  const categories = useQuery({
+    queryKey: ["product-categories"],
+    queryFn: () =>
+      adminFetch<{ product_categories: ProductCategory[] }>(
+        "/admin/product-categories?limit=100&fields=id,name,handle,parent_category.*",
+      ),
+  })
+  const brands = useQuery({
+    queryKey: ["catalog-brands"],
+    queryFn: () =>
+      adminFetch<{ brands: CatalogBrand[] }>("/admin/catalog/brands"),
+  })
+  const filteredProducts = (query.data?.products ?? []).filter(
+    (product) =>
+      (!categoryId ||
+        product.categories?.some((category) => category.id === categoryId)) &&
+      (!brandId || product.catalog?.brand?.id === brandId),
+  )
 
   return (
     <div className="stack">
@@ -57,28 +77,54 @@ export default function ProductsPage() {
             <option value="proposed">Chờ duyệt</option>
             <option value="rejected">Từ chối</option>
           </select>
+          <select
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+          >
+            <option value="">Tất cả danh mục</option>
+            {categories.data?.product_categories.map((category) => (
+              <option value={category.id} key={category.id}>
+                {category.parent_category
+                  ? `${category.parent_category.name} / `
+                  : ""}
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={brandId}
+            onChange={(event) => setBrandId(event.target.value)}
+          >
+            <option value="">Tất cả hãng</option>
+            {brands.data?.brands.map((brand) => (
+              <option value={brand.id} key={brand.id}>
+                {brand.name}
+              </option>
+            ))}
+          </select>
           <span className="toolbar-spacer">
-            {query.data?.count ?? 0} sản phẩm
+            {filteredProducts.length} sản phẩm
           </span>
         </div>
         {query.isLoading ? (
           <LoadingState />
         ) : query.isError ? (
           <ErrorState error={query.error} />
-        ) : query.data?.products.length ? (
+        ) : filteredProducts.length ? (
           <TableWrap>
             <table>
               <thead>
                 <tr>
                   <th>Sản phẩm</th>
                   <th>SKU</th>
+                  <th>Danh mục / hãng</th>
                   <th>Giá</th>
                   <th>Tồn</th>
                   <th>Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
-                {query.data.products.map((product) => {
+                {filteredProducts.map((product) => {
                   const variant = product.variants?.[0]
                   const directPrice = variant?.prices?.[0]
                   return (
@@ -111,6 +157,14 @@ export default function ProductsPage() {
                         </div>
                       </td>
                       <td>{variant?.sku ?? "-"}</td>
+                      <td>
+                        <span className="table-title">
+                          {product.categories?.[0]?.name ?? "Chưa phân loại"}
+                        </span>
+                        <span className="table-subtitle">
+                          {product.catalog?.brand?.name ?? "Chưa có hãng"}
+                        </span>
+                      </td>
                       <td>
                         {formatMoney(
                           directPrice?.amount ??

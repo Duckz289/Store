@@ -10,6 +10,7 @@ import { sdk } from "@/lib/sdk"
 const navigation = [
   { href: "/dashboard", label: "Tổng quan", short: "TQ" },
   { href: "/products", label: "Sản phẩm", short: "SP" },
+  { href: "/catalog", label: "Danh mục & hãng", short: "DM" },
   { href: "/orders", label: "Đơn hàng", short: "ĐH" },
   { href: "/promotions", label: "Khuyến mãi", short: "KM" },
   { href: "/repairs", label: "Sửa chữa", short: "SC" },

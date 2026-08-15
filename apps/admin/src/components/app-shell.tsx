@@ -5,7 +5,9 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { FormEvent, useEffect, useState } from "react"
 
+import { adminFetch } from "@/lib/api"
 import { sdk } from "@/lib/sdk"
+import type { StaffUser, SystemAccess } from "@/lib/types"
 
 const navigation = [
   { href: "/dashboard", label: "Tổng quan", short: "TQ" },
@@ -21,9 +23,10 @@ const navigation = [
 const systemNavigation = [
   { href: "/staff", label: "Nhân viên & bảo mật", short: "NV" },
   { href: "/audit", label: "Audit log", short: "AL" },
+  { href: "/system", label: "Sức khỏe hệ thống", short: "HT" },
 ]
 
-type CurrentUserResponse = { user: { id: string; email?: string; first_name?: string; last_name?: string } }
+type CurrentUserResponse = { user: StaffUser; access: SystemAccess }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -32,7 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [search, setSearch] = useState("")
   const currentUser = useQuery({
     queryKey: ["current-admin-user"],
-    queryFn: () => sdk.admin.user.me() as unknown as Promise<CurrentUserResponse>,
+    queryFn: () => adminFetch<CurrentUserResponse>("/admin/system/me"),
     retry: false,
   })
 
@@ -70,8 +73,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav aria-label="Điều hướng chính">
           <p className="nav-heading">Vận hành</p>
           {navigation.map((item) => <NavItem key={item.href} {...item} pathname={pathname} />)}
-          <p className="nav-heading nav-heading-spaced">Hệ thống</p>
-          {systemNavigation.map((item) => <NavItem key={item.href} {...item} pathname={pathname} />)}
+          {currentUser.data.access.can_manage_system ? (
+            <>
+              <p className="nav-heading nav-heading-spaced">Hệ thống</p>
+              {systemNavigation.map((item) => <NavItem key={item.href} {...item} pathname={pathname} />)}
+            </>
+          ) : null}
         </nav>
         <div className="sidebar-footer">
           <div className="avatar">{displayName.slice(0, 2).toUpperCase()}</div>
@@ -87,7 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm sản phẩm, SKU..." aria-label="Tìm kiếm toàn cục" />
             <kbd>Enter</kbd>
           </form>
-          <div className="topbar-status"><span className="status-dot" />Hệ thống hoạt động</div>
+          <div className="topbar-status"><span className="status-dot" />{currentUser.data.access.is_system_owner ? "System Owner" : "Phiên vận hành"}</div>
         </header>
         <main className="content">{children}</main>
       </div>

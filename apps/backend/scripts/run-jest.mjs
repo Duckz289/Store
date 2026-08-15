@@ -3,6 +3,10 @@ import { createRequire } from "node:module"
 
 const require = createRequire(import.meta.url)
 const mode = process.argv[2]
+const forwardedArgs = process.argv.slice(3)
+if (forwardedArgs[0] === "--") {
+  forwardedArgs.shift()
+}
 const testTypes = {
   unit: "unit",
   "integration-http": "integration:http",
@@ -20,6 +24,7 @@ const args = [
   jestBinary,
   "--runInBand",
   "--passWithNoTests",
+  ...forwardedArgs,
 ]
 
 if (mode !== "unit") {

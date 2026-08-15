@@ -1,9 +1,13 @@
-import { SECURITY_ROLE_MATRIX } from "../role-matrix"
+import {
+  hasBusinessOwnerAccess,
+  isSystemOwnerRole,
+  SECURITY_ROLE_MATRIX,
+} from "../role-matrix"
 
 describe("security role matrix", () => {
-  it("keeps the six reviewed roles and adds one isolated repair role", () => {
-    expect(SECURITY_ROLE_MATRIX).toHaveLength(7)
-    expect(new Set(SECURITY_ROLE_MATRIX.map((role) => role.name)).size).toBe(7)
+  it("keeps reviewed business roles plus one unique system owner role", () => {
+    expect(SECURITY_ROLE_MATRIX).toHaveLength(8)
+    expect(new Set(SECURITY_ROLE_MATRIX.map((role) => role.name)).size).toBe(8)
   })
 
   it("keeps repair technicians away from contact PII and commerce writes", () => {
@@ -49,6 +53,15 @@ describe("security role matrix", () => {
       { resource: "*", operation: "read" },
     ])
     expect(owner.permissions).toEqual([{ resource: "*", operation: "*" }])
+  })
+
+  it("separates system ownership from business owner access", () => {
+    expect(isSystemOwnerRole(["System Owner"])).toBe(true)
+    expect(isSystemOwnerRole(["Owner"])).toBe(false)
+    expect(hasBusinessOwnerAccess(["System Owner"])).toBe(true)
+    expect(hasBusinessOwnerAccess(["Owner"])).toBe(true)
+    expect(hasBusinessOwnerAccess(["Super Admin"])).toBe(true)
+    expect(hasBusinessOwnerAccess(["Support"])).toBe(false)
   })
 
   it("uses Medusa's registered CRUD policies instead of dynamic wildcards", () => {

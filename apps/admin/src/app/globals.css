@@ -1474,3 +1474,112 @@ tbody tr:hover {
 .datetime-shortcuts button {
   min-height: 44px;
 }
+
+/* Operational security and inventory */
+.inline-fields {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.45fr) minmax(180px, 1fr);
+  gap: 8px;
+}
+.inventory-adjust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.metric-strip > div {
+  display: grid;
+  gap: 7px;
+  min-height: 80px;
+  align-content: center;
+  border-right: 1px solid var(--line);
+  padding: 14px 18px;
+}
+.metric-strip > div:last-child {
+  border-right: 0;
+}
+.metric-strip span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.metric-strip strong {
+  font-size: 18px;
+}
+.system-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.role-boundaries {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.role-boundaries > div {
+  display: grid;
+  gap: 7px;
+}
+.role-boundaries span,
+.table-subline {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.table-subline {
+  margin-top: 5px;
+}
+.numeric-cell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.correlation-id {
+  color: #b7c8ee;
+  font-size: 11px;
+}
+
+@media (max-width: 960px) {
+  .inventory-adjust-grid,
+  .role-boundaries {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .system-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .system-metrics > div:nth-child(2) {
+    border-right: 0;
+  }
+  .system-metrics > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 760px) {
+  .inline-fields,
+  .inventory-adjust-grid,
+  .metric-strip,
+  .system-metrics,
+  .role-boundaries {
+    grid-template-columns: 1fr;
+  }
+  .metric-strip > div,
+  .system-metrics > div:nth-child(2) {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .metric-strip > div:last-child {
+    border-bottom: 0;
+  }
+}

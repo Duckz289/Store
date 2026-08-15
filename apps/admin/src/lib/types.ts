@@ -13,6 +13,7 @@ export type Product = {
   thumbnail?: string | null
   images?: { id?: string; url: string }[]
   categories?: { id: string; name: string; handle?: string }[]
+  sales_channels?: SalesChannel[]
   collection?: { id: string; title: string } | null
   catalog?: ProductCatalog | null
   variants?: {
@@ -23,7 +24,21 @@ export type Product = {
     inventory_quantity?: number
     prices?: { id?: string; amount: number; currency_code: string }[]
     calculated_price?: { calculated_amount?: number; currency_code?: string }
+    inventory_items?: {
+      inventory?: { id: string; sku?: string | null }
+    }[]
   }[]
+}
+
+export type SalesChannel = {
+  id: string
+  name: string
+  is_disabled?: boolean
+}
+
+export type StockLocation = {
+  id: string
+  name: string
 }
 
 export type CatalogBrandKind = "manufacturer" | "store_label" | "unspecified"
@@ -247,6 +262,46 @@ export type StaffUser = {
   email?: string
   created_at?: string
   rbac_roles?: { id: string; name: string }[]
+  is_system_owner?: boolean
+}
+
+export type StaffRole = {
+  id: string
+  name: string
+  description?: string | null
+  assignable: boolean
+}
+
+export type SystemAccess = {
+  is_system_owner: boolean
+  can_manage_system: boolean
+  role_names: string[]
+}
+
+export type SystemHealth = {
+  status: "healthy" | "degraded" | "unhealthy"
+  checked_at: string
+  uptime_seconds: number
+  memory: { rss_mb: number; heap_used_mb: number }
+  checks: {
+    id: string
+    label: string
+    status: "pass" | "warn" | "fail"
+    critical: boolean
+    latency_ms: number
+    message: string
+    details?: Record<string, unknown>
+  }[]
+  traces: {
+    correlation_id: string
+    method: string
+    path: string
+    status_code: number
+    duration_ms: number
+    actor_id?: string | null
+    occurred_at: string
+  }[]
+  recent_audit: AuditEvent[]
 }
 
 export type AuditEvent = {

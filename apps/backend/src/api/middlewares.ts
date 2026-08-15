@@ -9,8 +9,11 @@ import { PolicyOperation } from "@medusajs/framework/utils"
 import "../policies/security"
 import "../policies/repair"
 import "../policies/vietqr"
+import "../utils/policy-type-safety"
 import { ListAuditEventsSchema } from "./admin/security/audit-events/route"
+import { AdjustInventoryStockSchema } from "./admin/inventory/adjustments/route"
 import { VerifyMfaStepUpSchema } from "./admin/security/mfa/challenges/[id]/verify/route"
+import { AssignStaffRoleSchema } from "./admin/system/staff/[id]/role/route"
 import { CreateCatalogBrandSchema } from "./admin/catalog/brands/route"
 import { UpdateCatalogBrandSchema } from "./admin/catalog/brands/[id]/route"
 import { UpdateProductCatalogSchema } from "./admin/products/[id]/catalog/route"
@@ -35,9 +38,14 @@ import { blockNativeVietQrRefund } from "./middlewares/block-native-vietqr-refun
 import { auditPasswordRecovery } from "./middlewares/password-recovery-audit"
 import { passwordRecoveryRateLimit } from "./middlewares/password-recovery-rate-limit"
 import { requireMfaStepUp } from "./middlewares/require-mfa-step-up"
+import {
+  requireSystemOwner,
+  requireSystemOwnerUnlessSelf,
+} from "./middlewares/require-system-owner"
 import { repairIntakeRateLimit } from "./middlewares/repair-intake-rate-limit"
 import { revokeMfaAssurance } from "./middlewares/revoke-mfa-assurance"
 import { validateUniqueVariantSkus } from "./middlewares/validate-unique-variant-skus"
+import { traceRequest } from "./middlewares/request-trace"
 import {
   ConfirmVietQrPaymentSchema,
   RefundVietQrPaymentSchema,
@@ -52,6 +60,10 @@ const customerAuthentication = authenticate("customer", ["session", "bearer"])
 
 const middlewareConfiguration = {
   routes: [
+    {
+      matcher: /^\/(admin|store)(\/.*)?$/,
+      middlewares: [traceRequest],
+    },
     {
       matcher: "/auth/customer/emailpass/reset-password",
       methods: ["POST"],
@@ -114,6 +126,7 @@ const middlewareConfiguration = {
       methods: ["GET"],
       middlewares: [
         adminAuthentication,
+        requireSystemOwner,
         requireMfaStepUp,
         validateAndTransformQuery(ListAuditEventsSchema, {
           defaults: [
@@ -146,6 +159,59 @@ const middlewareConfiguration = {
           operation: PolicyOperation.read,
         },
       ],
+    },
+    {
+      matcher: "/admin/system/me",
+      methods: ["GET"],
+      middlewares: [adminAuthentication],
+    },
+    {
+      matcher: "/admin/system/health",
+      methods: ["GET"],
+      middlewares: [
+        adminAuthentication,
+        requireSystemOwner,
+        requireMfaStepUp,
+      ],
+    },
+    {
+      matcher: "/admin/system/staff",
+      methods: ["GET"],
+      middlewares: [
+        adminAuthentication,
+        requireSystemOwner,
+        requireMfaStepUp,
+      ],
+    },
+    {
+      matcher: "/admin/system/staff/:id/role",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        requireSystemOwner,
+        validateAndTransformBody(AssignStaffRoleSchema),
+      ],
+    },
+    {
+      matcher: "/admin/inventory/adjustments",
+      methods: ["POST"],
+      middlewares: [
+        adminAuthentication,
+        validateAndTransformBody(AdjustInventoryStockSchema),
+      ],
+      policies: [{ resource: "inventory_level", operation: "update" }],
+    },
+    {
+      matcher: /^\/admin\/users\/?$/,
+      middlewares: [adminAuthentication, requireSystemOwner],
+    },
+    {
+      matcher: "/admin/users/:id",
+      middlewares: [adminAuthentication, requireSystemOwnerUnlessSelf],
+    },
+    {
+      matcher: /^\/admin\/(rbac|invites|api-keys)(\/.*)?$/,
+      middlewares: [adminAuthentication, requireSystemOwner],
     },
     {
       matcher: "/admin/catalog/brands",

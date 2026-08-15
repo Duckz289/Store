@@ -12,7 +12,7 @@ export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
   const query = useQuery({ queryKey: ["product", id], queryFn: async () => {
     const [core, catalog] = await Promise.all([
-      adminFetch<{ product: Product }>(`/admin/products/${id}?fields=+variants.prices,+images,+categories`),
+      adminFetch<{ product: Product }>(`/admin/products/${id}?fields=+variants.prices,+images,+categories,+sales_channels`),
       adminFetch<{ catalog: ProductCatalog }>(`/admin/products/${id}/catalog`),
     ])
     return { product: core.product, catalog: catalog.catalog }

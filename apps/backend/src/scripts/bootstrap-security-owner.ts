@@ -12,12 +12,16 @@ export default async function bootstrapSecurityOwner({
   container: MedusaContainer
 }) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-  const email = process.env.SECURITY_OWNER_EMAIL?.trim().toLowerCase()
+  const email = (
+    process.env.SYSTEM_OWNER_EMAIL ?? process.env.SECURITY_OWNER_EMAIL
+  )
+    ?.trim()
+    .toLowerCase()
 
   if (!email) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      "SECURITY_OWNER_EMAIL is required"
+      "SYSTEM_OWNER_EMAIL is required"
     )
   }
 
@@ -26,6 +30,6 @@ export default async function bootstrapSecurityOwner({
   })
 
   logger.info(
-    `Security owner bootstrap completed for user ${result.user_id}; assigned=${result.assigned}`
+    `System owner bootstrap completed for user ${result.user_id}; assigned=${result.assigned}; revoked_duplicates=${result.revoked_duplicate_assignments}; normalized_legacy_accounts=${result.normalized_legacy_accounts}; removed_redundant_target_roles=${result.removed_redundant_target_roles}`
   )
 }

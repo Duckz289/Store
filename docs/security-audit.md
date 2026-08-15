@@ -216,3 +216,23 @@ Kết quả production chính xác là **17 finding / 17 advisory: 0 critical, 6
 So sánh định danh advisory, package, phiên bản và dependency path với snapshot Milestone 2 cho kết quả không có dòng thêm, bớt hoặc thay đổi. `pnpm-lock.yaml` không đổi; frozen install xác nhận lockfile up to date và bỏ qua resolution step. Milestone 3 không thêm package hoặc dependency resolution.
 
 Sáu production high vẫn là đúng các exception đã risk-accept đến 2026-09-06. Không có critical/high mới, không mở rộng runtime reachability và không thay đổi biện pháp giảm thiểu. Kết quả này chỉ đóng security gate cho development nội bộ; **không phải production approval**.
+
+## System Owner và observability — 15/08/2026
+
+- Hệ thống có đúng một vai trò `System Owner`, được gán bằng workflow bootstrap
+  theo `SYSTEM_OWNER_EMAIL`. Bootstrap chạy lặp an toàn, gỡ System Owner trùng và
+  chuyển các gán `Super Admin` cũ thành `Owner`.
+- `Owner` giữ toàn quyền nghiệp vụ nhưng không được truy cập staff role, RBAC,
+  invite, API key, audit log hay system health. Người dùng vẫn được xem và sửa hồ
+  sơ của chính mình; mọi mutation nhạy cảm tiếp tục yêu cầu MFA step-up.
+- System health kiểm tra database, cấu hình commerce, số lượng System Owner,
+  audit module và sự hiện diện của security environment variables mà không trả
+  secret value.
+- Request tracer gắn hoặc tái sử dụng `x-request-id`, ghi method, path, status,
+  duration, actor và timestamp trong ring buffer giới hạn 250 bản ghi. Request
+  lỗi/chậm được ghi log JSON để đối chiếu với audit correlation ID.
+- Inventory adjustment dùng Inventory Module và locking, có idempotency key,
+  ngăn tồn dưới reserved/zero và ghi audit trước/sau. Không có truy cập PostgreSQL
+  trực tiếp.
+- HTTP integration đã xác nhận phân quyền System Owner/Owner, MFA, audit,
+  lifecycle trace và điều chỉnh tồn kho idempotent.

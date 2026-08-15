@@ -21,6 +21,7 @@ import {
   stableHash,
 } from "../../utils/repair-domain"
 import { prepareAuditEvent } from "../../utils/security-audit"
+import { hasBusinessOwnerAccess } from "../../utils/role-matrix"
 
 export type TransitionRepairCaseInput = {
   repair_case_id: string
@@ -109,7 +110,7 @@ export const transitionRepairCaseStep = createStep(
       const actorRoles = (
         users[0] as unknown as { rbac_roles?: { name: string }[] }
       )?.rbac_roles?.map((role) => role.name) ?? []
-      const isOwner = actorRoles.includes("Owner")
+      const isOwner = hasBusinessOwnerAccess(actorRoles)
       const transitionKey = `${repairCase.status}:${input.to_status}`
       const permittedRoles = transitionRoles[transitionKey] ?? []
       if (!isOwner && !permittedRoles.some((role) => actorRoles.includes(role))) {

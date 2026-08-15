@@ -128,6 +128,23 @@ medusaIntegrationTestRunner({
       return secret
     }
 
+    async function stepUpAdmin(token: string) {
+      const headers = { Authorization: `Bearer ${token}` }
+      const secret = await enrollTotp(token)
+      const challenge = await api.post(
+        "/admin/security/mfa/challenges",
+        {},
+        { headers }
+      )
+      await api.post(
+        `/admin/security/mfa/challenges/${challenge.data.challenge.id}/verify`,
+        { method: "totp", code: currentTotp(secret) },
+        { headers }
+      )
+
+      return headers
+    }
+
     beforeEach(async () => {
       await configureSecurityRolesWorkflow(getContainer()).run()
     })
@@ -178,6 +195,49 @@ medusaIntegrationTestRunner({
       expect(
         await rbacService.listRbacRoles({ name: "Escalated role" })
       ).toHaveLength(0)
+    })
+
+    it("reserves system health and staff controls for the System Owner", async () => {
+      const systemOwner = await createAdmin("System Owner", "system-owner")
+      const businessOwner = await createAdmin("Owner", "business-owner")
+      const systemOwnerHeaders = await stepUpAdmin(systemOwner.token)
+      const businessOwnerHeaders = await stepUpAdmin(businessOwner.token)
+
+      const identity = await api.get("/admin/system/me", {
+        headers: systemOwnerHeaders,
+      })
+      expect(identity.data.access).toMatchObject({
+        is_system_owner: true,
+        can_manage_system: true,
+      })
+
+      const denied = await expectStatus(
+        api.get("/admin/system/health", { headers: businessOwnerHeaders }),
+        403
+      )
+      expect(denied.message).toBe("SYSTEM_OWNER_REQUIRED")
+
+      const health = await api.get("/admin/system/health", {
+        headers: systemOwnerHeaders,
+      })
+      expect(health.data.checks).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: "database" }),
+          expect.objectContaining({ id: "system_owner" }),
+          expect.objectContaining({ id: "audit" }),
+        ])
+      )
+      expect(Array.isArray(health.data.traces)).toBe(true)
+
+      const staff = await api.get("/admin/system/staff", {
+        headers: systemOwnerHeaders,
+      })
+      expect(staff.data.system_owner_count).toBe(1)
+      expect(staff.data.users).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: systemOwner.userId, is_system_owner: true }),
+        ])
+      )
     })
 
     it("rejects a challenge verified by a different auth identity", async () => {
@@ -245,8 +305,8 @@ medusaIntegrationTestRunner({
       expect(events.every((event) => event.resource_id === orderId)).toBe(true)
     })
 
-    it("steps up a session, audits a mutation, and revokes assurance on logout", async () => {
-      const owner = await createAdmin("Owner", "session-owner")
+    it("steps up a System Owner session, audits a mutation, and revokes assurance on logout", async () => {
+      const owner = await createAdmin("System Owner", "session-owner")
       const bearerHeaders = { Authorization: `Bearer ${owner.token}` }
       const secret = await enrollTotp(owner.token)
       const recovery = await api.post(

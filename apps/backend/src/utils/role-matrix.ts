@@ -1,4 +1,7 @@
 export const SECURITY_ROLE_MANAGED_BY = "dtc-security-role-matrix-v1"
+export const SYSTEM_OWNER_ROLE = "System Owner"
+export const BUSINESS_OWNER_ROLE = "Owner"
+export const LEGACY_SUPER_ADMIN_ROLE = "Super Admin"
 
 type Permission = {
   resource: string
@@ -82,8 +85,15 @@ const repairReadResources = [
 
 export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
   {
-    name: "Owner",
-    description: "Business owner with full administrative access",
+    name: SYSTEM_OWNER_ROLE,
+    description:
+      "Unique system owner with security, access-control, and observability authority",
+    permissions: [{ resource: "*", operation: "*" }],
+  },
+  {
+    name: BUSINESS_OWNER_ROLE,
+    description:
+      "Business owner with full store operations access; system security is reserved for System Owner",
     permissions: [{ resource: "*", operation: "*" }],
   },
   {
@@ -161,3 +171,15 @@ export const SECURITY_ROLE_MATRIX: SecurityRoleDefinition[] = [
     permissions: [{ resource: "*", operation: "read" }],
   },
 ]
+
+export function isSystemOwnerRole(roleNames: string[]) {
+  return roleNames.includes(SYSTEM_OWNER_ROLE)
+}
+
+export function hasBusinessOwnerAccess(roleNames: string[]) {
+  return [
+    SYSTEM_OWNER_ROLE,
+    BUSINESS_OWNER_ROLE,
+    LEGACY_SUPER_ADMIN_ROLE,
+  ].some((role) => roleNames.includes(role))
+}

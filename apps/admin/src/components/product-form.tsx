@@ -28,6 +28,8 @@ import {
   type Product,
   type ProductCatalog,
   type ProductCategory,
+  type SalesChannel,
+  type StockLocation,
 } from "@/lib/types"
 
 type ProductFormProps = { product?: Product; catalog?: ProductCatalog }
@@ -47,6 +49,11 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
   )
   const [brandId, setBrandId] = useState(catalog?.brand?.id ?? "")
   const [categoryId, setCategoryId] = useState(product?.categories?.[0]?.id ?? "")
+  const [salesChannelId, setSalesChannelId] = useState(
+    product?.sales_channels?.[0]?.id ?? "",
+  )
+  const [initialStock, setInitialStock] = useState("0")
+  const [stockLocationId, setStockLocationId] = useState("")
   const [model, setModel] = useState(catalog?.model ?? "")
   const [specifications, setSpecifications] = useState(
     readSpecifications(catalog),
@@ -65,6 +72,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
     setPrice(formatVndInput(product.variants?.[0]?.prices?.[0]?.amount))
     setBrandId(catalog?.brand?.id ?? "")
     setCategoryId(product.categories?.[0]?.id ?? "")
+    setSalesChannelId(product.sales_channels?.[0]?.id ?? "")
     setModel(catalog?.model ?? "")
     setSpecifications(readSpecifications(catalog))
     setMedia(readMedia(product, catalog))
@@ -84,6 +92,37 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
       ),
   })
 
+  const salesChannels = useQuery({
+    queryKey: ["sales-channels"],
+    queryFn: () =>
+      adminFetch<{ sales_channels: SalesChannel[] }>(
+        "/admin/sales-channels?limit=100&fields=id,name,is_disabled",
+      ),
+  })
+
+  const stockLocations = useQuery({
+    queryKey: ["stock-locations"],
+    queryFn: () =>
+      adminFetch<{ stock_locations: StockLocation[] }>(
+        "/admin/stock-locations?limit=100&fields=id,name",
+      ),
+  })
+
+  useEffect(() => {
+    if (!salesChannelId) {
+      const channel = salesChannels.data?.sales_channels.find(
+        (item) => !item.is_disabled,
+      )
+      if (channel) setSalesChannelId(channel.id)
+    }
+  }, [salesChannelId, salesChannels.data])
+
+  useEffect(() => {
+    if (!stockLocationId && stockLocations.data?.stock_locations[0]) {
+      setStockLocationId(stockLocations.data.stock_locations[0].id)
+    }
+  }, [stockLocationId, stockLocations.data])
+
   const upload = useMutation({
     mutationFn: async (files: File[]) => {
       const response = await sdk.admin.upload.create({ files })
@@ -95,8 +134,15 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
   const save = useMutation({
     mutationFn: async () => {
       const amount = parseVndInput(price)
+      const stockQuantity = Number(initialStock || "0")
       const images = media.map(({ url }) => ({ url }))
       let savedProduct = product
+
+      if (status === "published" && !salesChannelId) {
+        throw new Error(
+          "Sản phẩm đang bán phải có kênh bán hàng để xuất hiện trên Storefront.",
+        )
+      }
 
       if (product) {
         const response = await adminFetch<{ product: Product }>(
@@ -110,6 +156,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               status,
               images,
               categories: categoryId ? [{ id: categoryId }] : [],
+              sales_channels: salesChannelId ? [{ id: salesChannelId }] : [],
             },
           },
         )
@@ -139,6 +186,7 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               status,
               images,
               categories: categoryId ? [{ id: categoryId }] : [],
+              sales_channels: salesChannelId ? [{ id: salesChannelId }] : [],
               options: [{ title: "Tùy chọn", values: ["Mặc định"] }],
               variants: [
                 {
@@ -176,6 +224,30 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
           internal_note: null,
         },
       })
+      if (!product && stockQuantity > 0) {
+        if (!stockLocationId) {
+          throw new Error("Chưa có vị trí kho để nhập tồn đầu kỳ.")
+        }
+        const detail = await adminFetch<{ product: Product }>(
+          `/admin/products/${savedProduct.id}?fields=id,+variants.inventory_items.inventory.id`,
+        )
+        const inventoryItemId =
+          detail.product.variants?.[0]?.inventory_items?.[0]?.inventory?.id
+        if (!inventoryItemId) {
+          throw new Error("Variant chưa được liên kết với Inventory Module.")
+        }
+        await adminFetch("/admin/inventory/adjustments", {
+          method: "POST",
+          body: {
+            inventory_item_id: inventoryItemId,
+            location_id: stockLocationId,
+            delta: stockQuantity,
+            reason: "receiving",
+            note: `Tồn đầu kỳ khi tạo ${savedProduct.title}`,
+            idempotency_key: crypto.randomUUID(),
+          },
+        })
+      }
       return savedProduct
     },
     onSuccess: (saved) => router.push(`/products/${saved.id}`),
@@ -279,6 +351,24 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               <option value="rejected">Từ chối</option>
             </select>
           </Field>
+          <Field
+            label="Kênh bán hàng"
+            hint="Bắt buộc với sản phẩm đang bán trên Storefront"
+          >
+            <select
+              value={salesChannelId}
+              onChange={(event) => setSalesChannelId(event.target.value)}
+            >
+              <option value="">Chưa chọn</option>
+              {salesChannels.data?.sales_channels
+                .filter((channel) => !channel.is_disabled)
+                .map((channel) => (
+                  <option key={channel.id} value={channel.id}>
+                    {channel.name}
+                  </option>
+                ))}
+            </select>
+          </Field>
           <Field label="SKU">
             <input
               value={sku}
@@ -288,6 +378,33 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
           <Field label="Giá bán">
             <MoneyInput value={price} onChange={setPrice} />
           </Field>
+          {!product ? (
+            <Field
+              label="Tồn đầu kỳ"
+              hint="Có thể để 0 và nhập thêm sau trong Kho hàng"
+            >
+              <div className="inline-fields">
+                <input
+                  inputMode="numeric"
+                  min="0"
+                  type="number"
+                  value={initialStock}
+                  onChange={(event) => setInitialStock(event.target.value)}
+                />
+                <select
+                  value={stockLocationId}
+                  onChange={(event) => setStockLocationId(event.target.value)}
+                >
+                  <option value="">Chọn vị trí kho</option>
+                  {stockLocations.data?.stock_locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                      {location.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </Field>
+          ) : null}
           <Field label="Mô tả">
             <textarea
               value={description}

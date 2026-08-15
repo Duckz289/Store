@@ -83,8 +83,8 @@ if (-not (Test-Path -LiteralPath $backendEnvPath)) {
   $mfaSecret = New-LocalSecret
   Write-Utf8NoBom $backendEnvPath @"
 STORE_CORS=http://localhost:8010
-ADMIN_CORS=http://localhost:9000
-AUTH_CORS=http://localhost:8010,http://localhost:9000
+ADMIN_CORS=http://localhost:8020,http://localhost:9000
+AUTH_CORS=http://localhost:8010,http://localhost:8020,http://localhost:9000
 JWT_SECRET=$jwtSecret
 COOKIE_SECRET=$cookieSecret
 AUTH_MFA_ENCRYPTION_KEY=$mfaSecret
@@ -96,6 +96,7 @@ DB_NAME=hungphat_commerce
 }
 
 Set-EnvValue $backendEnvPath "MEDUSA_FF_RBAC" "true"
+Set-EnvValue $backendEnvPath "SYSTEM_OWNER_EMAIL" $AdminEmail
 Set-EnvValue $backendEnvPath "MFA_STEP_UP_TTL_SECONDS" "600"
 Set-EnvValue $backendEnvPath "STOREFRONT_URL" "http://localhost:8010"
 Set-EnvValue $backendEnvPath "STOREFRONT_DEFAULT_COUNTRY" "vn"
@@ -197,18 +198,18 @@ if (-not (Test-Path -LiteralPath $credentialPath)) {
   Write-Utf8NoBom $credentialPath "Email=$AdminEmail`r`nPassword=$adminPassword`r`n"
 }
 
-$previousSecurityOwnerEmail = $env:SECURITY_OWNER_EMAIL
+$previousSystemOwnerEmail = $env:SYSTEM_OWNER_EMAIL
 try {
-  $env:SECURITY_OWNER_EMAIL = $AdminEmail
+  $env:SYSTEM_OWNER_EMAIL = $AdminEmail
   corepack pnpm --filter @dtc/backend run security:bootstrap-owner
   if ($LASTEXITCODE -ne 0) {
     throw "Local security owner bootstrap failed."
   }
 } finally {
-  if ($null -eq $previousSecurityOwnerEmail) {
-    Remove-Item Env:\SECURITY_OWNER_EMAIL -ErrorAction SilentlyContinue
+  if ($null -eq $previousSystemOwnerEmail) {
+    Remove-Item Env:\SYSTEM_OWNER_EMAIL -ErrorAction SilentlyContinue
   } else {
-    $env:SECURITY_OWNER_EMAIL = $previousSecurityOwnerEmail
+    $env:SYSTEM_OWNER_EMAIL = $previousSystemOwnerEmail
   }
 }
 

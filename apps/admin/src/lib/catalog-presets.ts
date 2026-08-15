@@ -2,96 +2,105 @@ import type { CatalogSpecification } from "@/lib/types"
 
 type SpecificationPreset = Omit<CatalogSpecification, "position" | "value">
 
+/**
+ * Canonical specification groups. Storefront filters are ordered by this list, so
+ * keeping staff on these names is what makes the filter panel read consistently
+ * across categories instead of sprouting a new heading per product.
+ */
+export const CATALOG_SPECIFICATION_GROUPS = [
+  "Nhu cầu sử dụng",
+  "Cấu hình",
+  "Sản phẩm",
+  "Màn hình",
+  "Hiển thị",
+  "Kết nối",
+  "Tính năng",
+  "Vận hành",
+  "Lắp đặt",
+  "Tương thích",
+  "Kích thước",
+  "Bảo hành",
+] as const
+
+const spec = (
+  key: string,
+  label: string,
+  group: string,
+  extra: Partial<SpecificationPreset> = {}
+): SpecificationPreset => ({
+  key,
+  label,
+  unit: "",
+  group,
+  filterable: true,
+  featured: false,
+  multi: false,
+  ...extra,
+})
+
+/** Applies to every category: what the item is for, and how long it is covered. */
 const common: SpecificationPreset[] = [
-  {
-    key: "warranty",
-    label: "Bảo hành",
-    unit: "tháng",
-    group: "Bảo hành",
-    filterable: false,
-    featured: false,
-  },
-  {
-    key: "purpose",
-    label: "Phù hợp cho",
-    unit: "",
-    group: "Nhu cầu sử dụng",
-    filterable: true,
+  spec("purpose", "Nhu cầu sử dụng", "Nhu cầu sử dụng", {
     featured: true,
-  },
+    multi: true,
+  }),
+  spec("warranty", "Bảo hành", "Bảo hành", {
+    unit: "tháng",
+    filterable: false,
+  }),
 ]
 
 const presets: Record<string, SpecificationPreset[]> = {
   laptop: [
-    preset("cpu", "CPU", "Cấu hình", true),
-    preset("ram", "RAM", "GB", "Cấu hình", true, true),
-    preset("storage", "Ổ cứng", "GB", "Cấu hình", true, true),
-    preset("screen_size", "Kích thước màn hình", "inch", "Màn hình", true),
-    preset("graphics", "Card đồ họa", "Cấu hình", true),
+    spec("cpu", "CPU", "Cấu hình", { featured: true }),
+    spec("ram", "RAM", "Cấu hình", { unit: "GB", featured: true }),
+    spec("storage", "Ổ cứng", "Cấu hình", { unit: "GB SSD", featured: true }),
+    spec("graphics", "Card đồ họa", "Cấu hình", { featured: true }),
+    spec("screen_size", "Kích thước màn hình", "Màn hình", { unit: "inch" }),
   ],
   "do-gia-dung": [
-    preset("appliance_type", "Loại thiết bị", "Sản phẩm", true, true),
-    preset("power", "Công suất", "W", "Vận hành", true, true),
-    preset("capacity", "Dung tích", "lít", "Vận hành", true),
-    preset("material", "Chất liệu", "Sản phẩm", true),
-    preset("control", "Điều khiển", "Tính năng", true),
+    spec("appliance_type", "Loại thiết bị", "Sản phẩm", { featured: true }),
+    spec("capacity", "Dung tích", "Vận hành", { unit: "lít", featured: true }),
+    spec("power", "Công suất", "Vận hành", { unit: "W" }),
+    spec("material", "Chất liệu", "Sản phẩm"),
+    spec("control", "Điều khiển", "Tính năng"),
   ],
   "dien-lanh": [
-    preset("appliance_type", "Loại thiết bị", "Sản phẩm", true, true),
-    preset("capacity", "Dung tích hoặc tải trọng", "Sản phẩm", true, true),
-    preset("inverter", "Công nghệ Inverter", "Tính năng", true),
-    preset("energy_rating", "Nhãn năng lượng", "Tính năng", true),
-    preset("dimensions", "Kích thước", "Kích thước", false),
+    spec("appliance_type", "Loại thiết bị", "Sản phẩm", { featured: true }),
+    spec("capacity", "Dung tích hoặc tải trọng", "Vận hành", { featured: true }),
+    spec("inverter", "Công nghệ Inverter", "Tính năng", { featured: true }),
+    spec("energy_rating", "Nhãn năng lượng", "Tính năng"),
+    spec("room_size", "Diện tích phòng", "Vận hành"),
+    spec("dimensions", "Kích thước", "Kích thước", { filterable: false }),
   ],
   "thiet-bi-dien": [
-    preset("device_type", "Loại thiết bị", "Sản phẩm", true, true),
-    preset("power", "Công suất", "W", "Vận hành", true, true),
-    preset("voltage", "Điện áp", "V", "Vận hành", true),
-    preset("installation", "Kiểu lắp đặt", "Lắp đặt", true),
+    spec("device_type", "Loại thiết bị", "Sản phẩm", { featured: true }),
+    spec("power", "Công suất", "Vận hành", { unit: "W", featured: true }),
+    spec("voltage", "Điện áp", "Vận hành", { unit: "V" }),
+    spec("installation", "Kiểu lắp đặt", "Lắp đặt", { featured: true }),
   ],
   "am-thanh-tv": [
-    preset("device_type", "Loại thiết bị", "Sản phẩm", true, true),
-    preset("screen_size", "Kích thước màn hình", "inch", "Hiển thị", true),
-    preset("resolution", "Độ phân giải", "Hiển thị", true),
-    preset("connectivity", "Kết nối", "Kết nối", true),
+    spec("device_type", "Loại thiết bị", "Sản phẩm", { featured: true }),
+    spec("screen_size", "Kích thước màn hình", "Hiển thị", {
+      unit: "inch",
+      featured: true,
+    }),
+    spec("resolution", "Độ phân giải", "Hiển thị", { featured: true }),
+    spec("connectivity", "Kết nối", "Kết nối"),
   ],
   "phu-kien": [
-    preset("accessory_type", "Loại phụ kiện", "Sản phẩm", true, true),
-    preset("compatibility", "Tương thích", "Tương thích", true),
-    preset("power", "Công suất", "W", "Vận hành", true),
-    preset("connector", "Cổng kết nối", "Kết nối", true),
+    spec("accessory_type", "Loại phụ kiện", "Sản phẩm", { featured: true }),
+    spec("connector", "Cổng kết nối", "Kết nối", { featured: true }),
+    spec("power", "Công suất", "Vận hành", { unit: "W" }),
+    spec("compatibility", "Tương thích", "Tương thích"),
   ],
   "thiet-bi-mang": [
-    preset("network_type", "Loại thiết bị", "Sản phẩm", true, true),
-    preset("wifi_standard", "Chuẩn Wi-Fi", "Kết nối", true, true),
-    preset("speed_class", "Cấp tốc độ", "Kết nối", true),
-    preset("bands", "Băng tần", "Kết nối", true),
+    spec("network_type", "Loại thiết bị", "Sản phẩm", { featured: true }),
+    spec("wifi_standard", "Chuẩn Wi-Fi", "Kết nối", { featured: true }),
+    spec("speed_class", "Cấp tốc độ", "Kết nối", { featured: true }),
+    spec("bands", "Băng tần", "Kết nối"),
+    spec("ports", "Số cổng", "Kết nối", { unit: "cổng" }),
   ],
-  "dien-thoai": [
-    preset("model_family", "Dòng máy", "Sản phẩm", true, true),
-    preset("ram", "RAM", "GB", "Cấu hình", true),
-    preset("storage", "Bộ nhớ", "GB", "Cấu hình", true),
-    preset("display_size", "Kích thước màn hình", "inch", "Màn hình", true),
-  ],
-}
-
-function preset(
-  key: string,
-  label: string,
-  unitOrGroup: string,
-  groupOrFilterable: string | boolean,
-  filterableOrFeatured = true,
-  featured = false,
-): SpecificationPreset {
-  const hasUnit = typeof groupOrFilterable === "string"
-  return {
-    key,
-    label,
-    unit: hasUnit ? unitOrGroup : "",
-    group: hasUnit ? groupOrFilterable : unitOrGroup,
-    filterable: hasUnit ? filterableOrFeatured : groupOrFilterable,
-    featured: hasUnit ? featured : filterableOrFeatured,
-  }
 }
 
 export function getSpecificationPreset(categoryHandle?: string) {

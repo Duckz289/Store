@@ -4,43 +4,45 @@ import Image from "next/image"
 type BrandMarkProps = {
   name: string
   logoUrl?: string | null
+  logoAlt?: string | null
   className?: string
+  /** Set when the brand name is already rendered next to the mark. */
+  decorative?: boolean
 }
 
-const initialsFor = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
+/**
+ * Renders a brand's real logo, or nothing at all. Initial-letter avatars are
+ * deliberately not used: a made-up monogram reads as a brand identity the shop
+ * does not have, so a brand without a logo simply shows its name as text.
+ */
+const BrandMark = ({
+  name,
+  logoUrl,
+  logoAlt,
+  className,
+  decorative = true,
+}: BrandMarkProps) => {
+  if (!logoUrl?.trim()) return null
 
-const BrandMark = ({ name, logoUrl, className }: BrandMarkProps) => (
-  <span
-    className={clx(
-      "relative inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--hp-line)] bg-white text-[10px] font-extrabold tracking-tight text-[var(--hp-ink)]",
-      className,
-    )}
-    aria-hidden="true"
-  >
-    <span>{initialsFor(name)}</span>
-    {logoUrl ? (
+  return (
+    <span
+      className={clx(
+        "relative inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--hp-line)] bg-white",
+        className
+      )}
+    >
       <Image
-        className="absolute inset-0 h-full w-full bg-white object-contain p-1"
+        className="h-full w-full object-contain p-1"
         src={logoUrl}
-        alt=""
+        alt={decorative ? "" : logoAlt?.trim() || `Logo ${name}`}
+        aria-hidden={decorative || undefined}
         width={28}
         height={28}
         unoptimized
         loading="lazy"
-        onError={(event) => {
-          event.currentTarget.style.display = "none"
-        }}
       />
-    ) : null}
-  </span>
-)
+    </span>
+  )
+}
 
 export default BrandMark

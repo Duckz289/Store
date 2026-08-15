@@ -54,8 +54,44 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'manufacturer'",
+          "comment": null,
+          "enumItems": [
+            "manufacturer",
+            "store_label",
+            "unspecified"
+          ],
+          "mappedType": "enum"
+        },
         "logo_url": {
           "name": "logo_url",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "logo_alt": {
+          "name": "logo_alt",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -148,6 +184,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_catalog_brand_name\" ON \"catalog_brand\" (\"name\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_catalog_brand_kind",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_catalog_brand_kind\" ON \"catalog_brand\" (\"kind\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "catalog_brand_pkey",
@@ -245,6 +290,41 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "json"
+        },
+        "data_source": {
+          "name": "data_source",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'real'",
+          "comment": null,
+          "enumItems": [
+            "real",
+            "demo_fixture"
+          ],
+          "mappedType": "enum"
+        },
+        "internal_note": {
+          "name": "internal_note",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
         },
         "brand_id": {
           "name": "brand_id",

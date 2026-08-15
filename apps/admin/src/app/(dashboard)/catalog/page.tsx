@@ -14,13 +14,23 @@ import {
 import { adminFetch } from "@/lib/api"
 import { slugifyCatalogValue } from "@/lib/catalog-presets"
 import { sdk } from "@/lib/sdk"
-import type { CatalogBrand, ProductCategory } from "@/lib/types"
+import {
+  CATALOG_BRAND_KIND_LABELS,
+  type CatalogBrand,
+  type CatalogBrandKind,
+  type ProductCategory,
+} from "@/lib/types"
+
+const LOGO_MIME_TYPES = ["image/svg+xml", "image/png", "image/webp"]
+const LOGO_MAX_BYTES = 512 * 1024
 
 export default function CatalogPage() {
   const queryClient = useQueryClient()
   const [brandName, setBrandName] = useState("")
   const [brandHandle, setBrandHandle] = useState("")
+  const [brandKind, setBrandKind] = useState<CatalogBrandKind>("manufacturer")
   const [brandLogoUrl, setBrandLogoUrl] = useState("")
+  const [brandLogoAlt, setBrandLogoAlt] = useState("")
   const [isUploadingBrandLogo, setIsUploadingBrandLogo] = useState(false)
   const [brandLogoError, setBrandLogoError] = useState<string | null>(null)
   const newBrandLogoInputRef = useRef<HTMLInputElement>(null)
@@ -49,15 +59,18 @@ export default function CatalogPage() {
         method: "POST",
         body: {
           name: brandName.trim(),
-          handle:
-            brandHandle.trim() || slugifyCatalogValue(brandName.trim()),
+          handle: brandHandle.trim() || slugifyCatalogValue(brandName.trim()),
+          kind: brandKind,
           logo_url: brandLogoUrl.trim() || null,
+          logo_alt: brandLogoAlt.trim() || null,
         },
       }),
     onSuccess: async () => {
       setBrandName("")
       setBrandHandle("")
+      setBrandKind("manufacturer")
       setBrandLogoUrl("")
+      setBrandLogoAlt("")
       await queryClient.invalidateQueries({ queryKey: ["catalog-brands"] })
     },
   })
@@ -69,7 +82,9 @@ export default function CatalogPage() {
         body: {
           name: brand.name.trim(),
           handle: brand.handle.trim(),
+          kind: brand.kind ?? "manufacturer",
           logo_url: brand.logo_url?.trim() || null,
+          logo_alt: brand.logo_alt?.trim() || null,
         },
       }),
     onSuccess: async () => {
@@ -134,6 +149,22 @@ export default function CatalogPage() {
     if (!file) return
 
     setBrandLogoError(null)
+
+    if (!LOGO_MIME_TYPES.includes(file.type)) {
+      setBrandLogoError(
+        "Logo phải là SVG, PNG hoặc WebP nền trong suốt hoặc nền trắng.",
+      )
+      return
+    }
+    if (file.size > LOGO_MAX_BYTES) {
+      setBrandLogoError(
+        `Logo tối đa ${Math.round(LOGO_MAX_BYTES / 1024)} KB. File đang chọn ${Math.round(
+          file.size / 1024,
+        )} KB.`,
+      )
+      return
+    }
+
     setIsUploadingBrandLogo(true)
     try {
       const response = await sdk.admin.upload.create({ files: [file] })
@@ -184,9 +215,31 @@ export default function CatalogPage() {
               placeholder="panasonic"
             />
           </label>
+          <label className="field">
+            <span>Loại thương hiệu</span>
+            <select
+              value={brandKind}
+              onChange={(event) =>
+                setBrandKind(event.target.value as CatalogBrandKind)
+              }
+            >
+              {Object.entries(CATALOG_BRAND_KIND_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            <small>
+              Nhãn cửa hàng dùng cho hàng bán dưới tên Hưng Phát. Không rõ thương
+              hiệu chỉ chọn khi thật sự không xác định được hãng.
+            </small>
+          </label>
           <BrandLogoField
             value={brandLogoUrl}
             onChange={setBrandLogoUrl}
+            altValue={brandLogoAlt}
+            onAltChange={setBrandLogoAlt}
+            brandName={brandName}
             inputRef={newBrandLogoInputRef}
             isUploading={isUploadingBrandLogo}
             onUpload={(event) => uploadBrandLogo(event, setBrandLogoUrl)}
@@ -212,6 +265,7 @@ export default function CatalogPage() {
                 <tr>
                   <th>Tên hãng</th>
                   <th>Logo</th>
+                  <th>Loại</th>
                   <th>Handle</th>
                   <th>Thao tác</th>
                 </tr>
@@ -221,7 +275,17 @@ export default function CatalogPage() {
                   <tr key={brand.id}>
                     <td>{brand.name}</td>
                     <td>
-                      <BrandLogoPreview brand={brand} />
+                      <div className="brand-logo-cell">
+                        <BrandLogoPreview brand={brand} />
+                        {brand.logo_url ? null : (
+                          <span className="badge badge-warning">Chưa có logo</span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      {CATALOG_BRAND_KIND_LABELS[
+                        (brand.kind ?? "manufacturer") as CatalogBrandKind
+                      ]}
                     </td>
                     <td>/{brand.handle}</td>
                     <td>
@@ -367,11 +431,36 @@ export default function CatalogPage() {
                 }
               />
             </label>
+            <label className="field">
+              <span>Loại thương hiệu</span>
+              <select
+                value={editingBrand.kind ?? "manufacturer"}
+                onChange={(event) =>
+                  setEditingBrand({
+                    ...editingBrand,
+                    kind: event.target.value as CatalogBrandKind,
+                  })
+                }
+              >
+                {Object.entries(CATALOG_BRAND_KIND_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
             <BrandLogoField
               value={editingBrand.logo_url ?? ""}
               onChange={(logo_url) =>
                 setEditingBrand({ ...editingBrand, logo_url })
               }
+              altValue={editingBrand.logo_alt ?? ""}
+              onAltChange={(logo_alt) =>
+                setEditingBrand((current) =>
+                  current ? { ...current, logo_alt } : current,
+                )
+              }
+              brandName={editingBrand.name}
               inputRef={editBrandLogoInputRef}
               isUploading={isUploadingBrandLogo}
               onUpload={(event) =>
@@ -382,6 +471,9 @@ export default function CatalogPage() {
                 )
               }
             />
+            {brandLogoError ? (
+              <div className="form-error">{brandLogoError}</div>
+            ) : null}
             {updateBrand.isError ? (
               <div className="form-error">{updateBrand.error.message}</div>
             ) : null}
@@ -407,24 +499,32 @@ export default function CatalogPage() {
 function BrandLogoField({
   value,
   onChange,
+  altValue,
+  onAltChange,
+  brandName,
   inputRef,
   isUploading,
   onUpload,
 }: {
   value: string
   onChange: (value: string) => void
+  altValue: string
+  onAltChange: (value: string) => void
+  brandName: string
   inputRef: React.RefObject<HTMLInputElement | null>
   isUploading: boolean
   onUpload: (event: ChangeEvent<HTMLInputElement>) => void
 }) {
+  const isValidUrl = !value.trim() || /^https?:\/\//i.test(value.trim())
+
   return (
-    <label className="field field-span-2">
-      <span>Logo thương hiệu</span>
+    <div className="field field-span-2">
+      <span className="field-label">Logo thương hiệu</span>
       <div className="brand-logo-field">
         <BrandLogoPreview
           brand={{
             id: "preview",
-            name: "Logo",
+            name: brandName || "Logo",
             handle: "logo",
             logo_url: value,
           }}
@@ -433,12 +533,13 @@ function BrandLogoField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Dán URL ảnh logo hoặc tải ảnh lên"
+          aria-invalid={!isValidUrl}
         />
         <input
           className="sr-only"
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept="image/svg+xml,image/png,image/webp"
           onChange={onUpload}
         />
         <button
@@ -447,38 +548,60 @@ function BrandLogoField({
           onClick={() => inputRef.current?.click()}
           disabled={isUploading}
         >
-          {isUploading ? "Đang tải..." : "Tải logo"}
+          {isUploading ? "Đang tải..." : value ? "Thay logo" : "Tải logo"}
         </button>
+        {value ? (
+          <button
+            type="button"
+            className="text-button text-button-danger"
+            onClick={() => {
+              onChange("")
+              onAltChange("")
+            }}
+          >
+            Xóa logo
+          </button>
+        ) : null}
       </div>
-      <small>Hiển thị trong menu danh mục và bộ lọc trên website.</small>
-    </label>
+      {!isValidUrl ? (
+        <small className="field-error">URL logo phải bắt đầu bằng http hoặc https.</small>
+      ) : (
+        <small>
+          SVG, PNG hoặc WebP, tối đa {Math.round(LOGO_MAX_BYTES / 1024)} KB, nền
+          trong suốt hoặc nền trắng. Hiển thị trong menu danh mục và bộ lọc.
+        </small>
+      )}
+      {value ? (
+        <label className="field">
+          <span>Mô tả ảnh (alt)</span>
+          <input
+            value={altValue}
+            onChange={(event) => onAltChange(event.target.value)}
+            placeholder={brandName ? `Logo ${brandName}` : "Logo thương hiệu"}
+            maxLength={300}
+          />
+        </label>
+      ) : null}
+    </div>
   )
 }
 
 function BrandLogoPreview({ brand }: { brand: CatalogBrand }) {
-  const initials = brand.name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase()
-
+  // Deliberately no initials fallback: a monogram would read as a brand identity
+  // the shop has not actually got. An empty frame is the honest state.
   return (
-    <span className="brand-logo-preview" aria-hidden="true">
-      <span>{initials || "?"}</span>
+    <span className="brand-logo-preview">
       {brand.logo_url ? (
         <Image
           src={brand.logo_url}
-          alt=""
+          alt={brand.logo_alt?.trim() || `Logo ${brand.name}`}
           width={34}
           height={34}
           unoptimized
-          onError={(event) => {
-            event.currentTarget.style.display = "none"
-          }}
         />
-      ) : null}
+      ) : (
+        <span className="brand-logo-empty" aria-hidden="true" />
+      )}
     </span>
   )
 }

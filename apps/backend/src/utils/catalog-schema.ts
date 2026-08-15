@@ -14,8 +14,29 @@ export const catalogSpecificationSchema = z.object({
   group: z.string().trim().max(80).optional().default("general"),
   filterable: z.boolean().optional().default(true),
   featured: z.boolean().optional().default(false),
+  // A multi specification holds several comma-separated values in one row, so a
+  // product can answer to more than one facet chip (e.g. purpose = office + study).
+  multi: z.boolean().optional().default(false),
   position: z.number().int().min(0).max(10_000),
 })
+
+export const CATALOG_SPECIFICATION_MULTI_SEPARATOR = ","
+
+export function splitCatalogSpecificationValue(value: string, multi?: boolean) {
+  if (!multi) {
+    const single = value.trim()
+    return single ? [single] : []
+  }
+
+  return Array.from(
+    new Set(
+      value
+        .split(CATALOG_SPECIFICATION_MULTI_SEPARATOR)
+        .map((part) => part.trim())
+        .filter(Boolean)
+    )
+  )
+}
 
 export const catalogSpecificationsSchema = z
   .array(catalogSpecificationSchema)

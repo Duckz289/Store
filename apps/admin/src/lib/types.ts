@@ -26,11 +26,21 @@ export type Product = {
   }[]
 }
 
+export type CatalogBrandKind = "manufacturer" | "store_label" | "unspecified"
+
+export const CATALOG_BRAND_KIND_LABELS: Record<CatalogBrandKind, string> = {
+  manufacturer: "Hãng sản xuất",
+  store_label: "Nhãn cửa hàng",
+  unspecified: "Không rõ thương hiệu",
+}
+
 export type CatalogBrand = {
   id: string
   name: string
   handle: string
+  kind?: CatalogBrandKind | null
   logo_url?: string | null
+  logo_alt?: string | null
 }
 export type CatalogSpecification = {
   key: string
@@ -40,6 +50,8 @@ export type CatalogSpecification = {
   group: string
   filterable?: boolean
   featured?: boolean
+  /** Comma-separated values, each becoming its own filter chip on the storefront. */
+  multi?: boolean
   position: number
 }
 
@@ -57,6 +69,9 @@ export type ProductCatalog = {
   model?: string | null
   specifications?: { items?: CatalogSpecification[] }
   media_alt_text?: Record<string, string>
+  /** "demo_fixture" marks seeded sample rows whose price and stock are unverified. */
+  data_source?: "real" | "demo_fixture" | null
+  internal_note?: string | null
 }
 
 export type Order = {

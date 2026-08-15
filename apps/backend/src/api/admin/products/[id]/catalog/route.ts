@@ -22,6 +22,8 @@ export const UpdateProductCatalogSchema = z.object({
     collections: {},
     homepage: {},
   }),
+  data_source: z.enum(["real", "demo_fixture"]).optional(),
+  internal_note: z.string().trim().max(500).nullable().optional(),
 })
 
 type UpdateProductCatalogBody = z.infer<typeof UpdateProductCatalogSchema>

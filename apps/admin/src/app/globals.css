@@ -1183,14 +1183,56 @@ tbody tr:hover {
 .specification-row {
   display: grid;
   grid-template-columns:
-    minmax(130px, 1.3fr) minmax(120px, 1fr) minmax(90px, 0.65fr)
-    minmax(110px, 0.85fr) minmax(90px, 0.75fr) auto auto 32px;
+    minmax(130px, 1.3fr) minmax(120px, 1fr) minmax(80px, 0.6fr)
+    minmax(110px, 0.85fr) minmax(90px, 0.7fr) auto auto auto 32px;
   gap: 8px;
   align-items: center;
 }
-.specification-row > input {
+.specification-row > input,
+.specification-row > select {
   min-width: 0;
   padding: 8px 10px;
+}
+
+@media (max-width: 1180px) {
+  .specification-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 32px;
+  }
+  .specification-row > select,
+  .specification-row > input:nth-of-type(4) {
+    grid-column: span 1;
+  }
+}
+
+.specification-group + .specification-group {
+  margin-top: 14px;
+}
+
+.specification-group-title {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notice {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-inner);
+  padding: 11px 13px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.notice strong {
+  color: #e7e7ea;
+}
+
+.notice-warning {
+  border-color: rgb(255 196 84 / 0.4);
+  background: rgb(255 196 84 / 0.08);
 }
 .specification-flag {
   display: inline-flex;
@@ -1277,6 +1319,32 @@ tbody tr:hover {
   padding: 4px;
   background: #fff;
   object-fit: contain;
+}
+
+/* Empty frame for a brand with no logo yet. Never an initials monogram: a made-up
+   mark would read as brand identity the shop does not have. */
+.brand-logo-empty {
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--line) 0 4px,
+    transparent 4px 8px
+  );
+  opacity: 0.6;
+}
+
+.brand-logo-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-error {
+  color: #ff7585;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 .media-grid {

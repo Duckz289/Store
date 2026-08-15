@@ -1,0 +1,170 @@
+{
+  "manifest": [
+    {
+      "handle": "samsung",
+      "filename": "samsung.svg",
+      "bytes": 4459,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Samsung_wordmark.svg",
+      "commonsTitle": "File:Samsung wordmark.svg"
+    },
+    {
+      "handle": "panasonic",
+      "filename": "panasonic.svg",
+      "bytes": 4382,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Panasonic_logo.svg",
+      "commonsTitle": "File:Panasonic logo.svg"
+    },
+    {
+      "handle": "toshiba",
+      "filename": "toshiba.svg",
+      "bytes": 2049,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Toshiba_logo.svg",
+      "commonsTitle": "File:Toshiba logo.svg"
+    },
+    {
+      "handle": "sharp",
+      "filename": "sharp.svg",
+      "bytes": 4657,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Logo_of_the_Sharp_Corporation.svg",
+      "commonsTitle": "File:Sharp logo.svg"
+    },
+    {
+      "handle": "electrolux",
+      "filename": "electrolux.svg",
+      "bytes": 10630,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Electrolux_logo.svg",
+      "commonsTitle": "File:Electrolux logo.svg"
+    },
+    {
+      "handle": "philips",
+      "filename": "philips.svg",
+      "bytes": 1637,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Philips_logo_new.svg",
+      "commonsTitle": "File:Philips logo new.svg"
+    },
+    {
+      "handle": "lg",
+      "filename": "lg.svg",
+      "bytes": 1791,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:LG_logo_(2014).svg",
+      "commonsTitle": "File:LG logo (2015).svg"
+    },
+    {
+      "handle": "midea",
+      "filename": "midea.svg",
+      "bytes": 4587,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Midea.svg",
+      "commonsTitle": "File:Midea.svg"
+    },
+    {
+      "handle": "bosch",
+      "filename": "bosch.svg",
+      "bytes": 2300,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Bosch-logo.svg",
+      "commonsTitle": "File:Bosch-logo.svg"
+    },
+    {
+      "handle": "asus",
+      "filename": "asus.svg",
+      "bytes": 3224,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:ASUS_Logo.svg",
+      "commonsTitle": "File:ASUS Logo.svg"
+    },
+    {
+      "handle": "acer",
+      "filename": "acer.svg",
+      "bytes": 2540,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Acer_2011.svg",
+      "commonsTitle": "File:Acer 2011.svg"
+    },
+    {
+      "handle": "lenovo",
+      "filename": "lenovo.svg",
+      "bytes": 5256,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Lenovo_logo_2015.svg",
+      "commonsTitle": "File:Lenovo logo 2015.svg"
+    },
+    {
+      "handle": "dell",
+      "filename": "dell.svg",
+      "bytes": 2203,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Dell_logo_2016.svg",
+      "commonsTitle": "File:Dell logo 2016.svg"
+    },
+    {
+      "handle": "xiaomi",
+      "filename": "xiaomi.svg",
+      "bytes": 1881,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Xiaomi_logo_(2021-).svg",
+      "commonsTitle": "File:Xiaomi logo (2021-).svg"
+    },
+    {
+      "handle": "logitech",
+      "filename": "logitech.svg",
+      "bytes": 6644,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Logitech_logo.svg",
+      "commonsTitle": "File:Logitech logo.svg"
+    },
+    {
+      "handle": "aqua",
+      "filename": "aqua.svg",
+      "bytes": 8642,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:AQUA_logo.svg",
+      "commonsTitle": "File:AQUA logo.svg"
+    },
+    {
+      "handle": "sony",
+      "filename": "sony.svg",
+      "bytes": 5135,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Sony_logo.svg",
+      "commonsTitle": "File:Sony logo.svg"
+    },
+    {
+      "handle": "hitachi",
+      "filename": "hitachi.svg",
+      "bytes": 895,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:Hitachi_logo.svg",
+      "commonsTitle": "File:Hitachi logo.svg"
+    },
+    {
+      "handle": "hp",
+      "filename": "hp.svg",
+      "bytes": 3071,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:HP_logo_2012.svg",
+      "commonsTitle": "File:HP logo 2012.svg"
+    },
+    {
+      "handle": "tp-link",
+      "filename": "tp-link.svg",
+      "bytes": 5287,
+      "license": "Public domain",
+      "source": "https://commons.wikimedia.org/wiki/File:TP-LINK_logo.svg",
+      "commonsTitle": "File:TP-LINK logo.svg"
+    }
+  ],
+  "missing": [
+    "sunhouse",
+    "kangaroo",
+    "casper",
+    "daikin"
+  ]
+}

@@ -14,7 +14,6 @@ import {
   createCollectionsWorkflow,
   createInventoryLevelsWorkflow,
   createProductCategoriesWorkflow,
-  createProductOptionsWorkflow,
   createProductTypesWorkflow,
   createProductsWorkflow,
   createRegionsWorkflow,
@@ -32,10 +31,16 @@ import {
 import {
   CATALOG_BRANDS,
   CATALOG_CATEGORIES,
+  CATALOG_BRAND_RENAMES,
+  CATALOG_CATEGORY_HANDLE_FIXES,
   CATALOG_COLLECTIONS,
   CATALOG_PRODUCTS,
   CATALOG_PRODUCT_TYPES,
   COLLECTION_PRODUCT_HANDLES,
+  DEMO_FIXTURE_NOTE,
+  RETIRED_DEMO_BRAND_HANDLES,
+  RETIRED_DEMO_PRODUCT_HANDLES,
+  assertCatalogBrandReferences,
   assertUniqueCatalogSkus,
 } from "./catalog"
 import { CATALOG_MODULE } from "../modules/catalog"
@@ -120,6 +125,99 @@ async function retireUnsupportedPhoneCatalog(container: MedusaContainer) {
         selector: { id: phoneCategory.id },
         update: { is_active: false },
       },
+    })
+  }
+}
+
+/**
+ * Unpublishes the starter fixture's invented products (WorkPro, NetWave) and drops
+ * the invented brand rows once nothing references them. Products are moved to draft
+ * rather than deleted so a shop that already sold one keeps its order history.
+ */
+async function retireDemoCatalog(container: MedusaContainer) {
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const catalogService = container.resolve<CatalogModuleService>(CATALOG_MODULE)
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["id", "handle", "status"],
+    filters: { handle: RETIRED_DEMO_PRODUCT_HANDLES },
+  })
+  const productsToRetire = products.filter(
+    (product) => product.status !== ProductStatus.DRAFT
+  )
+  if (productsToRetire.length) {
+    await updateProductsWorkflow(container).run({
+      input: {
+        products: productsToRetire.map((product) => ({
+          id: product.id,
+          status: ProductStatus.DRAFT,
+        })),
+      },
+    })
+    logger.info(
+      `Đã ẩn ${productsToRetire.length} sản phẩm demo không có thật: ${productsToRetire
+        .map((product) => product.handle)
+        .join(", ")}`
+    )
+  }
+
+  for (const rename of CATALOG_BRAND_RENAMES) {
+    const { data: matches } = await query.graph({
+      entity: "catalog_brand",
+      fields: ["id", "name", "handle"],
+      filters: { handle: rename.handle },
+    })
+    const target = matches.find((brand) => brand.name === rename.from)
+    if (!target) continue
+
+    await catalogService.updateCatalogBrands({
+      id: target.id,
+      name: rename.to,
+      kind: rename.kind,
+    })
+    logger.info(`Đã đổi tên thương hiệu ${rename.from} thành ${rename.to}`)
+  }
+
+  const { data: staleBrands } = await query.graph({
+    entity: "catalog_brand",
+    fields: ["id", "handle", "name"],
+    filters: { handle: RETIRED_DEMO_BRAND_HANDLES },
+  })
+  for (const brand of staleBrands) {
+    const linked = await catalogService.listCatalogProductProfiles({
+      brand_id: brand.id,
+    })
+    if (linked.length) {
+      // Detach first so a retired brand never stays glued to a live product.
+      await catalogService.updateCatalogProductProfiles(
+        linked.map((profile) => ({ id: profile.id, brand_id: null }))
+      )
+    }
+    await catalogService.deleteCatalogBrands(brand.id)
+    logger.info(`Đã xóa thương hiệu demo không có thật: ${brand.name}`)
+  }
+}
+
+/** Renames the two categories seeded with percent-encoded Vietnamese handles. */
+async function normalizeCategoryHandles(container: MedusaContainer) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: categories } = await query.graph({
+    entity: "product_category",
+    fields: ["id", "name", "handle"],
+  })
+
+  for (const fix of CATALOG_CATEGORY_HANDLE_FIXES) {
+    const category = categories.find(
+      (candidate) => candidate.name === fix.name && candidate.handle === fix.from
+    )
+    if (!category) continue
+    const taken = categories.some((candidate) => candidate.handle === fix.to)
+    if (taken) continue
+
+    await updateProductCategoriesWorkflow(container).run({
+      input: { selector: { id: category.id }, update: { handle: fix.to } },
     })
   }
 }
@@ -509,10 +607,6 @@ async function ensureProducts(
   }
 ) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const { data: existingOptions } = await query.graph({
-    entity: "product_option",
-    fields: ["id", "title", "values.value"],
-  })
   const { data: existingProducts } = await query.graph({
     entity: "product",
     fields: [
@@ -540,39 +634,13 @@ async function ensureProducts(
     productsByHandle.set(product.handle, product)
   }
 
-  const optionsByTitle = new Map<string, QueryRecord>()
-  for (const option of existingOptions) {
-    if (optionsByTitle.has(option.title)) {
-      throwCatalogConflict(`duplicate product option "${option.title}" exists`)
-    }
-    optionsByTitle.set(option.title, option)
-  }
-
-  const missingOptions = CATALOG_PRODUCTS.map((product) => product.options).filter(
-    (option, index, options) =>
-      !optionsByTitle.has(option.title) &&
-      options.findIndex((candidate) => candidate.title === option.title) === index
-  )
-  if (missingOptions.length) {
-    const { result } = await createProductOptionsWorkflow(container).run({
-      input: {
-        product_options: missingOptions.map((option) => ({
-          title: option.title,
-          values: [...option.values],
-        })),
-      },
-    })
-    result.forEach((option) => optionsByTitle.set(option.title, option))
-  }
-
   const productsToCreate = CATALOG_PRODUCTS.filter(
     (product) => !productsByHandle.has(product.handle)
   ).map((product) => {
-    const option = optionsByTitle.get(product.options.title)
     const category = entities.categories.get(product.category)
     const type = entities.productTypes.get(product.type)
     const collection = entities.collections.get(PRIMARY_COLLECTION_HANDLE)
-    if (!option || !category || !type || !collection) {
+    if (!category || !type || !collection) {
       throwCatalogConflict(`missing catalog entity for product "${product.handle}"`)
     }
 
@@ -585,14 +653,10 @@ async function ensureProducts(
       collection_id: collection.id,
       status: ProductStatus.PUBLISHED,
       shipping_profile_id: operationalData.shippingProfileId,
-      weight: product.handle.startsWith("dien-thoai")
-        ? 190
-        : product.handle.startsWith("laptop")
-        ? 1350
-        : product.handle.startsWith("sac-")
-        ? 120
-        : 420,
-      options: [{ id: option.id }],
+      weight: product.weight,
+      options: [
+        { title: product.options.title, values: [...product.options.values] },
+      ],
       variants: product.variants.map((variant) => ({
         title: variant.title,
         sku: variant.sku,
@@ -672,9 +736,26 @@ async function ensureProducts(
     await updateProductsWorkflow(container).run({ input: { products: productsToUpdate } })
   }
 
-  const allProducts = Array.from(productsByHandle.values())
-  const allVariants = allProducts.flatMap((product) =>
-    (product.variants ?? []).map((variant: QueryRecord) => ({
+  // Re-read after create/update: createProductsWorkflow already provisions inventory
+  // items for managed variants, and its result does not carry that link. Reusing the
+  // stale copy would make the loop below create a second item for the same SKU.
+  const { data: refreshedProducts } = await query.graph({
+    entity: "product",
+    fields: [
+      "id",
+      "handle",
+      "variants.id",
+      "variants.title",
+      "variants.sku",
+      "variants.manage_inventory",
+      "variants.inventory_items.inventory.id",
+      "variants.inventory_items.inventory.sku",
+    ],
+    filters: { handle: CATALOG_PRODUCTS.map((product) => product.handle) },
+  })
+  const allProducts = refreshedProducts
+  const allVariants: QueryRecord[] = allProducts.flatMap((product) =>
+    ((product.variants ?? []) as QueryRecord[]).map((variant) => ({
       ...variant,
       productHandle: product.handle,
     }))
@@ -786,6 +867,38 @@ async function ensureProducts(
   return { productCount: allProducts.length, variantCount: allVariants.length }
 }
 
+/**
+ * Uploads a brand logo through the Medusa File Module so the storefront serves it
+ * from our own origin instead of hotlinking an upstream URL. Returns null when the
+ * asset is absent, which leaves the brand deliberately logo-less.
+ */
+async function uploadBrandLogo(fileService: any, filename: string) {
+  const logoPath = resolve(
+    process.cwd(),
+    "../storefront/public/images/brands",
+    filename
+  )
+  let content: Buffer
+  try {
+    content = await readFile(logoPath)
+  } catch {
+    return null
+  }
+
+  const file = await fileService.createFiles({
+    filename,
+    mimeType: filename.endsWith(".svg")
+      ? "image/svg+xml"
+      : filename.endsWith(".png")
+      ? "image/png"
+      : "image/webp",
+    content: content.toString("base64"),
+    access: "public",
+  })
+
+  return file.url as string
+}
+
 async function ensureCatalogExtensions(container: MedusaContainer) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const link = container.resolve(ContainerRegistrationKeys.LINK)
@@ -793,7 +906,7 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
   const catalogService = container.resolve<CatalogModuleService>(CATALOG_MODULE)
   const { data: existingBrands } = await query.graph({
     entity: "catalog_brand",
-    fields: ["id", "name", "handle"],
+    fields: ["id", "name", "handle", "kind", "logo_url", "logo_alt"],
   })
   const brands = new Map<string, QueryRecord>()
 
@@ -821,11 +934,33 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
           `brand "${expected.handle}" conflicts with the seeded identity`
         )
       }
+      // Only fill a logo in; never overwrite one the shop uploaded itself.
+      if (!brand.logo_url && expected.logo) {
+        const logoUrl = await uploadBrandLogo(fileService, expected.logo)
+        if (logoUrl) {
+          const updated = await catalogService.updateCatalogBrands({
+            id: brand.id,
+            logo_url: logoUrl,
+            logo_alt: expected.logoAlt ?? `Logo ${expected.name}`,
+          })
+          brands.set(expected.handle, updated)
+          continue
+        }
+      }
       brands.set(expected.handle, brand)
       continue
     }
 
-    const created = await catalogService.createCatalogBrands(expected)
+    const logoUrl = expected.logo
+      ? await uploadBrandLogo(fileService, expected.logo)
+      : null
+    const created = await catalogService.createCatalogBrands({
+      name: expected.name,
+      handle: expected.handle,
+      kind: expected.kind,
+      logo_url: logoUrl,
+      logo_alt: logoUrl ? expected.logoAlt ?? `Logo ${expected.name}` : null,
+    })
     brands.set(expected.handle, created)
   }
 
@@ -858,7 +993,10 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
     }
 
     let imageUrl = product.thumbnail || product.images?.[0]?.url
-    if (!imageUrl) {
+    // Most fixtures ship without a photo on purpose: inventing product imagery would
+    // misrepresent the goods. The storefront renders a branded placeholder instead
+    // and staff upload the real photo from Admin.
+    if (!imageUrl && expected.image) {
       const imagePath = resolve(
         process.cwd(),
         "../storefront/public/images/products",
@@ -919,6 +1057,11 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
     const profile = await catalogService.createCatalogProductProfiles({
       ...normalized,
       brand_id: brand.id,
+      data_source: expected.dataSource ?? "demo_fixture",
+      internal_note:
+        (expected.dataSource ?? "demo_fixture") === "demo_fixture"
+          ? DEMO_FIXTURE_NOTE
+          : null,
     })
     await link.create({
       [Modules.PRODUCT]: { product_id: product.id },
@@ -934,9 +1077,12 @@ export default async function initialDataSeed({
 }) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   assertUniqueCatalogSkus()
+  assertCatalogBrandReferences()
   logger.info("Đang chuẩn hóa catalog Medusa cho cửa hàng Việt Nam...")
 
   await retireUnsupportedPhoneCatalog(container)
+  await retireDemoCatalog(container)
+  await normalizeCategoryHandles(container)
   const operationalData = await ensureOperationalData(container)
   const entities = await ensureCatalogEntities(container)
   const result = await ensureProducts(container, {

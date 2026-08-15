@@ -42,8 +42,21 @@ const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
             className="object-contain p-3 transition-transform duration-200 group-hover:scale-[1.02]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-[var(--hp-muted)]">
-            Đang cập nhật ảnh
+          // No invented product photography: show the brand's own logo instead, so
+          // the card still reads as the right product while staff upload the real shot.
+          <div className="flex h-full flex-col items-center justify-center gap-2 px-3 text-center">
+            {catalog?.brand?.logo_url ? (
+              <Image
+                src={catalog.brand.logo_url}
+                alt=""
+                aria-hidden="true"
+                width={96}
+                height={40}
+                unoptimized
+                className="h-10 w-24 object-contain opacity-80"
+              />
+            ) : null}
+            <span className="text-xs text-[var(--hp-muted)]">Đang cập nhật ảnh</span>
           </div>
         )}
       </LocalizedClientLink>

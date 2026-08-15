@@ -27,6 +27,7 @@ export default async function PaginatedProducts({
   page,
   collectionId,
   categoryId,
+  categoryIds,
   productsIds,
   countryCode,
   query,
@@ -39,6 +40,8 @@ export default async function PaginatedProducts({
   page: number
   collectionId?: string
   categoryId?: string
+  /** Category subtree to list. Falls back to categoryId alone when omitted. */
+  categoryIds?: string[]
   productsIds?: string[]
   countryCode: string
   query?: string
@@ -55,8 +58,14 @@ export default async function PaginatedProducts({
     queryParams["collection_id"] = [collectionId]
   }
 
-  if (categoryId) {
-    queryParams["category_id"] = [categoryId]
+  const requestedCategoryIds = categoryIds?.length
+    ? categoryIds
+    : categoryId
+    ? [categoryId]
+    : []
+
+  if (requestedCategoryIds.length) {
+    queryParams["category_id"] = requestedCategoryIds
   }
 
   if (productsIds) {

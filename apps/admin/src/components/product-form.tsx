@@ -15,16 +15,19 @@ import {
 import { Field, Panel } from "@/components/ui"
 import { adminFetch } from "@/lib/api"
 import {
+  CATALOG_SPECIFICATION_GROUPS,
   getSpecificationPreset,
   slugifyCatalogValue,
 } from "@/lib/catalog-presets"
 import { sdk } from "@/lib/sdk"
-import type {
-  CatalogBrand,
-  CatalogSpecification,
-  Product,
-  ProductCatalog,
-  ProductCategory,
+import {
+  CATALOG_BRAND_KIND_LABELS,
+  type CatalogBrand,
+  type CatalogBrandKind,
+  type CatalogSpecification,
+  type Product,
+  type ProductCatalog,
+  type ProductCategory,
 } from "@/lib/types"
 
 type ProductFormProps = { product?: Product; catalog?: ProductCatalog }
@@ -167,6 +170,10 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
               .filter((item) => item.url && item.alt.trim())
               .map((item) => [item.url, item.alt.trim()]),
           ),
+          // Saving from Admin is the moment a human vouches for the row, so a
+          // seeded sample stops being flagged as unverified.
+          data_source: "real",
+          internal_note: null,
         },
       })
       return savedProduct
@@ -293,18 +300,47 @@ export function ProductForm({ product, catalog }: ProductFormProps) {
         title="Thông tin thiết bị"
         description="Nhập theo từng trường, không cần gõ cú pháp"
       >
+        {catalog?.data_source === "demo_fixture" ? (
+          <div className="panel-body">
+            <div className="notice notice-warning" role="status">
+              <strong>Dữ liệu mẫu chưa kiểm chứng.</strong>{" "}
+              {catalog.internal_note ??
+                "Giá và tồn kho do seed tạo, cần đối chiếu hàng thực tế."}{" "}
+              Sau khi xác nhận, lưu lại sản phẩm để chuyển sang dữ liệu thật.
+            </div>
+          </div>
+        ) : null}
         <div className="panel-body form-grid">
-          <Field label="Thương hiệu">
+          <Field
+            label="Thương hiệu"
+            hint="Để trống nếu chưa xác định. Chỉ chọn Không rõ thương hiệu khi thật sự không có hãng."
+          >
             <select
               value={brandId}
               onChange={(event) => setBrandId(event.target.value)}
             >
               <option value="">Chưa chọn</option>
-              {brands.data?.brands.map((brand) => (
-                <option value={brand.id} key={brand.id}>
-                  {brand.name}
-                </option>
-              ))}
+              {(
+                Object.keys(CATALOG_BRAND_KIND_LABELS) as CatalogBrandKind[]
+              ).map((kind) => {
+                const group = (brands.data?.brands ?? []).filter(
+                  (brand) => (brand.kind ?? "manufacturer") === kind,
+                )
+                if (!group.length) return null
+                return (
+                  <optgroup
+                    key={kind}
+                    label={CATALOG_BRAND_KIND_LABELS[kind]}
+                  >
+                    {group.map((brand) => (
+                      <option value={brand.id} key={brand.id}>
+                        {brand.name}
+                        {brand.logo_url ? "" : " (chưa có logo)"}
+                      </option>
+                    ))}
+                  </optgroup>
+                )
+              })}
             </select>
           </Field>
           <Field
@@ -486,73 +522,97 @@ function SpecificationsInput({
           </button>
         </div>
       </div>
-      <div className="specification-list">
-        {values.map((item, index) => (
-          <div className="specification-row" key={`${item.key}-${index}`}>
-            <input
-              value={item.label}
-              onChange={(event) => onChange(index, "label", event.target.value)}
-              placeholder="Tên hiển thị"
-            />
-            <input
-              value={item.value}
-              onChange={(event) => onChange(index, "value", event.target.value)}
-              placeholder="Giá trị"
-            />
-            <input
-              value={item.unit}
-              onChange={(event) => onChange(index, "unit", event.target.value)}
-              placeholder="Đơn vị"
-            />
-            <input
-              value={item.group}
-              onChange={(event) => onChange(index, "group", event.target.value)}
-              placeholder="Nhóm lọc"
-              list="catalog-specification-groups"
-            />
-            <input
-              value={item.key}
-              onChange={(event) => onChange(index, "key", event.target.value)}
-              placeholder="Mã"
-            />
-            <label className="specification-flag">
-              <input
-                type="checkbox"
-                checked={item.filterable !== false}
-                onChange={(event) =>
-                  onChange(index, "filterable", event.target.checked)
-                }
-              />
-              Dùng lọc
-            </label>
-            <label className="specification-flag">
-              <input
-                type="checkbox"
-                checked={item.featured === true}
-                onChange={(event) =>
-                  onChange(index, "featured", event.target.checked)
-                }
-              />
-              Nổi bật
-            </label>
-            <button
-              type="button"
-              className="icon-button"
-              aria-label="Xóa thông số"
-              onClick={() => onRemove(index)}
-            >
-              ×
-            </button>
+      {groupSpecifications(values).map((section) => (
+        <div className="specification-group" key={section.group}>
+          <h4 className="specification-group-title">{section.group}</h4>
+          <div className="specification-list">
+            {section.rows.map(({ item, index }) => (
+              <div className="specification-row" key={`${item.key}-${index}`}>
+                <input
+                  value={item.label}
+                  onChange={(event) => onChange(index, "label", event.target.value)}
+                  placeholder="Tên hiển thị"
+                  aria-label="Tên hiển thị"
+                />
+                <input
+                  value={item.value}
+                  onChange={(event) => onChange(index, "value", event.target.value)}
+                  placeholder={
+                    item.multi ? "Giá trị 1, giá trị 2" : "Giá trị"
+                  }
+                  aria-label="Giá trị"
+                />
+                <input
+                  value={item.unit}
+                  onChange={(event) => onChange(index, "unit", event.target.value)}
+                  placeholder="Đơn vị"
+                  aria-label="Đơn vị"
+                />
+                <select
+                  value={item.group}
+                  onChange={(event) => onChange(index, "group", event.target.value)}
+                  aria-label="Nhóm thông số"
+                >
+                  {CATALOG_SPECIFICATION_GROUPS.includes(
+                    item.group as (typeof CATALOG_SPECIFICATION_GROUPS)[number],
+                  ) ? null : (
+                    <option value={item.group}>{item.group || "Chưa phân nhóm"}</option>
+                  )}
+                  {CATALOG_SPECIFICATION_GROUPS.map((group) => (
+                    <option key={group} value={group}>
+                      {group}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={item.key}
+                  onChange={(event) => onChange(index, "key", event.target.value)}
+                  placeholder="Mã"
+                  aria-label="Mã thông số"
+                />
+                <label className="specification-flag">
+                  <input
+                    type="checkbox"
+                    checked={item.filterable !== false}
+                    onChange={(event) =>
+                      onChange(index, "filterable", event.target.checked)
+                    }
+                  />
+                  Dùng lọc
+                </label>
+                <label className="specification-flag">
+                  <input
+                    type="checkbox"
+                    checked={item.featured === true}
+                    onChange={(event) =>
+                      onChange(index, "featured", event.target.checked)
+                    }
+                  />
+                  Nổi bật
+                </label>
+                <label className="specification-flag">
+                  <input
+                    type="checkbox"
+                    checked={item.multi === true}
+                    onChange={(event) =>
+                      onChange(index, "multi", event.target.checked)
+                    }
+                  />
+                  Nhiều giá trị
+                </label>
+                <button
+                  type="button"
+                  className="icon-button"
+                  aria-label="Xóa thông số"
+                  onClick={() => onRemove(index)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <datalist id="catalog-specification-groups">
-        <option value="Cấu hình" />
-        <option value="Nhu cầu sử dụng" />
-        <option value="Tính năng" />
-        <option value="Kết nối" />
-        <option value="Vận hành" />
-      </datalist>
+        </div>
+      ))}
       {!values.length ? (
         <button type="button" className="text-button" onClick={onAdd}>
           + Thêm thông số đầu tiên
@@ -560,6 +620,34 @@ function SpecificationsInput({
       ) : null}
     </section>
   )
+}
+
+/**
+ * Buckets rows by their group for display while keeping each row's original index,
+ * so edits still address the right entry in the flat specifications array.
+ */
+function groupSpecifications(values: CatalogSpecification[]) {
+  const sections = new Map<
+    string,
+    { group: string; rows: { item: CatalogSpecification; index: number }[] }
+  >()
+
+  values.forEach((item, index) => {
+    const group = item.group?.trim() || "Chưa phân nhóm"
+    const section = sections.get(group) ?? { group, rows: [] }
+    section.rows.push({ item, index })
+    sections.set(group, section)
+  })
+
+  const order = [...CATALOG_SPECIFICATION_GROUPS] as string[]
+  return Array.from(sections.values()).sort((left, right) => {
+    const leftRank = order.indexOf(left.group)
+    const rightRank = order.indexOf(right.group)
+    return (
+      (leftRank === -1 ? order.length : leftRank) -
+      (rightRank === -1 ? order.length : rightRank)
+    )
+  })
 }
 
 function MediaInput({
@@ -707,6 +795,7 @@ function blankSpecification(position: number): CatalogSpecification {
     group: "Cấu hình",
     filterable: true,
     featured: false,
+    multi: false,
     position,
   }
 }

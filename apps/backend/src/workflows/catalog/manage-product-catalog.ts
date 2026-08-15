@@ -22,6 +22,8 @@ export type UpsertProductCatalogInput = {
   specifications?: unknown
   media_alt_text?: unknown
   merchandising?: unknown
+  data_source?: "real" | "demo_fixture"
+  internal_note?: string | null
 }
 
 const upsertProductCatalogStep = createStep(
@@ -52,17 +54,23 @@ const upsertProductCatalogStep = createStep(
 
     const normalized = normalizeCatalogProfile(input)
     const existing = product.catalog
+    const provenance = {
+      data_source: input.data_source ?? existing?.data_source ?? "real",
+      internal_note: input.internal_note?.trim() || null,
+    }
     let profile
 
     if (existing?.id) {
       profile = await catalogService.updateCatalogProductProfiles({
         id: existing.id,
         ...normalized,
+        ...provenance,
         brand_id: input.brand_id ?? null,
       })
     } else {
       profile = await catalogService.createCatalogProductProfiles({
         ...normalized,
+        ...provenance,
         brand_id: input.brand_id ?? null,
       })
       try {
@@ -88,10 +96,14 @@ export const upsertProductCatalogWorkflow = createWorkflow(
   }
 )
 
+export type BrandKind = "manufacturer" | "store_label" | "unspecified"
+
 export type CreateBrandInput = {
   name: string
   handle: string
+  kind?: BrandKind
   logo_url?: string | null
+  logo_alt?: string | null
 }
 
 const createBrandStep = createStep(
@@ -114,10 +126,13 @@ const createBrandStep = createStep(
       )
     }
 
+    const logoUrl = input.logo_url?.trim() || null
     const brand = await catalogService.createCatalogBrands({
       name,
       handle,
-      logo_url: input.logo_url?.trim() || null,
+      kind: input.kind ?? "manufacturer",
+      logo_url: logoUrl,
+      logo_alt: logoUrl ? input.logo_alt?.trim() || `Logo ${name}` : null,
     })
     return new StepResponse(brand, brand.id)
   },
@@ -144,7 +159,9 @@ export type UpdateBrandInput = {
   id: string
   name: string
   handle: string
+  kind?: BrandKind
   logo_url?: string | null
+  logo_alt?: string | null
 }
 
 const updateBrandStep = createStep(
@@ -176,18 +193,23 @@ const updateBrandStep = createStep(
     }
 
     const previous = current[0]
+    const logoUrl = input.logo_url?.trim() || null
     const brand = await catalogService.updateCatalogBrands({
       id: input.id,
       name,
       handle,
-      logo_url: input.logo_url?.trim() || null,
+      kind: input.kind ?? previous.kind ?? "manufacturer",
+      logo_url: logoUrl,
+      logo_alt: logoUrl ? input.logo_alt?.trim() || `Logo ${name}` : null,
     })
 
     return new StepResponse(brand, {
       id: previous.id,
       name: previous.name,
       handle: previous.handle,
+      kind: previous.kind,
       logo_url: previous.logo_url,
+      logo_alt: previous.logo_alt,
     })
   },
   async (previous, { container }) => {

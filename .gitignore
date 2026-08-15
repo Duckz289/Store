@@ -61,3 +61,6 @@ yarn-error.log*
 ehthumbs.db
 Thumbs.db
 **/.DS_Store
+
+# Medusa CLI machine-local runtime state
+.runtime-config/

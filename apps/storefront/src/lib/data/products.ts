@@ -15,6 +15,13 @@ import { listCategories } from "./categories"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
 
+/**
+ * Facets, catalog filtering and sorting all run over a single fetched page rather
+ * than in the database, so this is the ceiling on how much catalog they can see.
+ * Raise it together with the store's product count.
+ */
+const CATALOG_SCAN_LIMIT = 200
+
 type ProductListQueryParams = (HttpTypes.FindParams &
   HttpTypes.StoreProductListParams) & {
   options?: string[]
@@ -130,7 +137,7 @@ export const searchCatalog = async ({
   }
 
   const [productResponse, categories] = await Promise.all([
-    listProducts({ countryCode, queryParams: { limit: 100 } }),
+    listProducts({ countryCode, queryParams: { limit: CATALOG_SCAN_LIMIT } }),
     listCategories().catch(() => []),
   ])
   const normalizedQuery = normalizeSearchText(trimmedQuery)
@@ -258,7 +265,7 @@ export const listProductsWithSort = async ({
     queryParams: {
       ...queryParams,
       ...(optionFilters.length ? { option_value_id: optionFilters } : {}),
-      limit: 100,
+      limit: CATALOG_SCAN_LIMIT,
     },
     countryCode,
   })
@@ -291,19 +298,28 @@ export const listProductsWithSort = async ({
 export const listCatalogFacets = async ({
   countryCode,
   categoryId,
+  categoryIds,
   query,
 }: {
   countryCode: string
   categoryId?: string
+  /** Category subtree to build facets from. Falls back to categoryId alone. */
+  categoryIds?: string[]
   query?: string
 }) => {
+  const scopedCategoryIds = categoryIds?.length
+    ? categoryIds
+    : categoryId
+    ? [categoryId]
+    : []
+
   const {
     response: { products },
   } = await listProducts({
     countryCode,
     queryParams: {
-      limit: 100,
-      ...(categoryId ? { category_id: [categoryId] } : {}),
+      limit: CATALOG_SCAN_LIMIT,
+      ...(scopedCategoryIds.length ? { category_id: scopedCategoryIds } : {}),
       ...(query?.trim() ? { q: query.trim() } : {}),
     },
   })

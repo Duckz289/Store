@@ -1000,6 +1000,7 @@ const COOLING: CatalogProductSeed[] = [
     brand: "casper",
     model: "GC-09IS35",
     weight: 32000,
+    image: "casper-gc-09is35.jpg",
     specifications: [
       { key: "appliance_type", label: "Loại thiết bị", value: "Máy lạnh 1 chiều", group: "Sản phẩm", featured: true },
       { key: "capacity", label: "Công suất làm lạnh", value: "9000", unit: "BTU", group: "Vận hành", featured: true },
@@ -1203,6 +1204,7 @@ const ELECTRICAL: CatalogProductSeed[] = [
     brand: "panasonic",
     model: "FV-20CUT1",
     weight: 1900,
+    image: "panasonic-fv-20cut1.jpg",
     specifications: [
       { key: "device_type", label: "Loại thiết bị", value: "Quạt hút gắn tường", group: "Sản phẩm", featured: true },
       { key: "power", label: "Công suất", value: "30", unit: "W", group: "Vận hành", featured: true },
@@ -1225,6 +1227,7 @@ const ELECTRICAL: CatalogProductSeed[] = [
     brand: "panasonic",
     model: "GP-129JXK",
     weight: 7800,
+    image: "panasonic-gp-129jxk.jpg",
     specifications: [
       { key: "device_type", label: "Loại thiết bị", value: "Máy bơm đẩy cao", group: "Sản phẩm", featured: true },
       { key: "power", label: "Công suất", value: "125", unit: "W", group: "Vận hành", featured: true },

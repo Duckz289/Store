@@ -1012,7 +1012,7 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
       }
       const file = await fileService.createFiles({
         filename: expected.image,
-        mimeType: "image/webp",
+        mimeType: productImageMimeType(expected.image),
         content: content.toString("base64"),
         access: "public",
       })
@@ -1068,6 +1068,13 @@ async function ensureCatalogExtensions(container: MedusaContainer) {
       [CATALOG_MODULE]: { catalog_product_profile_id: profile.id },
     })
   }
+}
+
+function productImageMimeType(filename: string) {
+  const extension = filename.split(".").pop()?.toLowerCase()
+  if (extension === "jpg" || extension === "jpeg") return "image/jpeg"
+  if (extension === "png") return "image/png"
+  return "image/webp"
 }
 
 export default async function initialDataSeed({

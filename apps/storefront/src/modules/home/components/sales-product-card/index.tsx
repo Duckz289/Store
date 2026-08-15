@@ -26,7 +26,7 @@ const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
     <article className="flex h-full min-h-[440px] flex-col overflow-hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] p-4 transition-colors hover:border-[var(--hp-accent)]">
       <LocalizedClientLink
         href={`/products/${product.handle}`}
-        className="group relative block aspect-[4/3] isolate overflow-hidden rounded-[10px] border border-white/80 bg-[radial-gradient(circle_at_50%_22%,#ffffff_0%,#f8fafc_43%,#e8edf4_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]"
+        className="group relative block aspect-[4/3] isolate overflow-hidden rounded-[10px] border border-white/80 bg-[#f1f2f3] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]"
       >
         {hasDiscount && (
           <span className="type-badge absolute left-2 top-2 z-10 rounded-[6px] bg-[var(--hp-accent)] px-2 py-1 text-white">
@@ -34,19 +34,13 @@ const SalesProductCard = ({ product }: { product: HttpTypes.StoreProduct }) => {
           </span>
         )}
         {image ? (
-          <>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-[18%] bottom-[-18%] h-1/2 rounded-full bg-white/90 blur-2xl"
-            />
-            <Image
-              src={image}
-              alt={catalog?.media_alt_text?.[image] || product.title}
-              fill
-              sizes="(max-width: 640px) 78vw, (max-width: 1280px) 33vw, 280px"
-              className="relative z-10 object-contain p-1.5 mix-blend-multiply transition-transform duration-200 ease-out group-hover:scale-[1.055] motion-reduce:transition-none"
-            />
-          </>
+          <Image
+            src={image}
+            alt={catalog?.media_alt_text?.[image] || product.title}
+            fill
+            sizes="(max-width: 640px) 78vw, (max-width: 1280px) 33vw, 280px"
+            className="object-contain p-1.5 mix-blend-darken transition-transform duration-200 ease-out group-hover:scale-[1.055] motion-reduce:transition-none"
+          />
         ) : (
           // No invented product photography: show the brand's own logo instead, so
           // the card still reads as the right product while staff upload the real shot.

@@ -41,7 +41,7 @@ const ProductVisual = ({
       fill
       priority
       sizes={sizes}
-      className="object-contain object-center"
+      className="object-contain object-center mix-blend-darken"
     />
   ) : (
     <div className="flex h-full items-center justify-center text-[var(--hp-muted)]">
@@ -80,7 +80,7 @@ const PromoTile = ({ product }: { product?: HttpTypes.StoreProduct }) => {
           </span>
         </div>
       </div>
-      <div className="relative min-h-[120px] transition-transform duration-200 group-hover:scale-[1.02]">
+      <div className="relative min-h-[120px] overflow-hidden rounded-[10px] bg-[#f1f2f3] transition-transform duration-200 group-hover:scale-[1.02]">
         <ProductVisual product={product} sizes="240px" />
       </div>
     </LocalizedClientLink>
@@ -161,7 +161,7 @@ const Hero = ({
               Mua ngay
             </span>
           </div>
-          <div className="relative min-h-[260px] p-5 sm:min-h-[330px]">
+          <div className="relative min-h-[260px] bg-[#f1f2f3] p-5 sm:min-h-[330px]">
             <ProductVisual product={mainProduct} sizes="(max-width: 1024px) 50vw, 580px" />
           </div>
         </LocalizedClientLink>

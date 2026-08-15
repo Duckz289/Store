@@ -47,7 +47,7 @@ const ImageGallery = ({ product, images }: ImageGalleryProps) => {
               key={image.id || image.url}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[8px] border bg-[var(--hp-paper)] ${activeIndex === index ? "border-[var(--hp-accent)] ring-1 ring-[var(--hp-accent)]" : "border-[var(--hp-line)] hover:border-[var(--hp-accent)]"}`}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[8px] border bg-[#f1f2f3] ${activeIndex === index ? "border-[var(--hp-accent)] ring-1 ring-[var(--hp-accent)]" : "border-[var(--hp-line)] hover:border-[var(--hp-accent)]"}`}
               aria-label={`Xem hình ${index + 1} của ${product.title}`}
               aria-current={activeIndex === index ? "true" : undefined}
             >
@@ -56,20 +56,20 @@ const ImageGallery = ({ product, images }: ImageGalleryProps) => {
                 alt={mediaAltText?.[image.url!] || `${product.title} ${index + 1}`}
                 fill
                 sizes="64px"
-                className="object-contain p-1"
+                className="object-contain p-1 mix-blend-darken"
               />
             </button>
           ))}
         </div>
       )}
-      <div className="group relative order-1 aspect-square overflow-hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[var(--hp-surface)] sm:order-2">
+      <div className="group relative order-1 aspect-square overflow-hidden rounded-[var(--hp-radius-card)] border border-[var(--hp-line)] bg-[#f1f2f3] sm:order-2">
         <Image
           src={activeImage.url}
           alt={mediaAltText?.[activeImage.url] || product.title}
           fill
           priority
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 66vw, 760px"
-          className="object-contain p-6"
+          className="object-contain p-4 mix-blend-darken"
         />
         {galleryImages.length > 1 && (
           <>

@@ -198,7 +198,7 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--hp-ink)] hover:bg-[var(--hp-paper)]"
                   >
-                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[8px] bg-[var(--hp-paper)]">
+                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[8px] bg-[#f1f2f3]">
                       {product.thumbnail ? (
                         <Image
                           unoptimized
@@ -206,7 +206,7 @@ const SearchBar = ({ countryCode }: { countryCode: string }) => {
                           sizes="48px"
                           src={product.thumbnail}
                           alt={product.title}
-                          className="object-contain"
+                          className="object-contain mix-blend-darken"
                         />
                       ) : null}
                     </span>

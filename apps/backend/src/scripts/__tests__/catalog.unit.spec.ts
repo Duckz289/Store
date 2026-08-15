@@ -102,11 +102,9 @@ describe("catalog seed contract", () => {
     }
   })
 
-  it("ships product imagery only where a real asset exists", () => {
+  it("maps every catalog product to a local product image", () => {
     for (const product of CATALOG_PRODUCTS) {
-      if (product.image) {
-        expect(product.image).toMatch(/\.(webp|png|jpg)$/)
-      }
+      expect(product.image).toMatch(/^[a-z0-9-]+\.(webp|png|jpg)$/)
     }
   })
 

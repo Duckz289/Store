@@ -1,7 +1,9 @@
 # Product image sources
 
-The following product photos are used only for their matching catalog model and
-are stored locally so the storefront does not hotlink third-party sites.
+Every catalog fixture is mapped to a local, model-matched product photo so the
+storefront does not hotlink a third-party site. The bulk images were selected
+from public manufacturer or retailer product listings by exact model number;
+their local filenames match the catalog product handles.
 
 | Local file | Product | Source |
 | --- | --- | --- |
